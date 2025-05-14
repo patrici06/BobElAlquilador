@@ -1,31 +1,70 @@
 package com.BobElAlquilador.demo.model;
 import jakarta.persistence.*;
-import lombok.*;
 
+//Cliente = (DNI(pk), nombre, apellido, email, clave, Teléfono?)
 @Entity
-@Table(name = "Cliente")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Table(name = "cliente")
 public class Cliente {
-
     @Id
-    @Column(length = 20)
-    private String dni;
+    private String dni_cliente;
 
-    @Column(length = 50)
     private String nombre;
-
-    @Column(length = 50)
     private String apellido;
-
-    @Column(length = 100)
     private String email;
-
-    @Column(length = 100)
     private String clave;
-
-    @Column(length = 20)
     private String telefono;
+    public Cliente(){}
+
+    public Cliente(String dni, String nombre, String apellido, String email, String clave, String telefono) {
+        this.dni_cliente = dni;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.clave = clave;
+        this.telefono = telefono;
+    }
+
+    public String getDni() {
+        return dni_cliente;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 }

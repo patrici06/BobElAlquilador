@@ -1,0 +1,25 @@
+Dueño/propietario = (DNI(pk), nombre, apellido, email, clave)
+
+Cliente = (DNI(pk), nombre, apellido, email, clave, Teléfono?)
+
+Empleado = (DNI(pk), nombre, apellido, email, clave)
+
+Reseña = (id(pk), DNI(E),DNI(C), comentario, valoración)
+
+Pregunta = {id(pk), DNI(C), Fecha, hora, cuerpo}
+
+Respuesta = {(idR(pk), DNI(E), Fecha, hora, cuerpo)}
+
+Iteración = {(id(pk): idP(fk), idR(pk)(PK))}
+
+Conversación = {id(pk)}
+
+Alquiler = {(NombreMaquina(fk), FechaInicio, FechaFin)(PK), DNI(C)(fk)}
+
+Maquina = {Nombre(pk), ubicación(fk)?, FechaIngreso?, URL/PATH+Foto, Descripción, nombreEstado(fk), precioxDía, políticaCancelar}
+
+Reseña Máquina = {NombreMaquina(fk)(pk), DNI(fk), Comentario, valoración}
+
+Registro Movimiento = {ubicación(fk), NombreMaquina(fk), FechaIngreso(PK), FechaEgreso}
+
+Estado = {nombreEstado}
