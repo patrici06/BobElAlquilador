@@ -12,19 +12,19 @@ public class ResenaMaquina {
 
     @ManyToOne
     @JoinColumn (name = "nombre_maquina")
-    private String nombreMaquina;
-    @JoinColumn (name = "dni_cliente")
+    private Maquina maquina;
     @ManyToOne
-    private Cliente dni;
+    @JoinColumn (name = "dni_cliente")
+    private Cliente cliente;
     private String comentario;
     private int valoracion;
 
     public ResenaMaquina() {}
 
-    public ResenaMaquina(Long id_resena, String nombreMaquina, Cliente dni, String comentario, int valoracion) {
+    public ResenaMaquina(Long id_resena, Maquina nombreMaquina, Cliente dni, String comentario, int valoracion) {
         this.id_resena = id_resena;
-        this.nombreMaquina = nombreMaquina;
-        this.dni = dni;
+        this.maquina = nombreMaquina;
+        this.cliente = dni;
         this.comentario = comentario;
         this.valoracion = valoracion;
     }
@@ -45,16 +45,16 @@ public class ResenaMaquina {
         this.comentario = comentario;
     }
 
-    public Cliente getDni() {
-        return dni;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public String getNombreMaquina() {
-        return nombreMaquina;
+    public Maquina getMaquina() {
+        return maquina;
     }
 
-    public void setNombreMaquina(String nombreMaquina) {
-        this.nombreMaquina = nombreMaquina;
+    public void setMaquina(Maquina nombreMaquina) {
+        this.maquina = nombreMaquina;
     }
 
     public Long getId_resena() {

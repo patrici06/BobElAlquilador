@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Table (name = "maquina")
 public class Maquina {
     @Id
-    private String nombre;
+    private String nombre_maquina;
 
     private String ubicacion;
-    private LocalDate fechaIngreso;
+    private LocalDate fecha_ingreso;
     @Lob
     private String fotoUrl;
     @Lob
@@ -21,19 +21,19 @@ public class Maquina {
     public Maquina() {}
 
     public Maquina(String nombre, String ubicacion, LocalDate fechaIngreso, String fotoUrl, String descripcion) {
-        this.nombre = nombre;
+        this.nombre_maquina = nombre;
         this.ubicacion = ubicacion;
-        this.fechaIngreso = fechaIngreso;
+        this.fecha_ingreso = fechaIngreso;
         this.fotoUrl = fotoUrl;
         this.descripcion = descripcion;
     }
 
     public String getNombre() {
-        return nombre;
+        return nombre_maquina;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre_maquina = nombre;
     }
 
     public String getUbicacion() {
@@ -45,11 +45,11 @@ public class Maquina {
     }
 
     public LocalDate getFechaIngreso() {
-        return fechaIngreso;
+        return fecha_ingreso;
     }
 
     public void setFechaIngreso(LocalDate fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
+        this.fecha_ingreso = fechaIngreso;
     }
 
     public String getFotoUrl() {

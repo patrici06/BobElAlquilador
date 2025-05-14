@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Table(name = "propietario")
 public class Propietario {
     @Id
-    private String dni_Propietario;
+    private String dni_propietario;
 
     private String nombre;
     private String apellido;
@@ -14,7 +14,7 @@ public class Propietario {
     public Propietario(){}
 
     public Propietario(String dni, String nombre, String apellido, String email, String clave) {
-        this.dni_Propietario = dni;
+        this.dni_propietario = dni;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -22,7 +22,7 @@ public class Propietario {
     }
 
     public String getDni() {
-        return dni_Propietario;
+        return dni_propietario;
     }
 
     public String getNombre() {
