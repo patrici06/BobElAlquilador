@@ -17,7 +17,7 @@ public class Resena {
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
     private Empleado empleado;
-
+    @Lob
     private String comentario;
     private int valoracion;
 
