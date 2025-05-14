@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 @Table (name = "alquiler")
 public class Alquiler {
     @EmbeddedId
-    private AlquilerID alquiler_id;
+    private AlquilerId alquiler_id;
 
     @ManyToOne
     @MapsId ("nombre_maquina")
