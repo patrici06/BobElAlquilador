@@ -19,17 +19,17 @@ public class Alquiler {
     private Cliente cliente;
     public Alquiler(){}
 
-    public Alquiler(AlquilerID alquiler_id, Maquina maquina, Cliente cliente) {
+    public Alquiler(AlquilerId alquiler_id, Maquina maquina, Cliente cliente) {
         this.alquiler_id = alquiler_id;
         this.maquina = maquina;
         this.cliente = cliente;
     }
 
-    public AlquilerID getAlquiler_id() {
+    public AlquilerId getAlquiler_id() {
         return alquiler_id;
     }
 
-    public void setAlquiler_id(AlquilerID alquiler_id) {
+    public void setAlquiler_id(AlquilerId alquiler_id) {
         this.alquiler_id = alquiler_id;
     }
 
