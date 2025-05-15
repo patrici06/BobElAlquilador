@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "resena")
-public class Resena {
+public class Resena extends DbEstado{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +22,11 @@ public class Resena {
     private int valoracion;
 
     public Resena() {
+        super();
     }
 
     public Resena(Cliente cliente, Empleado empleado, String comentario, int valoracion) {
+        super();
         this.cliente = cliente;
         this.empleado = empleado;
         this.comentario = comentario;

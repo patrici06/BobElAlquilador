@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MaquinaService {
@@ -29,7 +28,9 @@ public class MaquinaService {
     }
     //Borrado Logico
     public void deleteMaquina(Maquina manquina){
-        manquina.setEstado(Estado.Eliminada);
+       //Se deben Cancelar los alquileres (marcar como cancelado)
+         manquina.borrar();
+        //Puede que requiera la cancelacion de todos los Alquileres pendientes.
         this.saveMaquina(manquina);
     }
 

@@ -22,6 +22,14 @@ public class Pregunta {
     @Lob
     private String cuerpo;
 
+    public Pregunta(){}
+    public Pregunta(Cliente cliente, LocalDate fecha, LocalTime hora, String cuerpo) {
+        this.cliente = cliente;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.cuerpo = cuerpo;
+    }
+
     public Long getIdP() {
         return idP;
     }
@@ -58,12 +66,6 @@ public class Pregunta {
         this.cuerpo = cuerpo;
     }
 
-    public Pregunta(){}
-    public Pregunta(Cliente cliente, LocalDate fecha, LocalTime hora, String cuerpo) {
-        this.cliente = cliente;
-        this.fecha = fecha;
-        this.hora = hora;
-        this.cuerpo = cuerpo;
-    }
+
 
 }

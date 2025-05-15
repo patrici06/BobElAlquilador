@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 public class PropietarioService {
     @Autowired
     public PropietarioRepository propietarioRepository;
-    public Propietario findByDniPropietario(String dni_propietario){
-        return propietarioRepository.findById(dni_propietario).orElse(null);
+    public Propietario findByDniPropietario(String dni){
+        return propietarioRepository.findById(dni).orElse(null);
     }
     public void savePropietario(Propietario p){
         propietarioRepository.save(p);

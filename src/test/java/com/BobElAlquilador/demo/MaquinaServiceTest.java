@@ -120,6 +120,6 @@ class MaquinaServiceTest {
         maquinaService.deleteMaquina(maquina);
 
         // Verificar resultados
-        assertEquals(Estado.Eliminada, maquina.getEstado());
+        assertEquals(Estado.Eliminado, maquina.getEstado());
     }
 }

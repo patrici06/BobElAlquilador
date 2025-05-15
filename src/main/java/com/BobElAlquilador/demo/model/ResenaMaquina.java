@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 ////Reseña Máquina = {NombreMaquina(fk)(pk), DNI(fk), Comentario, valoración}
 @Entity
 @Table (name = "resena_maquina")
-public class ResenaMaquina {
+public class ResenaMaquina extends DbEstado{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_resena;
@@ -19,9 +19,10 @@ public class ResenaMaquina {
     private String comentario;
     private int valoracion;
 
-    public ResenaMaquina() {}
+    public ResenaMaquina() { super();}
 
     public ResenaMaquina(Long id_resena, Maquina nombreMaquina, Cliente dni, String comentario, int valoracion) {
+        super();
         this.id_resena = id_resena;
         this.maquina = nombreMaquina;
         this.cliente = dni;

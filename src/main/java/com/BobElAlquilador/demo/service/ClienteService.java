@@ -10,8 +10,8 @@ public class ClienteService {
     @Autowired
     public ClienteRepository clienteRepository;
 
-    public Cliente findByDniCliente(String dni_cliente){
-        return clienteRepository.findById(dni_cliente).orElse(null);
+    public Cliente findByDniCliente(String dni){
+        return clienteRepository.findById(dni).orElse(null);
     }
     public void saveCliente(Cliente cliente){
         clienteRepository.save(cliente);

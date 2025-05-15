@@ -6,13 +6,16 @@ import jakarta.persistence.*;
 
 @Entity
 @Table (name = "conversacion")
-public class Conversacion {
+public class Conversacion extends DbEstado {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id_conversacion;
-    public Conversacion(){}
+    public Conversacion(){
+        super();
+    }
 
     public Conversacion(Long id_conversacion) {
+        super();
         this.id_conversacion = id_conversacion;
     }
 

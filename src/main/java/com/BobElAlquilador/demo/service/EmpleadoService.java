@@ -13,8 +13,8 @@ public class EmpleadoService {
     @Autowired
     public EmpleadoRepository empleadoRepository;
     public List<Empleado> findAllEmpleados(){ return empleadoRepository.findAll();}
-    public Empleado findByDniEmpleado(String dni_empleado){
-        return empleadoRepository.findById(dni_empleado).orElse(null);
+    public Empleado findByDniEmpleado(String dni){
+        return empleadoRepository.findById(dni).orElse(null);
     }
     public void saveEmpleado(Empleado empleado){
         empleadoRepository.save(empleado);

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table (name = "registro_movimiento")
-public class RegistroMovimiento {
+public class RegistroMovimiento extends DbEstado{
     @EmbeddedId
     private RegistroMovimientoId registroMovimientoId;
 
@@ -17,8 +17,15 @@ public class RegistroMovimiento {
     private Maquina maquina;
     private LocalDate fechaEgreso;
 
-    public RegistroMovimiento() {}
-
+    public RegistroMovimiento() {
+        super();
+    }
+    public RegistroMovimiento(RegistroMovimientoId registroMovimientoId, Maquina maquina, LocalDate fechaEgreso) {
+        super();
+        this.registroMovimientoId = registroMovimientoId;
+        this.maquina = maquina;
+        this.fechaEgreso = fechaEgreso;
+    }
     public RegistroMovimientoId getRegistroMovimientoId() {
         return registroMovimientoId;
     }
@@ -35,9 +42,5 @@ public class RegistroMovimiento {
         return fechaEgreso;
     }
 
-    public RegistroMovimiento(RegistroMovimientoId registroMovimientoId, Maquina maquina, LocalDate fechaEgreso) {
-        this.registroMovimientoId = registroMovimientoId;
-        this.maquina = maquina;
-        this.fechaEgreso = fechaEgreso;
-    }
+
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "alquiler")
-public class Alquiler {
+public class Alquiler extends DbEstado {
     @EmbeddedId
     private AlquilerId alquilerId;
 
@@ -18,17 +18,29 @@ public class Alquiler {
     @JoinColumn(name = "dni_cliente")
     private Cliente cliente;
 
-    private Boolean estado;
+    private Double precioTotal;
+    private EstadoAlquiler estado;
 
-    public Alquiler() {}
+    public Alquiler() {
+        super();
+    }
 
-    public Alquiler(AlquilerId alquilerId, Maquina maquina, Cliente cliente, Boolean estado) {
+    public Alquiler(AlquilerId alquilerId, Maquina maquina, Cliente cliente, Double precioTotal) {
+        super();
         this.alquilerId = alquilerId;
         this.maquina = maquina;
         this.cliente = cliente;
-        this.estado = estado;
+        this.estado = EstadoAlquiler.Pendiente;
+        this.precioTotal = precioTotal;
     }
 
+    public Double getPrecioTotal() {
+        return precioTotal;
+    }
+
+    public void setPrecioTotal(Double precioTotal) {
+        this.precioTotal = precioTotal;
+    }
     public AlquilerId getAlquilerId() {
         return alquilerId;
     }
@@ -53,11 +65,20 @@ public class Alquiler {
         this.cliente = cliente;
     }
 
-    public Boolean getEstado() {
+    public EstadoAlquiler getEstadoAlquiler() {
         return estado;
     }
 
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
+    public void setEstadoActivo() {
+        this.estado = EstadoAlquiler.Activo;
     }
+
+    public void setEstadoPendiente() {
+        this.estado = EstadoAlquiler.Pendiente;
+    }
+
+    public void setEstadoCancelado() {
+        this.estado = EstadoAlquiler.Cancelado;
+    }
+    public void serEstadoFinalizado(){ this.estado = EstadoAlquiler.Finalizado; }
 }

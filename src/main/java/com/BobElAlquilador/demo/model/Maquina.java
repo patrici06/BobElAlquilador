@@ -7,7 +7,7 @@ import java.time.LocalDate;
 /// nombreEstado(fk), precioxDía, políticaCancelar}
 @Entity
 @Table (name = "maquina")
-public class Maquina {
+public class Maquina extends DbEstado{
     @Id
     private String nombre_maquina;
 
@@ -18,8 +18,10 @@ public class Maquina {
     @Lob
     private String descripcion;
     private String tipo;
-    private Estado estado;
-    public Maquina() {}
+    private EstadoMaquina estadoMaquina;
+    public Maquina() {
+        super();
+    }
 
     public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, String tipo) {
         this.nombre_maquina = nombre;
@@ -28,14 +30,17 @@ public class Maquina {
         this.fotoUrl = fotoUrl;
         this.descripcion = descripcion;
         this.tipo = tipo;
-        this.estado = Estado.Disponible;
+        this.estadoMaquina = EstadoMaquina.Disponible;
     }
-    public Estado getEstado (){
-        return this.estado;
+    public EstadoMaquina getEstadoMaquina (){
+        return this.estadoMaquina;
     }
-    public void setEstado (Estado estado){
-        this.estado =  estado;
+    public void setEstadoMaquina(EstadoMaquina estadoMaquina){
+        this.estadoMaquina =  estadoMaquina;
     }
+    public void setEstadoMaquinaDisponible(){ this.estadoMaquina = EstadoMaquina.Disponible;}
+    public void setEstadoMaquinaMantenimiento(){ this.estadoMaquina = EstadoMaquina.Mantenimiento;}
+    public void setEstadoMaquinaDescompuesta(){this.estadoMaquina = EstadoMaquina.Descompuesta;}
     public String getTipo(){ return tipo; }
 
     public void setTipo(String tipo){
