@@ -19,4 +19,7 @@ public class ResenaService {
     public List<Resena> getAllResena(){
         return resenaRepository.findAll();
     }
+    public List<Resena> findByValoracion(int valoracion){
+        return resenaRepository.findByValoracion(valoracion);
+    }
 }
