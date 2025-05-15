@@ -17,17 +17,30 @@ public class Maquina {
     private String fotoUrl;
     @Lob
     private String descripcion;
-
+    private String tipo;
+    private Estado estado;
     public Maquina() {}
 
-    public Maquina(String nombre, String ubicacion, LocalDate fechaIngreso, String fotoUrl, String descripcion) {
+    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, String tipo) {
         this.nombre_maquina = nombre;
         this.ubicacion = ubicacion;
-        this.fecha_ingreso = fechaIngreso;
+        this.fecha_ingreso = fecha;
         this.fotoUrl = fotoUrl;
         this.descripcion = descripcion;
+        this.tipo = tipo;
+        this.estado = Estado.Disponible;
     }
+    public Estado getEstado (){
+        return this.estado;
+    }
+    public void setEstado (Estado estado){
+        this.estado =  estado;
+    }
+    public String getTipo(){ return tipo; }
 
+    public void setTipo(String tipo){
+        this.tipo = tipo;
+    }
     public String getNombre() {
         return nombre_maquina;
     }

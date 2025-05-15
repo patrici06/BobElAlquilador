@@ -24,8 +24,11 @@ public class Cliente {
         this.telefono = telefono;
     }
 
-    public String getDni() {
+    public String getDni_cliente() {
         return dni_cliente;
+    }
+    public void setDni_cliente( String dni_cliente){
+        this.dni_cliente = dni_cliente;
     }
 
     public String getNombre() {

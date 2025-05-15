@@ -6,16 +6,17 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
-public class AlquilerId  implements Serializable {
+public class AlquilerId implements Serializable {
     private String nombre_maquina;
-    private LocalDate fecha_inicio;
-    private LocalDate fecha_fin;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 
-    public AlquilerId(){}
-    public AlquilerId(String nombre_maquina, LocalDate fecha_inicio, LocalDate fecha_fin) {
+    public AlquilerId() {}
+
+    public AlquilerId(String nombre_maquina, LocalDate fechaInicio, LocalDate fechaFin) {
         this.nombre_maquina = nombre_maquina;
-        this.fecha_inicio = fecha_inicio;
-        this.fecha_fin = fecha_fin;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
     }
 
     public String getNombre_maquina() {
@@ -26,31 +27,34 @@ public class AlquilerId  implements Serializable {
         this.nombre_maquina = nombre_maquina;
     }
 
-    public LocalDate getFecha_inicio() {
-        return fecha_inicio;
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFecha_inicio(LocalDate fecha_inicio) {
-        this.fecha_inicio = fecha_inicio;
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 
-    public LocalDate getFecha_fin() {
-        return fecha_fin;
+    public LocalDate getFechaFin() {
+        return fechaFin;
     }
 
-    public void setFecha_fin(LocalDate fecha_fin) {
-        this.fecha_fin = fecha_fin;
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlquilerId that = (AlquilerId) o;
-        return Objects.equals(nombre_maquina, that.nombre_maquina) && Objects.equals(fecha_inicio, that.fecha_inicio) && Objects.equals(fecha_fin, that.fecha_fin);
+        return Objects.equals(nombre_maquina, that.nombre_maquina) &&
+                Objects.equals(fechaInicio, that.fechaInicio) &&
+                Objects.equals(fechaFin, that.fechaFin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre_maquina, fecha_inicio, fecha_fin);
+        return Objects.hash(nombre_maquina, fechaInicio, fechaFin);
     }
 }

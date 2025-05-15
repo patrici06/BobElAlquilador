@@ -4,33 +4,37 @@ package com.BobElAlquilador.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table (name = "alquiler")
+@Table(name = "alquiler")
 public class Alquiler {
     @EmbeddedId
-    private AlquilerId alquiler_id;
+    private AlquilerId alquilerId;
 
     @ManyToOne
-    @MapsId ("nombre_maquina")
+    @MapsId("nombre_maquina")
     @JoinColumn(name = "nombre_maquina")
     private Maquina maquina;
 
     @ManyToOne
-    @JoinColumn (name = "dni_cliente")
+    @JoinColumn(name = "dni_cliente")
     private Cliente cliente;
-    public Alquiler(){}
 
-    public Alquiler(AlquilerId alquiler_id, Maquina maquina, Cliente cliente) {
-        this.alquiler_id = alquiler_id;
+    private Boolean estado;
+
+    public Alquiler() {}
+
+    public Alquiler(AlquilerId alquilerId, Maquina maquina, Cliente cliente, Boolean estado) {
+        this.alquilerId = alquilerId;
         this.maquina = maquina;
         this.cliente = cliente;
+        this.estado = estado;
     }
 
-    public AlquilerId getAlquiler_id() {
-        return alquiler_id;
+    public AlquilerId getAlquilerId() {
+        return alquilerId;
     }
 
-    public void setAlquiler_id(AlquilerId alquiler_id) {
-        this.alquiler_id = alquiler_id;
+    public void setAlquilerId(AlquilerId alquilerId) {
+        this.alquilerId = alquilerId;
     }
 
     public Maquina getMaquina() {
@@ -47,5 +51,13 @@ public class Alquiler {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }
