@@ -1,5 +1,6 @@
 package com.BobElAlquilador.demo.model;
 import jakarta.persistence.*;
+import org.springframework.beans.PropertyValues;
 
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class Persona extends DbEstado {
     private String apellido;
     private String email;
     private String clave;
+    private String telefono;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "persona_roles",
@@ -23,23 +25,34 @@ public class Persona extends DbEstado {
     private Set<Rol> roles;
     public Persona(){}
     public Persona(String dni, String nombre, String apellido, String email, String clave) {
-        super();
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.clave = clave;
+        this.roles = new HashSet<>();
     }
-    public Set<Rol>getRol(){
+    public Persona(String dni, String nombre, String apellido, String email, String clave, String telefono) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.clave = clave;
+        this.telefono = telefono;
+        this.roles = new HashSet<Rol>();
+    }
+    public Set<Rol> getRol() {
         return this.roles;
     }
-    public void setRol(String rol){
-        this.roles = new HashSet<Rol>();
+    public void addRol(Rol rol) {
+        this.roles.add(rol);
+    }
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
     }
     public String getDni() {
         return dni;
     }
-
     public void setDni(String dni) {
         this.dni = dni;
     }
