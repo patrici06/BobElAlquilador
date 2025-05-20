@@ -1,7 +1,11 @@
 package com.BobElAlquilador.demo.service;
-
+import java.util.*;
 import com.BobElAlquilador.demo.model.Persona;
+import com.BobElAlquilador.demo.model.Rol;
 import com.BobElAlquilador.demo.repository.PersonaRepository;
+import com.BobElAlquilador.demo.repository.RolRepository;
+import com.BobElAlquilador.demo.util.ClaveGenerador;
+import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,10 @@ public class PersonaService {
     PersonaRepository pRepo;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    RolRepository rolRepository;
+    @Autowired
+    ValidadorCredencialesService validadorCredencialesService;
 
     public Persona findByDniCliente(String dni) {
         Persona p = pRepo.findById(dni).orElse(null);
@@ -34,35 +42,48 @@ public class PersonaService {
         }
         return null;
     }
-    public Persona registerNewUser(RegisterRequest request) {
-        if (personaRepository.existsById(request.getDni())) {
-            throw new RuntimeException("El usuario ya existe");
-        }
-
-        Persona persona = new Persona( request);
-        persona.setDni(request.getDni());
-        persona.setNombre(request.getNombre());
-        persona.setApellido(request.getApellido());
-        persona.setEmail(request.getEmail());
-        persona.setClave(passwordEncoder.encode(request.getClave()));
-
+    public Persona registerNewCliente(RegisterRequest request) {
+        validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
+        Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
+                , request.getEmail(),request.getClave(), request.getTelefono());
+        Rol rol = rolRepository.findByNombre("CLIENTE")
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         Set<Rol> roles = new HashSet<>();
-        for (String nombreRol : request.getRoles()) {
-            Rol rol = rolRepository.findByNombre(nombreRol)
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombreRol));
-            roles.add(rol);
-        }
+        roles.add(rol);
         persona.setRoles(roles);
+        return this.savePersona(persona);
+    }
+    public Persona changeUserData(RegisterRequest request) {
+        validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
+        Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
+                , request.getEmail(),request.getClave(), request.getTelefono());
+        return this.savePersona(persona);
+    }
+    public Persona registerNewEmpleado(RegisterRequest request) {
+        if (pRepo.existsPersonaByDni(request.getDni())) {
+            throw new RuntimeException("El Empleado ya existe");
+        }
+        if (pRepo.existsPersonaByEmail(request.getEmail())) {
+            throw new RuntimeException("El Mail ya esta en uso porfavor contactar al propietario");
+        }
+        Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
+                , request.getEmail(),ClaveGenerador.generar(12));
 
-        return personaRepository.save(persona);
+        String clave = persona.getClave();
+        //Requiere Ser enviada por mail Guardado temporal!
+        Rol rol = rolRepository.findByNombre("EMPLEADO")
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rol);
+        persona.setRoles(roles);
+        return this.savePersona(persona);
     }
 
-
-    public void savePersona(Persona persona) {
+    private Persona savePersona(Persona persona) {
         persona.setClave(passwordEncoder.encode(persona.getClave()));
-        this.pRepo.save(persona);
+        return this.pRepo.save(persona);
     }
-    public void updatePersona(Persona persona) {
+    private void updatePersona(Persona persona) {
         this.pRepo.save(persona);
     }
     public boolean deletePersona(Persona persona) { this.pRepo.delete(persona); return true; }

@@ -20,11 +20,12 @@ public class Persona extends DbEstado {
     @JoinTable(
             name = "persona_roles",
             joinColumns = @JoinColumn(name = "persona_dni"),
-            inverseJoinColumns = @JoinColumn(name = "rol_id")
+            inverseJoinColumns = @JoinColumn(name = "rol_nombre")
     )
     private Set<Rol> roles;
-    public Persona(){}
+    public Persona(){super();}
     public Persona(String dni, String nombre, String apellido, String email, String clave) {
+        super();
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -33,6 +34,7 @@ public class Persona extends DbEstado {
         this.roles = new HashSet<>();
     }
     public Persona(String dni, String nombre, String apellido, String email, String clave, String telefono) {
+        super();
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;

@@ -1,9 +1,11 @@
 package com.BobElAlquilador.demo.controller;
 
 import com.BobElAlquilador.demo.model.Persona;
+import com.BobElAlquilador.demo.service.PersonaService;
 import com.BobElAlquilador.demo.util.JwtUtil;
 import com.BobElAlquilador.demo.service.CustomUserDetailsService;
 import com.BobElAlquilador.demo.util.LoginRequest;
+import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ public class AuthController {
     private JwtUtil jwtUtil;
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private PersonaService personaService;
 
     @GetMapping("/login")
     public String login() {
@@ -48,6 +52,16 @@ public class AuthController {
             // Si las credenciales son inválidas, devolver 401
             System.out.println("Error durante login: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        }
+    }
+
+    @PostMapping("/register/cliente")
+    public ResponseEntity<?> registerCliente(@RequestBody RegisterRequest request) {
+        try {
+            Persona persona =  personaService.registerNewCliente(request);
+            return ResponseEntity.ok(persona);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 }
