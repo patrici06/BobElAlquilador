@@ -1,0 +1,1 @@
+mysql -u root -p midb < data_base_insert.sql

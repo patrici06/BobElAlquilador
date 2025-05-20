@@ -23,21 +23,21 @@ public class PersonaService {
 
     public Persona findByDniCliente(String dni) {
         Persona p = pRepo.findById(dni).orElse(null);
-        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("CLIENTE"))) {
+        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_CLIENTE"))) {
             return p;
         }
         return null;
     }
     public Persona findByDniPropietario(String dni) {
         Persona p = pRepo.findById(dni).orElse(null);
-        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("PROPIETARIO"))) {
+        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_PROPIETARIO"))) {
             return p;
         }
         return null;
     }
     public Persona findByDniEmpleado(String dni) {
         Persona p = pRepo.findById(dni).orElse(null);
-        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("EMPLEADO"))) {
+        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_EMPLEADO"))) {
             return p;
         }
         return null;
@@ -46,7 +46,7 @@ public class PersonaService {
         validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
                 , request.getEmail(),request.getClave(), request.getTelefono());
-        Rol rol = rolRepository.findByNombre("CLIENTE")
+        Rol rol = rolRepository.findByNombre("ROLE_CLIENTE")
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         Set<Rol> roles = new HashSet<>();
         roles.add(rol);
@@ -71,7 +71,7 @@ public class PersonaService {
 
         String clave = persona.getClave();
         //Requiere Ser enviada por mail Guardado temporal!
-        Rol rol = rolRepository.findByNombre("EMPLEADO")
+        Rol rol = rolRepository.findByNombre("ROLE_EMPLEADO")
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         Set<Rol> roles = new HashSet<>();
         roles.add(rol);

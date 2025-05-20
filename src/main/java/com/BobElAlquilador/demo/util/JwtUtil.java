@@ -25,7 +25,14 @@ public class JwtUtil {
                 .signWith(secretKey)
                 .compact();
     }
-
+    public String getRolesFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("roles", String.class);
+    }
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build()
                 .parseClaimsJws(token).getBody().getSubject();

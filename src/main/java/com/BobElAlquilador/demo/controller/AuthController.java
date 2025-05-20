@@ -9,11 +9,13 @@ import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +31,6 @@ public class AuthController {
     @Autowired
     private PersonaService personaService;
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -55,13 +53,4 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register/cliente")
-    public ResponseEntity<?> registerCliente(@RequestBody RegisterRequest request) {
-        try {
-            Persona persona =  personaService.registerNewCliente(request);
-            return ResponseEntity.ok(persona);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
 }
