@@ -10,7 +10,7 @@ SPRING_PID=$!
 sleep 5
 
 # Navega al directorio Angular y ejecuta ng serve
-cd src/main/resources/front-bobelalquilador
+cd /src/main/resources/static/fronend
 npm start &
 
 # Guarda el PID de Angular
