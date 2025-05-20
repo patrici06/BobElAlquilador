@@ -20,7 +20,7 @@ public class AuthController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public String login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getDni(), loginRequest.getClave())

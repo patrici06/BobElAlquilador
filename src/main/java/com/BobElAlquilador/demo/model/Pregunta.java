@@ -15,7 +15,7 @@ public class Pregunta {
     private Long idP;
 
     @ManyToOne
-    @JoinColumn (name  = "persona_dni")
+    @JoinColumn (name  = "dni_cliente")
     private Persona cliente;
     private LocalDate fecha;
     private LocalTime hora;

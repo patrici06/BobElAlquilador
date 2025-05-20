@@ -11,11 +11,11 @@ public class Resena extends DbEstado{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "persona_dni")
+    @JoinColumn(name = "dni_cliente")
     private Persona cliente;
 
     @ManyToOne
-    @JoinColumn(name = "persona_dni")
+    @JoinColumn(name = "dni_empleado")
     private Persona empleado;
     @Lob
     private String comentario;

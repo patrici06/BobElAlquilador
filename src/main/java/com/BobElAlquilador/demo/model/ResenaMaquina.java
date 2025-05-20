@@ -14,7 +14,7 @@ public class ResenaMaquina extends DbEstado{
     @JoinColumn (name = "nombre_maquina")
     private Maquina maquina;
     @ManyToOne
-    @JoinColumn (name = "persona_dni")
+    @JoinColumn (name = "dni_cliente")
     private Persona cliente;
     private String comentario;
     private int valoracion;
