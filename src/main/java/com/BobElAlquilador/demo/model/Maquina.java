@@ -1,7 +1,9 @@
 package com.BobElAlquilador.demo.model;
 
+import com.BobElAlquilador.demo.service.AlquilerService;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 //// Maquina = {Nombre(pk), ubicación(fk)?, FechaIngreso?, URL/PATH+Foto, Descripción,
 /// nombreEstado(fk), precioxDía, políticaCancelar}
@@ -34,20 +36,27 @@ public class Maquina extends DbEstado{
         this.precio_dia = precio;
         this.estadoMaquina = EstadoMaquina.Disponible;
     }
+
     public EstadoMaquina getEstadoMaquina (){
         return this.estadoMaquina;
     }
+
     public void setEstadoMaquina(EstadoMaquina estadoMaquina){
         this.estadoMaquina =  estadoMaquina;
     }
+
     public void setEstadoMaquinaDisponible(){ this.estadoMaquina = EstadoMaquina.Disponible;}
+
     public void setEstadoMaquinaMantenimiento(){ this.estadoMaquina = EstadoMaquina.Mantenimiento;}
+
     public void setEstadoMaquinaDescompuesta(){this.estadoMaquina = EstadoMaquina.Descompuesta;}
+
     public String getTipo(){ return tipo; }
 
     public void setTipo(String tipo){
         this.tipo = tipo;
     }
+
     public String getNombre() {
         return nombre_maquina;
     }

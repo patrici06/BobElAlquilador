@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlquilerService {
@@ -55,4 +56,13 @@ public class AlquilerService {
         return repo.save(alquiler);
     }
 
+    public List<Alquiler> getAllAlquileres() { return repo.findAll(); }
+
+    public void cancelarAlquileresMaquina(Maquina maq) {
+        List<Alquiler> alquileresMaq = this.getAllAlquileres().stream()
+                .filter(alq -> (alq.getMaquina().equals(maq) && alq.getEstadoAlquiler() == EstadoAlquiler.Pendiente))
+                .toList();
+        alquileresMaq.forEach(alq -> alq.cancelamientoInvoluntario());
+        personaService.enviarMailCancelacion(alquileresMaq);
+    }
 }

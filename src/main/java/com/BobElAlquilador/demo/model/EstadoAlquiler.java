@@ -4,5 +4,6 @@ public enum EstadoAlquiler {
     Activo,
     Pendiente,
     Cancelado,
-    Finalizado
+    Finalizado,
+    CanceladoInvoluntario
 }

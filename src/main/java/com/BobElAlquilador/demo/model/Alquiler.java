@@ -34,6 +34,10 @@ public class Alquiler extends DbEstado {
         this.precioTotal = precioTotal;
     }
 
+    public void cancelamientoInvoluntario() {
+        this.estado = EstadoAlquiler.CanceladoInvoluntario;
+    }
+
     public Double getPrecioTotal() {
         return precioTotal;
     }
@@ -41,6 +45,7 @@ public class Alquiler extends DbEstado {
     public void setPrecioTotal(Double precioTotal) {
         this.precioTotal = precioTotal;
     }
+
     public AlquilerId getAlquilerId() {
         return alquilerId;
     }

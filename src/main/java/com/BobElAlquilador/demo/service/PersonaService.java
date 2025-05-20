@@ -1,5 +1,7 @@
 package com.BobElAlquilador.demo.service;
 import java.util.*;
+
+import com.BobElAlquilador.demo.model.Alquiler;
 import com.BobElAlquilador.demo.model.Persona;
 import com.BobElAlquilador.demo.model.Rol;
 import com.BobElAlquilador.demo.repository.PersonaRepository;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PersonaService {
     @Autowired
+    CorreoService correoService;
+    @Autowired
     PersonaRepository pRepo;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -20,6 +24,14 @@ public class PersonaService {
     RolRepository rolRepository;
     @Autowired
     ValidadorCredencialesService validadorCredencialesService;
+
+    public void enviarMailCancelacion(Alquiler aCancelar) {
+        correoService.enviarCancelacion(aCancelar.getPersona().getEmail(), aCancelar);
+    }
+
+    public void enviarMailCancelacion(List<Alquiler> aCancelar) {
+        aCancelar.stream().forEach(alq -> correoService.enviarCancelacion(alq.getPersona().getEmail(), alq));
+    }
 
     public Persona findByDniCliente(String dni) {
         Persona p = pRepo.findById(dni).orElse(null);
