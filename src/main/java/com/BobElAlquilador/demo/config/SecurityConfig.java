@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/propietario/**").hasRole("PROPIETARIO")
                         .requestMatchers("/empleado/**").hasRole("EMPLEADO")
                         .requestMatchers("/cliente/**").hasRole("CLIENTE")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

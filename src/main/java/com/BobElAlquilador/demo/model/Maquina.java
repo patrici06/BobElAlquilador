@@ -19,17 +19,19 @@ public class Maquina extends DbEstado{
     private String descripcion;
     private String tipo;
     private EstadoMaquina estadoMaquina;
+    private double precio_dia;
     public Maquina() {
         super();
     }
 
-    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, String tipo) {
+    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, String tipo, double precio) {
         this.nombre_maquina = nombre;
         this.ubicacion = ubicacion;
         this.fecha_ingreso = fecha;
         this.fotoUrl = fotoUrl;
         this.descripcion = descripcion;
         this.tipo = tipo;
+        this.precio_dia = precio;
         this.estadoMaquina = EstadoMaquina.Disponible;
     }
     public EstadoMaquina getEstadoMaquina (){
@@ -84,5 +86,9 @@ public class Maquina extends DbEstado{
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public double calcularPrecio(long cantDias) {
+        return this.precio_dia * cantDias;
     }
 }

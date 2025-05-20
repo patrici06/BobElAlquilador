@@ -69,16 +69,7 @@ public class Alquiler extends DbEstado {
         return estado;
     }
 
-    public void setEstadoActivo() {
-        this.estado = EstadoAlquiler.Activo;
+    public void setEstado(EstadoAlquiler estado) {
+        this.estado = estado;
     }
-
-    public void setEstadoPendiente() {
-        this.estado = EstadoAlquiler.Pendiente;
-    }
-
-    public void setEstadoCancelado() {
-        this.estado = EstadoAlquiler.Cancelado;
-    }
-    public void serEstadoFinalizado(){ this.estado = EstadoAlquiler.Finalizado; }
 }

@@ -1,8 +1,8 @@
-Dueño/propietario = (DNI(pk), nombre, apellido, email, clave)
+Persona = (DNI(pk), nombre, apellido, email, clave, Teléfono?,  idRol(fk))
 
-Cliente = (DNI(pk), nombre, apellido, email, clave, Teléfono?)
+Roles = (idRol(pk), nombreRol)
 
-Empleado = (DNI(pk), nombre, apellido, email, clave)
+Persona_Rol = (idRol(fk), DNI(fk))
 
 Reseña = (id(pk), DNI(E),DNI(C), comentario, valoración)
 
