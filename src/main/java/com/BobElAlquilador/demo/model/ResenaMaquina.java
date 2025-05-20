@@ -14,14 +14,14 @@ public class ResenaMaquina extends DbEstado{
     @JoinColumn (name = "nombre_maquina")
     private Maquina maquina;
     @ManyToOne
-    @JoinColumn (name = "dni_cliente")
-    private Cliente cliente;
+    @JoinColumn (name = "persona_dni")
+    private Persona cliente;
     private String comentario;
     private int valoracion;
 
     public ResenaMaquina() { super();}
 
-    public ResenaMaquina(Long id_resena, Maquina nombreMaquina, Cliente dni, String comentario, int valoracion) {
+    public ResenaMaquina(Long id_resena, Maquina nombreMaquina, Persona dni, String comentario, int valoracion) {
         super();
         this.id_resena = id_resena;
         this.maquina = nombreMaquina;
@@ -46,7 +46,7 @@ public class ResenaMaquina extends DbEstado{
         this.comentario = comentario;
     }
 
-    public Cliente getCliente() {
+    public Persona getPersona() {
         return cliente;
     }
 

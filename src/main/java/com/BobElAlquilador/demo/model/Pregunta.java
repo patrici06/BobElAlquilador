@@ -3,7 +3,7 @@ package com.BobElAlquilador.demo.model;
 
 import jakarta.persistence.*;
 import org.springframework.scheduling.support.SimpleTriggerContext;
-
+import com.BobElAlquilador.demo.model.Persona;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -15,8 +15,8 @@ public class Pregunta {
     private Long idP;
 
     @ManyToOne
-    @JoinColumn (name  = "dni_cliente")
-    private Cliente cliente;
+    @JoinColumn (name  = "persona_dni")
+    private Persona cliente;
     private LocalDate fecha;
     private LocalTime hora;
     @Lob
@@ -27,7 +27,7 @@ public class Pregunta {
         
     }
 
-    public Pregunta(Cliente cliente, LocalDate fecha, LocalTime hora, String cuerpo) {
+    public Pregunta(Persona cliente, LocalDate fecha, LocalTime hora, String cuerpo) {
         this.cliente = cliente;
         this.fecha = fecha;
         this.hora = hora;
@@ -38,11 +38,11 @@ public class Pregunta {
         return idP;
     }
 
-    public Cliente getCliente() {
+    public Persona getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
+    public void setCliente(Persona cliente) {
         this.cliente = cliente;
     }
 

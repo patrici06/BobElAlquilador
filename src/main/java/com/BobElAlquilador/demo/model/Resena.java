@@ -11,12 +11,12 @@ public class Resena extends DbEstado{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "dni_cliente")
-    private Cliente cliente;
+    @JoinColumn(name = "persona_dni")
+    private Persona cliente;
 
     @ManyToOne
-    @JoinColumn(name = "dni_empleado")
-    private Empleado empleado;
+    @JoinColumn(name = "persona_dni")
+    private Persona empleado;
     @Lob
     private String comentario;
     private int valoracion;
@@ -25,7 +25,7 @@ public class Resena extends DbEstado{
         super();
     }
 
-    public Resena(Cliente cliente, Empleado empleado, String comentario, int valoracion) {
+    public Resena(Persona cliente, Persona empleado, String comentario, int valoracion) {
         super();
         this.cliente = cliente;
         this.empleado = empleado;
@@ -42,19 +42,19 @@ public class Resena extends DbEstado{
         this.id = id;
     }
 
-    public Cliente getCliente() {
+    public Persona getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
+    public void setCliente(Persona cliente) {
         this.cliente = cliente;
     }
 
-    public Empleado getEmpleado() {
+    public Persona getEmpleado() {
         return empleado;
     }
 
-    public void setEmpleado(Empleado empleado) {
+    public void setEmpleado(Persona empleado) {
         this.empleado = empleado;
     }
 
@@ -78,8 +78,8 @@ public class Resena extends DbEstado{
     public String toString() {
         return "Resena{" +
                 "id=" + id +
-                ", cliente=" + cliente +
-                ", empleado=" + empleado +
+                ", cliente=" + cliente.toString() +
+                ", empleado=" + empleado.toString() +
                 ", comentario='" + comentario + '\'' +
                 ", valoracion=" + valoracion +
                 '}';

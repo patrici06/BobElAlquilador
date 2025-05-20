@@ -1,10 +1,12 @@
 package com.BobElAlquilador.demo.model;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
 
-@MappedSuperclass
-public abstract class Persona extends DbEstado {
+import java.util.HashSet;
+import java.util.Set;
+@Entity
+@Table (name  =  "persona")
+public class Persona extends DbEstado {
     @Id
     private String dni;
 
@@ -12,9 +14,14 @@ public abstract class Persona extends DbEstado {
     private String apellido;
     private String email;
     private String clave;
-    public Persona(){
-        super();
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "persona_roles",
+            joinColumns = @JoinColumn(name = "persona_dni"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private Set<Rol> roles;
+    public Persona(){}
     public Persona(String dni, String nombre, String apellido, String email, String clave) {
         super();
         this.dni = dni;
@@ -23,12 +30,20 @@ public abstract class Persona extends DbEstado {
         this.email = email;
         this.clave = clave;
     }
+    public Set<Rol>getRol(){
+        return this.roles;
+    }
+    public void setRol(String rol){
+        this.roles = new HashSet<Rol>();
+    }
     public String getDni() {
         return dni;
     }
+
     public void setDni(String dni) {
         this.dni = dni;
     }
+
     public String getNombre() {
         return nombre;
     }

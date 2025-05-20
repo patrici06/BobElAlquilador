@@ -15,8 +15,8 @@ public class Alquiler extends DbEstado {
     private Maquina maquina;
 
     @ManyToOne
-    @JoinColumn(name = "dni_cliente")
-    private Cliente cliente;
+    @JoinColumn(name = "persona_dni")
+    private Persona cliente;
 
     private Double precioTotal;
     private EstadoAlquiler estado;
@@ -25,7 +25,7 @@ public class Alquiler extends DbEstado {
         super();
     }
 
-    public Alquiler(AlquilerId alquilerId, Maquina maquina, Cliente cliente, Double precioTotal) {
+    public Alquiler(AlquilerId alquilerId, Maquina maquina, Persona cliente, Double precioTotal) {
         super();
         this.alquilerId = alquilerId;
         this.maquina = maquina;
@@ -57,11 +57,11 @@ public class Alquiler extends DbEstado {
         this.maquina = maquina;
     }
 
-    public Cliente getCliente() {
+    public Persona getPersona() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
+    public void setPersona(Persona cliente) {
         this.cliente = cliente;
     }
 

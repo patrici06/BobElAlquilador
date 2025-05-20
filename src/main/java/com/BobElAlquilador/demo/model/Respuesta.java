@@ -14,8 +14,8 @@ public class Respuesta {
     private Long id_respuesta;
 
     @ManyToOne
-    @JoinColumn (name = "dni_empleado")
-    private Empleado empleado;
+    @JoinColumn (name = "persona_dni")
+    private Persona empleado;
 
     private LocalDate fecha;
     private LocalTime hora;
@@ -23,7 +23,7 @@ public class Respuesta {
     private String cuerpo;
     public Respuesta(){}
 
-    public Respuesta(Empleado empleado, LocalDate fecha, LocalTime hora, String cuerpo) {
+    public Respuesta(Persona empleado, LocalDate fecha, LocalTime hora, String cuerpo) {
         this.empleado = empleado;
         this.fecha = fecha;
         this.hora = hora;
@@ -38,11 +38,11 @@ public class Respuesta {
         this.id_respuesta = idR;
     }
 
-    public Empleado getEmpleado() {
+    public Persona getPersona() {
         return empleado;
     }
 
-    public void setEmpleado(Empleado empleado) {
+    public void setPersona(Persona empleado) {
         this.empleado = empleado;
     }
 

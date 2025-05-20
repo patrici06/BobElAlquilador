@@ -1,29 +1,32 @@
 package com.BobElAlquilador.demo.controller;
 
-import com.BobElAlquilador.demo.model.Persona;
-import com.BobElAlquilador.demo.service.AuthService;
 import com.BobElAlquilador.demo.util.JwtUtil;
+import com.BobElAlquilador.demo.service.CustomUserDetailsService;
 import com.BobElAlquilador.demo.util.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
     @Autowired
-    private AuthService authService;
+    private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        Persona user = authService.authenticate(loginRequest.getDni(), loginRequest.getClave());
-        if (user == null) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
-        }
-        String token = jwtUtil.generateToken(loginRequest.getDni());
-        return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+    public String login(@RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getDni(), loginRequest.getClave())
+        );
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getDni());
+        String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
+        return "{\"token\": \"" + jwt + "\"}";
     }
 }
