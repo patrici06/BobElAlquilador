@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.HashMap;
@@ -37,13 +38,14 @@ public class AuthController {
             // Proceso habitual de autenticación
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getDni(), loginRequest.getClave())
+                            loginRequest.getEmail(), loginRequest.getClave())
             );
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getDni());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
 
             Map<String, String> response = new HashMap<>();
             response.put("token", jwt);
+            response.put("email", userDetails.getUsername());
             response.put("rol", userDetails.getAuthorities().toString());
             return ResponseEntity.ok(response);
 

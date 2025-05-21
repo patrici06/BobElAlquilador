@@ -14,9 +14,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private PersonaRepository personaRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String dni) throws UsernameNotFoundException {
-        Persona persona = personaRepository.findById(dni)
-                .orElseThrow(() -> new UsernameNotFoundException("No existe el usuario"));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Persona persona = personaRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Credenciales Invalidas Email o Clave Incorrectos"));
         return new CustomUserDetails(persona);
     }
 

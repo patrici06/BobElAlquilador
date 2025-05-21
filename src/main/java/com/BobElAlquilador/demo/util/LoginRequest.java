@@ -1,15 +1,15 @@
 package com.BobElAlquilador.demo.util;
 
 public class LoginRequest {
-    private String dni;
+    private String email;
     private String clave;
 
-    public String getDni() {
-        return dni;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setEmail(String email) {
+        this.email = email;
     }
     public String getClave() {
         return clave;

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 
 function Login() {
-    const [dni, setDni] = useState("");
+    const [correo, setCorreo] = useState("");
     const [clave, setClave] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(""); // Nuevo estado para el mensaje de éxito
@@ -14,7 +14,7 @@ function Login() {
         setError("");
         setSuccess("");
         try {
-            const response = await login(dni, clave);
+            const response = await login(correo, clave);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("rol", response.data.rol);
             setSuccess("Inicio de sesión exitoso");
@@ -23,7 +23,7 @@ function Login() {
                 navigate("/");
             }, 1500);
         } catch (err) {
-            setError(err.response?.data?.mensaje || "Error desconocido");
+            setError(err.response?.data?.mensaje);
         }
     };
 
@@ -43,17 +43,17 @@ function Login() {
                 >
                     <h1 style={{ textAlign: "center", color: "#222f3e", marginBottom: "0.5rem" }}>Iniciar Sesión</h1>
                     <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>DNI</label>
+                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Correo</label>
                         <input
                             style={{
                                 width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
                                 outline: "none", fontSize: "1rem", background: "#f8fafc"
                             }}
                             type="text"
-                            value={dni}
-                            onChange={(e) => setDni(e.target.value)}
+                            value={correo}
+                            onChange={(e) => setCorreo(e.target.value)}
                             required
-                            placeholder="Ingresa tu DNI"
+                            placeholder="Ingresa tu Correo"
                         />
                     </div>
                     <div>

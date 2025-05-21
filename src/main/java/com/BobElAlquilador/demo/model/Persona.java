@@ -9,17 +9,16 @@ import java.util.Set;
 @Table (name  =  "persona")
 public class Persona extends DbEstado {
     @Id
+    private String email;
     private String dni;
-
     private String nombre;
     private String apellido;
-    private String email;
     private String clave;
     private String telefono;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "persona_roles",
-            joinColumns = @JoinColumn(name = "persona_dni"),
+            joinColumns = @JoinColumn(name = "persona_email"),
             inverseJoinColumns = @JoinColumn(name = "rol_nombre")
     )
     private Set<Rol> roles;

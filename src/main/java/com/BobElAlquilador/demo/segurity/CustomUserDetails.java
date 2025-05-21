@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() { return persona.getClave(); }
     @Override
-    public String getUsername() { return persona.getDni(); }
+    public String getUsername() { return persona.getEmail(); }
     @Override
     public boolean isAccountNonExpired() { return true; }
     @Override

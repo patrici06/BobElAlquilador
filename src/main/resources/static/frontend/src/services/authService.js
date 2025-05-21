@@ -3,8 +3,8 @@ import axios from "axios";
 const API_BASE = "http://localhost:8080";
 
 // Servicio de login
-export function login(dni, clave) {
-    return axios.post(`${API_BASE}/auth/login`, { dni, clave });
+export function login(email, clave) {
+    return axios.post(`${API_BASE}/auth/login`, { email, clave });
 }
 
 // Servicio de registro

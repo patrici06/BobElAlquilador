@@ -20,7 +20,11 @@ function RegisterEmpleado() {
             setSuccess("Empleado registrado exitosamente. Redirigiendo...");
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
-            setError(err?.response?.data?.mensaje || "Error en el registro");
+            if (err?.response?.status === 403) {
+                setError("No tienes permisos para registrar empleados.");
+            } else {
+                setError(err?.response?.data?.mensaje || "Error en el registro");
+            }
         }
     };
 
