@@ -5,12 +5,10 @@ import Footer from "../components/Footer";
 function Home() {
     return (
         <div style={{ paddingBottom: "3rem" }}>
-            <Header />
             <main style={{ padding: "2rem" }}>
                 <h1>Bienvenido a la pagina oficial de bob el alquilador </h1>
                 <p>aun estamos en desarrollo :'(.</p>
             </main>
-            <Footer />
         </div>
     );
 }

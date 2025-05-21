@@ -1,19 +1,29 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Home from "./pages/Home";
+// ...otros imports
 
 function App() {
-  return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </Router>
-  );
+    const location = useLocation();
+    // Solo oculta Header/Footer en /login y /register exactamente
+    const hideHeaderFooter = location.pathname === "/login" || location.pathname === "/register";
+
+    return (
+        <div>
+            {!hideHeaderFooter && <Header />}
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<Home />} />
+                {/* Otras rutas */}
+            </Routes>
+            {!hideHeaderFooter && <Footer />}
+        </div>
+    );
 }
 
 export default App;

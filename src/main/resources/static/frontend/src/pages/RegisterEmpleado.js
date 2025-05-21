@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../services/authService";
+import { registerEmpleado } from "../services/authService";
 
-function Register() {
+function RegisterEmpleado() {
     const [dni, setDni] = useState("");
     const [nombre, setNombre] = useState("");
     const [apellido, setApellido] = useState("");
     const [email, setEmail] = useState("");
-    const [telefono, setTelefono] = useState("");
-    const [clave, setClave] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const navigate = useNavigate();
@@ -18,17 +16,20 @@ function Register() {
         setError("");
         setSuccess("");
         try {
-            await register({ dni, nombre, apellido, email, telefono, clave });
-            setSuccess("Registro exitoso. Redirigiendo al login...");
-            setTimeout(() => navigate("/login"), 1800);
+            await registerEmpleado({ dni, nombre, apellido, email });
+            setSuccess("Empleado registrado exitosamente. Redirigiendo...");
+            setTimeout(() => navigate("/"), 1800);
         } catch (err) {
-            setError(err?.response?.data?.mensaje);
+            setError(err?.response?.data?.mensaje || "Error en el registro");
         }
     };
 
     return (
         <div style={{ paddingBottom: "3rem", background: "#f5f6fa", minHeight: "100vh" }}>
-            <main style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", background: "#f5f6fa" }}>
+            <main style={{
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                minHeight: "80vh", background: "#f5f6fa"
+            }}>
                 <form
                     style={{
                         background: "#fff", padding: "2.5rem 2rem", borderRadius: "12px",
@@ -38,7 +39,7 @@ function Register() {
                     onSubmit={handleSubmit}
                     autoComplete="off"
                 >
-                    <h1 style={{ textAlign: "center", color: "#222f3e", marginBottom: "0.5rem" }}>Registrarse</h1>
+                    <h1 style={{ textAlign: "center", color: "#222f3e", marginBottom: "0.5rem" }}>Registrar Empleado</h1>
                     <div>
                         <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>DNI</label>
                         <input
@@ -48,9 +49,9 @@ function Register() {
                             }}
                             type="text"
                             value={dni}
-                            onChange={(e) => setDni(e.target.value)}
+                            onChange={e => setDni(e.target.value)}
                             required
-                            placeholder="Ingresa tu DNI"
+                            placeholder="Ingresa el DNI"
                         />
                     </div>
                     <div>
@@ -62,9 +63,9 @@ function Register() {
                             }}
                             type="text"
                             value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
+                            onChange={e => setNombre(e.target.value)}
                             required
-                            placeholder="Ingresa tu nombre"
+                            placeholder="Ingresa el nombre"
                         />
                     </div>
                     <div>
@@ -76,9 +77,9 @@ function Register() {
                             }}
                             type="text"
                             value={apellido}
-                            onChange={(e) => setApellido(e.target.value)}
+                            onChange={e => setApellido(e.target.value)}
                             required
-                            placeholder="Ingresa tu apellido"
+                            placeholder="Ingresa el apellido"
                         />
                     </div>
                     <div>
@@ -90,41 +91,19 @@ function Register() {
                             }}
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={e => setEmail(e.target.value)}
                             required
-                            placeholder="Ingresa tu email"
+                            placeholder="Ingresa el email"
                         />
                     </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Teléfono</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="tel"
-                            value={telefono}
-                            onChange={(e) => setTelefono(e.target.value)}
-                            required
-                            placeholder="Ingresa tu teléfono"
-                        />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Clave</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="password"
-                            value={clave}
-                            onChange={(e) => setClave(e.target.value)}
-                            required
-                            placeholder="Crea una clave"
-                        />
-                    </div>
-                    {error && <div style={{ color: "#ee5253", background: "#ffeaea", borderRadius: "5px", padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem" }}>{error}</div>}
-                    {success && <div style={{ color: "#10ac84", background: "#e6fffa", borderRadius: "5px", padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem" }}>{success}</div>}
+                    {error && <div style={{
+                        color: "#ee5253", background: "#ffeaea", borderRadius: "5px",
+                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
+                    }}>{error}</div>}
+                    {success && <div style={{
+                        color: "#10ac84", background: "#e6fffa", borderRadius: "5px",
+                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
+                    }}>{success}</div>}
                     <button
                         type="submit"
                         style={{
@@ -132,7 +111,7 @@ function Register() {
                             borderRadius: "6px", fontWeight: 600, fontSize: "1.1rem", cursor: "pointer", marginTop: "0.7rem"
                         }}
                     >
-                        Registrarse
+                        Registrar Empleado
                     </button>
                 </form>
             </main>
@@ -140,4 +119,4 @@ function Register() {
     );
 }
 
-export default Register;
+export default RegisterEmpleado;

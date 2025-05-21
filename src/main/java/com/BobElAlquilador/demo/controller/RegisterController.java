@@ -11,28 +11,43 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/")
 public class RegisterController {
     @Autowired
     PersonaService personaService;
+
     @PreAuthorize("hasRole('PROPIETARIO')")
     @PostMapping("/register/empleado")
     public ResponseEntity<?> registerEmpleado(@RequestBody RegisterRequest request) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            Persona persona =  personaService.registerNewEmpleado(request);
-            return ResponseEntity.ok(persona);
+            Persona persona = personaService.registerNewEmpleado(request);
+            response.put("mensaje", "Empleado registrado exitosamente");
+            response.put("persona", persona);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            response.put("mensaje", "Error al registrar empleado: " + ex.getMessage());
+            //response.put("persona", null);
+            return ResponseEntity.badRequest().body(response);
         }
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> registerCliente(@RequestBody RegisterRequest request) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            Persona persona =  personaService.registerNewCliente(request);
-            return ResponseEntity.ok(persona);
+            Persona persona = personaService.registerNewCliente(request);
+            response.put("mensaje", "Cliente registrado exitosamente");
+            response.put("persona", persona);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            response.put("mensaje", "Error al registrarse: " + ex.getMessage());
+            //response.put("persona", null);
+            return ResponseEntity.badRequest().body(response);
         }
     }
 }

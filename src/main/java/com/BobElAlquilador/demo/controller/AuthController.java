@@ -44,12 +44,14 @@ public class AuthController {
 
             Map<String, String> response = new HashMap<>();
             response.put("token", jwt);
+            response.put("rol", userDetails.getAuthorities().toString());
             return ResponseEntity.ok(response);
 
         } catch (Exception ex) {
-            // Si las credenciales son inválidas, devolver 401
-            System.out.println("Error durante login: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+            // Siempre responde con JSON: {"mensaje": "..."}
+            Map<String, String> response = new HashMap<>();
+            response.put("mensaje", ex.getMessage()); // O tu mensaje personalizado
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 
