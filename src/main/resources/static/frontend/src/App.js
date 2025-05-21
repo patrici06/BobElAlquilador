@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import SubirMaquina from "./pages/SubirMaquina";
 import RegisterEmpleado from "./pages/RegisterEmpleado";
 
 // ...otros imports
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/register/empleado" element={<RegisterEmpleado />} />
                 <Route path="/" element={<Home />} />
+                <Route path="/subir-maquina" element={<SubirMaquina />} />
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}
