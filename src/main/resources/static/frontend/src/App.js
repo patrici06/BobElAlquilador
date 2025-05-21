@@ -20,7 +20,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/" element={<Home />} />
-                <Route path="/subir-maquina" element={<SubirMaquina />} />
+                <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}

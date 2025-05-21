@@ -38,6 +38,7 @@ public class MaquinaService {
     public Maquina subir(String nombre_maquina, String ubicacion, LocalDate fecha_ingreso, String fotoUrl,
                          String descripcion, String tipo, double precio_dia) {
         Maquina nueva = new Maquina(nombre_maquina, ubicacion, fecha_ingreso, fotoUrl, descripcion, tipo, precio_dia);
+        if (this.getMaquinaPorNombre(nombre_maquina) != null) {throw new RuntimeException("La maquina \'"+ nombre_maquina +"\' ya se encuentra registrada");}
         return maquinaRepository.save(nueva);
     }
 
