@@ -10,6 +10,7 @@ function RegisterEmpleado() {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [submitting, setSubmitting] = useState(false); // Nuevo estado para deshabilitar el botón
     const navigate = useNavigate();
 
     // Obtener roles directamente dentro del componente para que se actualicen si el usuario cambia
@@ -49,6 +50,7 @@ function RegisterEmpleado() {
         e.preventDefault();
         setError("");
         setSuccess("");
+        setSubmitting(true); // Desactiva el botón al enviar
         try {
             await registerEmpleado({ dni, nombre, apellido, email });
             setSuccess("Empleado registrado exitosamente. Redirigiendo...");
@@ -59,6 +61,7 @@ function RegisterEmpleado() {
             } else {
                 setError(err?.response?.data?.mensaje || "Error en el registro");
             }
+            setSubmitting(false); // Reactiva el botón si ocurre un error
         }
     };
 
@@ -144,12 +147,21 @@ function RegisterEmpleado() {
                     }}>{success}</div>}
                     <button
                         type="submit"
+                        disabled={submitting}
                         style={{
-                            width: "100%", padding: "0.8rem", background: "#10ac84", color: "#fff", border: "none",
-                            borderRadius: "6px", fontWeight: 600, fontSize: "1.1rem", cursor: "pointer", marginTop: "0.7rem"
+                            width: "100%",
+                            padding: "0.8rem",
+                            background: submitting ? "#bdbdbd" : "#10ac84",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontWeight: 600,
+                            fontSize: "1.1rem",
+                            cursor: submitting ? "not-allowed" : "pointer",
+                            marginTop: "0.7rem"
                         }}
                     >
-                        Registrar Empleado
+                        {submitting ? "Registrando..." : "Registrar Empleado"}
                     </button>
                 </form>
             </main>

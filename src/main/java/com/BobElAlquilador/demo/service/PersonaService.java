@@ -81,7 +81,12 @@ public class PersonaService {
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
                 , request.getEmail(),ClaveGenerador.generar(12));
 
-        String clave = persona.getClave();
+       String clave = persona.getClave();
+       correoService.enviarMail(request.getEmail(), "Clave Auto-Generada",
+               "Tu Clave auto generada para el primer login es:\n" +
+                       clave +"\n"+
+                       "Cambiala Una vez inicies tu sesión con tu correo y la clave provista. Saludos!"
+               );
         //Requiere Ser enviada por mail Guardado temporal!
         Rol rol = rolRepository.findByNombre("ROLE_EMPLEADO")
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));

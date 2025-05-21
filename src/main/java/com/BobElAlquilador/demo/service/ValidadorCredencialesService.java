@@ -19,7 +19,7 @@ public class ValidadorCredencialesService {
             //Contraseña invalida, se espera al menos una mayúscula, minuscula y numero
             String clave = claveIn;
             if (clave.length() < 8 || !clave.matches(".*[A-Z].*") || !clave.matches(".*[a-z].*") || !clave.matches(".*\\d.*")){
-                throw new RuntimeException("Contraseña invalida, se espera al menos una mayúscula, una minúscula y un número");
+                throw new RuntimeException("Contraseña invalida, se espera al menos una mayúscula,\n una minúscula, un número y al menos 8 caracteres");
             }
         }
 }

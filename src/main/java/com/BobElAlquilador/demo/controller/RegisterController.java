@@ -1,6 +1,7 @@
 package com.BobElAlquilador.demo.controller;
 
 import com.BobElAlquilador.demo.model.Persona;
+import com.BobElAlquilador.demo.service.CorreoService;
 import com.BobElAlquilador.demo.service.PersonaService;
 import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class RegisterController {
     @Autowired
     PersonaService personaService;
+
 
     @PreAuthorize("hasRole('PROPIETARIO')")
     @PostMapping("/register/empleado")
