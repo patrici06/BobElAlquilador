@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { subirMaquina } from "../services/authService";
 
 function SubirMaquina() {
     const [formData, setFormData] = useState({
@@ -26,14 +26,15 @@ function SubirMaquina() {
         setError("");
         setSuccess("");
         try {
-            const response = await axios.post("http://localhost:8080/api/maquinas/subir", null, {
-                params: formData
-            });
+            await subirMaquina(formData);
             setSuccess("Máquina registrada exitosamente. Redirigiendo...");
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
-            console.error(err);
-            setError("Error al subir la máquina");
+            if (err?.response?.status === 403) {
+                setError("No tienes permisos para registrar máquinas.");
+            } else {
+                setError(err?.response?.data?.mensaje);
+            }
         }
     };
 
@@ -66,97 +67,42 @@ function SubirMaquina() {
                         Subir Máquina
                     </h1>
 
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Nombre</label>
-                        <input
-                            name="nombre_maquina"
-                            placeholder="Nombre de la máquina"
-                            value={formData.nombre_maquina}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
+                    {[
+                        { name: "nombre_maquina", label: "Nombre de la máquina", type: "text", required: true },
+                        { name: "ubicacion", label: "Ubicación", type: "text", required: true },
+                        { name: "fecha_ingreso", label: "Fecha de ingreso", type: "date", required: true },
+                        { name: "fotoUrl", label: "Foto (URL)", type: "text", required: false },
+                        { name: "descripcion", label: "Descripción", type: "text", required: false },
+                        { name: "tipo", label: "Tipo de máquina", type: "text", required: false },
+                        { name: "precio_dia", label: "Precio por día", type: "number", required: true },
+                    ].map(({ name, label, type, required }) => (
+                        <div key={name}>
+                            <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>{label}</label>
+                            <input
+                                type={type}
+                                name={name}
+                                value={formData[name]}
+                                onChange={handleChange}
+                                required={required}
+                                placeholder={label}
+                                style={inputStyle}
+                            />
+                        </div>
+                    ))}
 
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Ubicación</label>
-                        <input
-                            name="ubicacion"
-                            placeholder="Ubicación"
-                            value={formData.ubicacion}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
+                    {error && (
+                        <div style={{
+                            color: "#ee5253", background: "#ffeaea", borderRadius: "5px",
+                            padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
+                        }}>{error}</div>
+                    )}
 
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Fecha de ingreso</label>
-                        <input
-                            type="date"
-                            name="fecha_ingreso"
-                            value={formData.fecha_ingreso}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Foto (URL)</label>
-                        <input
-                            name="fotoUrl"
-                            placeholder="https://example.com/imagen.jpg"
-                            value={formData.fotoUrl}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Descripción</label>
-                        <input
-                            name="descripcion"
-                            placeholder="Descripción"
-                            value={formData.descripcion}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Tipo</label>
-                        <input
-                            name="tipo"
-                            placeholder="Tipo de máquina"
-                            value={formData.tipo}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Precio por día</label>
-                        <input
-                            type="number"
-                            name="precio_dia"
-                            placeholder="Precio por día"
-                            value={formData.precio_dia}
-                            onChange={handleChange}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    {error && <div style={{
-                        color: "#ee5253", background: "#ffeaea", borderRadius: "5px",
-                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
-                    }}>{error}</div>}
-
-                    {success && <div style={{
-                        color: "#10ac84", background: "#e6fffa", borderRadius: "5px",
-                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
-                    }}>{success}</div>}
+                    {success && (
+                        <div style={{
+                            color: "#10ac84", background: "#e6fffa", borderRadius: "5px",
+                            padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
+                        }}>{success}</div>
+                    )}
 
                     <button
                         type="submit"

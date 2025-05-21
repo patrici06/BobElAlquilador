@@ -33,7 +33,7 @@ public class RegisterController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             response.put("mensaje", "Error al registrar empleado: " + ex.getMessage());
-            //response.put("persona", null);
+            //response.put("perso, null);
             return ResponseEntity.badRequest().body(response);
         }
     }

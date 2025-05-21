@@ -99,11 +99,11 @@ function Header() {
                                     Registrar Empleado
                                 </button>
                                 <button
-                                    onClick={() => navigate("/subir-maquina")}
-                                    style={hoveredBtn === "subir-maquina"
+                                    onClick={() => navigate("/propietario/subirMaquina")}
+                                    style={hoveredBtn === "/propietario/subirMaquina"
                                         ? { ...baseBtn, ...hoverBtn }
                                         : baseBtn}
-                                    onMouseEnter={() => setHoveredBtn("subir-maquina")}
+                                    onMouseEnter={() => setHoveredBtn("/propietario/subirMaquina")}
                                     onMouseLeave={() => setHoveredBtn("")}
                                 >
                                     Subir Maquina

@@ -7,6 +7,23 @@ export function login(email, clave) {
     return axios.post(`${API_BASE}/auth/login`, { email, clave });
 }
 
+// Servicio subir maquina
+export function subirMaquina({nombre_maquina, ubicacion, fecha_ingreso, fotoUrl, descripcion, tipo, precio_dia}) {
+    const token = localStorage.getItem("token");
+    return axios.post(`${API_BASE}/propietario/subirMaquina`, {
+        nombre_maquina,
+        ubicacion,
+        fecha_ingreso,
+        fotoUrl,
+        descripcion,
+        tipo,
+        precio_dia,
+    },  {
+       headers: {
+           Authorization: `Bearer ${token}`
+   }});
+}
+
 // Servicio de registro
 export function register({ dni, nombre, apellido, email, telefono, clave }) {
     return axios.post(`${API_BASE}/register`, {
