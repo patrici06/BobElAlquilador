@@ -1,9 +1,0 @@
-{
-  "devDependencies": {
-    "@angular/language-service": "^19.2.11",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "angular": "^1.8.3"
-  }
-}
