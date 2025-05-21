@@ -34,4 +34,5 @@ public class MaquinaController {
         Maquina nueva = maquinaService.subir(nombre_maquina, ubicacion, fecha_ingreso, fotoUrl, descripcion, tipo, precio_dia);
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
+
 }
