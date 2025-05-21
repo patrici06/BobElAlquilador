@@ -5,6 +5,8 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import RegisterEmpleado from "./pages/RegisterEmpleado";
+
 // ...otros imports
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/register/empleado" element={<RegisterEmpleado />} />
                 <Route path="/" element={<Home />} />
                 {/* Otras rutas */}
             </Routes>

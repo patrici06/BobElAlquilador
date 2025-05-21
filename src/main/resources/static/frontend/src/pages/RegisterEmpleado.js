@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerEmpleado } from "../services/authService";
+import { getRolTexto, getUserRoles } from "../utils/authUtils";
 
 function RegisterEmpleado() {
     const [dni, setDni] = useState("");
@@ -10,6 +11,39 @@ function RegisterEmpleado() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const navigate = useNavigate();
+
+    // Obtener roles directamente dentro del componente para que se actualicen si el usuario cambia
+    const rawRoles = localStorage.getItem("rol");
+    const roles = getUserRoles(rawRoles);
+
+    // Solo permitir acceso a propietarios
+    if (!roles.includes("ROLE_PROPIETARIO")) {
+        return (
+            <div style={{
+                padding: "3rem",
+                background: "#f5f6fa",
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center"
+            }}>
+                <div style={{
+                    background: "#fff",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 32px 0 rgba(0,0,0,0.08)",
+                    padding: "2.5rem 2rem",
+                    minWidth: "350px",
+                    textAlign: "center"
+                }}>
+                    <h2 style={{ color: "#ee5253", marginBottom: "1rem" }}>
+                        403: Permiso denegado
+                    </h2>
+                    <p style={{ color: "#222f3e" }}>No tienes permisos para acceder a esta página.</p>
+                </div>
+            </div>
+        );
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();

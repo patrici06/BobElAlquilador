@@ -1,29 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserRoles, getRolTexto } from "../utils/authUtils";
 
 function Header() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const rawRoles = localStorage.getItem("rol");
 
-    function parseRoles(str) {
-        if (!str) return [];
-        return str
-            .replace(/\[|\]/g, '')
-            .split(',')
-            .map(r => r.trim());
-    }
-
-    const roles = parseRoles(rawRoles);
-
-    let rolTexto = null;
-    if (roles.includes("ROLE_PROPIETARIO")) {
-        rolTexto = "Propietario";
-    } else if (roles.includes("ROLE_EMPLEADO")) {
-        rolTexto = "Empleado";
-    } else if (roles.includes("ROLE_CLIENTE")) {
-        rolTexto = "Sesión Activa";
-    }
+    const roles = getUserRoles(rawRoles);
+    const rolTexto = getRolTexto(roles);
 
     // Estilos para los botones
     const baseBtn = {
