@@ -102,16 +102,28 @@ function Header() {
                 {token && (
                     <>
                         {roles.includes("ROLE_PROPIETARIO") && (
-                            <button
-                                onClick={() => navigate("/register/empleado")}
-                                style={hoveredBtn === "registerEmpleado"
-                                    ? { ...baseBtn, ...hoverBtn }
-                                    : baseBtn}
-                                onMouseEnter={() => setHoveredBtn("registerEmpleado")}
-                                onMouseLeave={() => setHoveredBtn("")}
-                            >
-                                Registrar Empleado
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => navigate("/register/empleado")}
+                                    style={hoveredBtn === "registerEmpleado"
+                                        ? { ...baseBtn, ...hoverBtn }
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("registerEmpleado")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Registrar Empleado
+                                </button>
+                                <button
+                                    onClick={() => navigate("/subir-maquina")}
+                                    style={hoveredBtn === "subir-maquina"
+                                        ? { ...baseBtn, ...hoverBtn }
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("subir-maquina")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Subir Maquina
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={() => {
