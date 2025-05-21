@@ -10,7 +10,7 @@ SPRING_PID=$!
 sleep 5
 
 # Navega al directorio Angular y ejecuta ng serve
-cd /src/main/resources/static/fronend
+cd /src/main/resources/static/frontend
 npm start &
 
 # Guarda el PID de Angular

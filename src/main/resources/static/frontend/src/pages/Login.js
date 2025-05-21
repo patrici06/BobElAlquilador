@@ -49,7 +49,7 @@ function Login() {
                         />
                     </div>
                     {error && <div style={{ color: "red" }}>{error}</div>}
-                    <button type="submit">Entrar</button>
+                    <button type="submit">Iniciar Sesión</button>
                 </form>
             </main>
             <Footer />
