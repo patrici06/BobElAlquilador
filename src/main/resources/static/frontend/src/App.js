@@ -7,6 +7,8 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import SubirMaquina from "./pages/SubirMaquina";
 import RegisterEmpleado from "./pages/RegisterEmpleado";
+import Perfil from "./pages/Perfil";
+import PerfilUsuario from "./pages/Perfil";
 
 // ...otros imports
 
@@ -24,6 +26,7 @@ function App() {
                 <Route path="/register/empleado" element={<RegisterEmpleado />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
+                <Route path="/perfil/:email" element={<PerfilUsuario />} />
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}

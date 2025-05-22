@@ -6,10 +6,10 @@ function Header() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const rawRoles = localStorage.getItem("rol");
-
+    const email = localStorage.getItem("email");
     const roles = getUserRoles(rawRoles);
     const rolTexto = getRolTexto(roles);
-
+    // Obtener el correo desde el token JWT (si está en el payload)
     // Estilos para los botones
     const baseBtn = {
         padding: "0.6rem 1.2rem",
@@ -44,19 +44,32 @@ function Header() {
             <div style={{ display: "flex", alignItems: "center" }}>
                 <h2 style={{ margin: 0, marginRight: "1rem" }}>BobElAlquilador</h2>
                 {rolTexto && (
-                    <span
-                        style={{
-                            background: "#ac1010",
-                            color: "#ffffff",
-                            borderRadius: "5px",
-                            padding: "0.3rem 0.8rem",
-                            fontWeight: 600,
-                            fontSize: "0.95rem",
-                            marginLeft: "0.5rem"
-                        }}
-                    >
-                        {rolTexto}
-                    </span>
+                    <>
+                        {/* Botón "Mi Perfil" que navega a /perfil/{email extraído del token} */}
+                        <button
+                            onClick={() => navigate(`/perfil/${email}`)}
+                            style={hoveredBtn === "perfil"
+                                ? { ...baseBtn, ...hoverBtn }
+                                : baseBtn}
+                            onMouseEnter={() => setHoveredBtn("perfil")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                        >
+                            Mi Perfil
+                        </button>
+                        <span
+                            style={{
+                                background: "#ac1010",
+                                color: "#ffffff",
+                                borderRadius: "5px",
+                                padding: "0.3rem 0.8rem",
+                                fontWeight: 600,
+                                fontSize: "0.95rem",
+                                marginLeft: "0.5rem"
+                            }}
+                        >
+                            {rolTexto}
+                        </span>
+                    </>
                 )}
             </div>
             <div>

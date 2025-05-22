@@ -4,6 +4,7 @@ import com.BobElAlquilador.demo.model.Estado;
 import com.BobElAlquilador.demo.model.EstadoMaquina;
 import com.BobElAlquilador.demo.model.Maquina;
 import com.BobElAlquilador.demo.repository.MaquinaRepository;
+import com.BobElAlquilador.demo.util.MaquinaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +16,19 @@ public class MaquinaService {
     @Autowired
     public MaquinaRepository maquinaRepository;
 
-    public List<Maquina> getAllMaquinas (){ return maquinaRepository.findAll();}
+    public List<Maquina> getAllMaquinas() {
+        return maquinaRepository.findAll();
+    }
 
-    public List<Maquina> getMaquinasPorTipo (String tipo){
+    public List<Maquina> getMaquinasPorTipo(String tipo) {
         return maquinaRepository.findByTipo(tipo);
     }
 
-    public Maquina getMaquinaPorNombre(String nombre){
-      return maquinaRepository.findById(nombre).orElse(null);
+    public Maquina getMaquinaPorNombre(String nombre) {
+        return maquinaRepository.findById(nombre).orElse(null);
     }
 
-    public List<Maquina> getMaquinasporUbicacion (String ubicacion){
+    public List<Maquina> getMaquinasPorUbicacion(String ubicacion) {
         return maquinaRepository.findByUbicacion(ubicacion);
     }
 
@@ -35,24 +38,34 @@ public class MaquinaService {
                 .toList();
     }
 
-    public Maquina subir(String nombre_maquina, String ubicacion, LocalDate fecha_ingreso, String fotoUrl,
-                         String descripcion, String tipo, double precio_dia) {
-        Maquina nueva = new Maquina(nombre_maquina, ubicacion, fecha_ingreso, fotoUrl, descripcion, tipo, precio_dia);
-        if (this.getMaquinaPorNombre(nombre_maquina) != null) {throw new RuntimeException("La maquina \'"+ nombre_maquina +"\' ya se encuentra registrada");}
+    public Maquina subir(MaquinaRequest req) {
+        Maquina nueva = new Maquina(
+                req.getNombreMaquina(),
+                req.getUbicacion(),
+                req.getFechaIngreso(),
+                req.getFotoUrl(),
+                req.getDescripcion(),
+                req.getTipo(),
+                req.getPrecioDia()
+        );
+        nueva.setEstadoMaquina(EstadoMaquina.Disponible);
+        if (this.getMaquinaPorNombre(req.getNombreMaquina()) != null) {
+            throw new RuntimeException("La maquina '" + req.getNombreMaquina() + "' ya se encuentra registrada");
+        }
         return maquinaRepository.save(nueva);
     }
 
-    public void saveMaquina (Maquina maquina){
+    public void saveMaquina(Maquina maquina) {
         maquinaRepository.save(maquina);
     }
 
-    //Borrado Logico
-    public void deleteMaquina(Maquina maquina){
-        //Se deben Cancelar los alquileres (marcar como cancelado)
+    // Borrado Lógico
+    public void deleteMaquina(Maquina maquina) {
+        // Se deben Cancelar los alquileres (marcar como cancelado)
         maquina.borrar();
         AlquilerService alquilerService = new AlquilerService();
         alquilerService.cancelarAlquileresMaquina(maquina);
-        //Puede que requiera la cancelacion de todos los Alquileres pendientes.
+        // Puede que requiera la cancelación de todos los Alquileres pendientes.
         this.saveMaquina(maquina);
     }
 }

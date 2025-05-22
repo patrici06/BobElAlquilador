@@ -89,4 +89,12 @@ public class Persona extends DbEstado {
     public void setClave(String clave) {
         this.clave = clave;
     }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 }

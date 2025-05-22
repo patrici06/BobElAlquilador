@@ -54,6 +54,9 @@ public class PersonaService {
         }
         return null;
     }
+    public Persona findByEmail(String email){
+        return this.pRepo.findById(email).orElse(null);
+    }
     public Persona registerNewCliente(RegisterRequest request) {
         validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
@@ -66,10 +69,24 @@ public class PersonaService {
         return this.savePersona(persona);
     }
     public Persona changeUserData(RegisterRequest request) {
-        validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
-        Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
-                , request.getEmail(),request.getClave(), request.getTelefono());
-        return this.savePersona(persona);
+        Persona persona = pRepo.findById(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!persona.getEmail().equals(request.getEmail())&&
+             validadorCredencialesService.correoYaRegistrado(request.getEmail())
+        ){
+            persona.setEmail(request.getEmail());
+        }
+        if (!persona.getDni().equals(request.getDni())){validadorCredencialesService.dniYaRegistrado(request.getDni());}
+        if (     request.getClave() != null &&
+                !request.getClave().isEmpty() &&
+                validadorCredencialesService.formatoClaveValido(request.getClave()))
+        {
+            persona.setClave(passwordEncoder.encode(request.getClave()));
+        }
+        persona.setNombre(request.getNombre());
+        persona.setApellido(request.getApellido());
+        persona.setTelefono(request.getTelefono());
+        return this.pRepo.save(persona);
     }
     public Persona registerNewEmpleado(RegisterRequest request) {
         if (pRepo.existsPersonaByDni(request.getDni())) {
@@ -95,13 +112,9 @@ public class PersonaService {
         persona.setRoles(roles);
         return this.savePersona(persona);
     }
-
     private Persona savePersona(Persona persona) {
         persona.setClave(passwordEncoder.encode(persona.getClave()));
         return this.pRepo.save(persona);
-    }
-    private void updatePersona(Persona persona) {
-        this.pRepo.save(persona);
     }
     public boolean deletePersona(Persona persona) { this.pRepo.delete(persona); return true; }
 }

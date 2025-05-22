@@ -16,6 +16,7 @@ function Login() {
         try {
             const response = await login(correo, clave);
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("email", response.data.email);
             localStorage.setItem("rol", response.data.rol);
             setSuccess("Inicio de sesión exitoso");
             // Espera 1.5 segundos antes de redirigir
