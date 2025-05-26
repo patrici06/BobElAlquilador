@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerEmpleado } from "../services/authService";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
+import styles from "./RegisterEmpleado.module.css";
 
 function RegisterEmpleado() {
     const [dni, setDni] = useState("");
-    const [nombre, setNombre] = useState("");
-    const [apellido, setApellido] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -20,27 +21,10 @@ function RegisterEmpleado() {
     // Solo permitir acceso a propietarios
     if (!roles.includes("ROLE_PROPIETARIO")) {
         return (
-            <div style={{
-                padding: "3rem",
-                background: "#f5f6fa",
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center"
-            }}>
-                <div style={{
-                    background: "#fff",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 32px 0 rgba(0,0,0,0.08)",
-                    padding: "2.5rem 2rem",
-                    minWidth: "350px",
-                    textAlign: "center"
-                }}>
-                    <h2 style={{ color: "#ee5253", marginBottom: "1rem" }}>
-                        403: Permiso denegado
-                    </h2>
-                    <p style={{ color: "#222f3e" }}>No tienes permisos para acceder a esta página.</p>
+            <div className={styles.deniedContainer}>
+                <div className={styles.deniedBox}>
+                    <h2 className={styles.deniedTitle}>403: Permiso denegado</h2>
+                    <p className={styles.deniedText}>No tienes permisos para acceder a esta página.</p>
                 </div>
             </div>
         );
@@ -52,7 +36,12 @@ function RegisterEmpleado() {
         setSuccess("");
         setSubmitting(true);
         try {
-            await registerEmpleado({ dni, nombre, apellido, email });
+            await registerEmpleado({
+                dni,
+                nombre: firstName,
+                apellido: lastName,
+                email,
+            });
             setSuccess("Empleado registrado exitosamente. Redirigiendo...");
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
@@ -65,101 +54,83 @@ function RegisterEmpleado() {
         }
     };
 
+    const renderFeedback = (msg, type) => (
+        <div className={type === "error" ? styles.errorMsg : styles.successMsg} role="alert" aria-live="assertive">
+            {msg}
+        </div>
+    );
+
+    const InputGroup = ({
+                            label,
+                            id,
+                            type,
+                            value,
+                            onChange,
+                            placeholder,
+                            required = true,
+                            autoComplete,
+                        }) => (
+        <div className={styles.inputGroup}>
+            <label htmlFor={id} className={styles.label}>
+                {label}
+            </label>
+            <input
+                id={id}
+                type={type}
+                className={styles.input}
+                value={value}
+                onChange={onChange}
+                required={required}
+                placeholder={placeholder}
+                autoComplete={autoComplete}
+            />
+        </div>
+    );
+
     return (
-        <div style={{ paddingBottom: "3rem", background: "#f5f6fa", minHeight: "100vh" }}>
-            <main style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                minHeight: "80vh", background: "#f5f6fa"
-            }}>
-                <form
-                    style={{
-                        background: "#fff", padding: "2.5rem 2rem", borderRadius: "12px",
-                        boxShadow: "0 4px 32px 0 rgba(0,0,0,0.08)", minWidth: "350px", display: "flex",
-                        flexDirection: "column", gap: "1.2rem"
-                    }}
-                    onSubmit={handleSubmit}
-                    autoComplete="off"
-                >
-                    <h1 style={{ textAlign: "center", color: "#222f3e", marginBottom: "0.5rem" }}>Registrar Empleado</h1>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>DNI</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="text"
-                            value={dni}
-                            onChange={e => setDni(e.target.value)}
-                            required
-                            placeholder="Ingresa el DNI"
-                        />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Nombre</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="text"
-                            value={nombre}
-                            onChange={e => setNombre(e.target.value)}
-                            required
-                            placeholder="Ingresa el nombre"
-                        />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Apellido</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="text"
-                            value={apellido}
-                            onChange={e => setApellido(e.target.value)}
-                            required
-                            placeholder="Ingresa el apellido"
-                        />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Email</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                            placeholder="Ingresa el email"
-                        />
-                    </div>
-                    {error && <div style={{
-                        color: "#ee5253", background: "#ffeaea", borderRadius: "5px",
-                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
-                    }}>{error}</div>}
-                    {success && <div style={{
-                        color: "#10ac84", background: "#e6fffa", borderRadius: "5px",
-                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem"
-                    }}>{success}</div>}
+        <div className={styles.container}>
+            <main className={styles.centeredMain}>
+                <form className={styles.form} onSubmit={handleSubmit} autoComplete="off">
+                    <h1 className={styles.title}>Registrar Empleado</h1>
+                    <InputGroup
+                        label="DNI"
+                        id="dni"
+                        type="text"
+                        value={dni}
+                        onChange={e => setDni(e.target.value)}
+                        placeholder="Ingresa el DNI"
+                    />
+                    <InputGroup
+                        label="Nombre"
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
+                        placeholder="Ingresa el nombre"
+                    />
+                    <InputGroup
+                        label="Apellido"
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
+                        placeholder="Ingresa el apellido"
+                    />
+                    <InputGroup
+                        label="Email"
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder="Ingresa el email"
+                        autoComplete="new-email"
+                    />
+                    {error && renderFeedback(error, "error")}
+                    {success && renderFeedback(success, "success")}
                     <button
                         type="submit"
                         disabled={submitting}
-                        style={{
-                            width: "100%",
-                            padding: "0.8rem",
-                            background: submitting ? "#bdbdbd" : "#10ac84",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "6px",
-                            fontWeight: 600,
-                            fontSize: "1.1rem",
-                            cursor: submitting ? "not-allowed" : "pointer",
-                            marginTop: "0.7rem"
-                        }}
+                        className={styles.button}
                     >
                         {submitting ? "Registrando..." : "Registrar Empleado"}
                     </button>
