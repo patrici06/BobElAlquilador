@@ -16,6 +16,16 @@ import java.util.List;
 @Repository
 public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> {
 
+    @Query("""
+    SELECT a FROM Alquiler a
+    WHERE a.maquina.nombre_maquina = :maquinaName
+      AND a.estado IN :estados
+    """)
+    List<Alquiler> findByMaquinaNombreAndEstadoIn(
+            @Param("maquinaName") String maquinaName,
+            @Param("estados") List<EstadoAlquiler> estados);
+
+
     // Metodo para devolver los alquileres activos / pendientes realizados por un cliente
     // HU: Listar mis alquileres
     List<Alquiler> findByCliente_DniAndEstado(String dni, EstadoAlquiler estado);

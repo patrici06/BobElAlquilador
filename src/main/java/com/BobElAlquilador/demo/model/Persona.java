@@ -8,8 +8,9 @@ import java.util.Set;
 @Entity
 @Table (name  =  "persona")
 public class Persona extends DbEstado {
-    @Id
     private String email;
+    // PATO CAMBIE ESTO PORQ ESTABA EN EMAIL Y EN LA BD ES EL DNI LA PK
+    @Id
     private String dni;
     private String nombre;
     private String apellido;
@@ -18,8 +19,8 @@ public class Persona extends DbEstado {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "persona_roles",
-            joinColumns = @JoinColumn(name = "persona_email"),
-            inverseJoinColumns = @JoinColumn(name = "rol_nombre")
+            joinColumns = @JoinColumn(name = "persona_dni", referencedColumnName = "dni"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id")
     )
     private Set<Rol> roles;
     public Persona(){super();}

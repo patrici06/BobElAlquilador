@@ -20,6 +20,7 @@ public class Maquina extends DbEstado{
     @Lob
     private String descripcion;
     private String tipo;
+    @Enumerated(EnumType.STRING)
     private EstadoMaquina estadoMaquina;
     private double precio_dia;
     public Maquina() {
@@ -40,6 +41,7 @@ public class Maquina extends DbEstado{
     public EstadoMaquina getEstadoMaquina (){
         return this.estadoMaquina;
     }
+    public Estado getEstado() {return super.getEstado();}
 
     public void setEstadoMaquina(EstadoMaquina estadoMaquina){
         this.estadoMaquina =  estadoMaquina;
@@ -96,6 +98,8 @@ public class Maquina extends DbEstado{
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public double getPrecioDia(){return this.precio_dia;}
 
     public double calcularPrecio(long cantDias) {
         return this.precio_dia * cantDias;

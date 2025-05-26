@@ -1,0 +1,175 @@
+.container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.calendar-container {
+    flex: 1;
+}
+
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    width: 320px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    object-fit: cover;
+}
+
+.machine-info {
+    flex: 1;
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    font-size: 1rem;
+}
+
+.machine-info h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-weight: 700;
+    color: #e63946;
+}
+
+.machine-photo {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.big-calendar {
+    font-size: 1.2rem !important; /* Aumenta el tamaño del calendario */
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.card-type {
+    color: #666;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.button-primary {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+    background-color: #d62828;
+}
+
+.button-secondary {
+    background-color: white;
+    color: #e63946;
+    border: 1.5px solid #e63946;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-secondary:hover {
+    background-color: #e63946;
+    color: white;
+}
+
+.reserve-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.reserve-content {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+    align-items: flex-start;
+}
+
+.payment-section {
+    max-width: 400px;
+}
+
+label {
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 1.1rem;
+}
+
+input[type="date"] {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.error {
+    color: red;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 5px solid #ccc;
+    border-top-color: #2196F3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.dia-ocupado .react-datepicker-day {
+    background-color: #ff4d4d;
+    color: white;
+    border-radius: 50%;
+    width: 320px;
+}
+

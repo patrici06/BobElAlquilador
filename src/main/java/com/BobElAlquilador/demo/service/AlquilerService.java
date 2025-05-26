@@ -65,4 +65,8 @@ public class AlquilerService {
         alquileresMaq.forEach(alq -> alq.cancelamientoInvoluntario());
         personaService.enviarMailCancelacion(alquileresMaq);
     }
+
+    public List<Alquiler> obtenerReservasActivasOPendientes(String maquinaNombre) {
+        return repo.findByMaquinaNombreAndEstadoIn(maquinaNombre, List.of(EstadoAlquiler.Pendiente, EstadoAlquiler.Activo));
+    }
 }
