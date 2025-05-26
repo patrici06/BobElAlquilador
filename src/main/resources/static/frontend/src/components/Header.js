@@ -1,16 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserRoles, getRolTexto } from "../utils/authUtils";
+import { getRolTexto } from "../utils/authUtils";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
+import { jwtDecode } from "jwt-decode";
 
 function Header() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
-    const rawRoles = localStorage.getItem("rol");
-    const email = localStorage.getItem("email");
-    const roles = getUserRoles(rawRoles);
-    const rolTexto = getRolTexto(roles);
-    // Obtener el correo desde el token JWT (si está en el payload)
-    // Estilos para los botones
+    const rawRoles = getRolesFromJwt(token);
+
+    // Extraer el email del JWT si existe
+    let email = "";
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            email = decoded.email || decoded.sub || "";
+        } catch (e) {
+            email = "";
+        }
+    }
+
     const baseBtn = {
         padding: "0.6rem 1.2rem",
         background: "#10ac84",
@@ -23,11 +32,7 @@ function Header() {
         marginRight: "0.7rem",
         transition: "background 0.2s"
     };
-    const hoverBtn = {
-        background: "#098e6b"
-    };
-
-    // Estado para hover botón
+    const hoverBtn = { background: "#098e6b" };
     const [hoveredBtn, setHoveredBtn] = useState("");
 
     return (
@@ -43,9 +48,8 @@ function Header() {
         >
             <div style={{ display: "flex", alignItems: "center" }}>
                 <h2 style={{ margin: 0, marginRight: "1rem" }}>BobElAlquilador</h2>
-                {rolTexto && (
+                {token && (
                     <>
-                        {/* Botón "Mi Perfil" que navega a /perfil/{email extraído del token} */}
                         <button
                             onClick={() => navigate(`/perfil/${email}`)}
                             style={hoveredBtn === "perfil"
@@ -67,7 +71,9 @@ function Header() {
                                 marginLeft: "0.5rem"
                             }}
                         >
-                            {rolTexto}
+                            {rawRoles.length > 0
+                                ? rawRoles.map(getRolTexto).join(", ")
+                                : "Sin rol"}
                         </span>
                     </>
                 )}
@@ -99,7 +105,7 @@ function Header() {
                 )}
                 {token && (
                     <>
-                        {roles.includes("ROLE_PROPIETARIO") && (
+                        {rawRoles.includes("ROLE_PROPIETARIO") && (
                             <>
                                 <button
                                     onClick={() => navigate("/register/empleado")}
@@ -123,6 +129,7 @@ function Header() {
                                 </button>
                             </>
                         )}
+                        {/* Aquí puedes agregar funcionalidades propias de empleado si lo deseas */}
                         <button
                             onClick={() => {
                                 localStorage.removeItem("token");

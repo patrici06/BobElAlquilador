@@ -9,6 +9,8 @@ function Register() {
     const [email, setEmail] = useState("");
     const [telefono, setTelefono] = useState("");
     const [clave, setClave] = useState("");
+    const [confirmarClave, setConfirmarClave] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const navigate = useNavigate();
@@ -17,12 +19,20 @@ function Register() {
         e.preventDefault();
         setError("");
         setSuccess("");
+
+        // Validar que las contraseñas coincidan
+        if (clave !== confirmarClave) {
+            setError("Las contraseñas no coinciden.");
+            return;
+        }
+
         try {
-            await register({ dni, nombre, apellido, email, telefono, clave });
-            setSuccess("Registro exitoso. Redirigiendo al login...");
-            setTimeout(() => navigate("/login"), 1800);
+            const response = await register({ dni, nombre, apellido, email, telefono, clave, fechaNacimiento });
+            setSuccess(response.data.mensaje);
+            localStorage.setItem("token", response.data.token);
+            setTimeout(() => navigate("/"), 1800);
         } catch (err) {
-            setError(err?.response?.data?.mensaje);
+            setError(err?.response?.data?.mensaje || "Error al registrarse");
         }
     };
 
@@ -110,6 +120,20 @@ function Register() {
                         />
                     </div>
                     <div>
+                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Fecha de nacimiento</label>
+                        <input
+                            style={{
+                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
+                                outline: "none", fontSize: "1rem", background: "#f8fafc"
+                            }}
+                            type="date"
+                            value={fechaNacimiento}
+                            onChange={(e) => setFechaNacimiento(e.target.value)}
+                            required
+                            placeholder="Selecciona tu fecha de nacimiento"
+                        />
+                    </div>
+                    <div>
                         <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Clave</label>
                         <input
                             style={{
@@ -121,6 +145,20 @@ function Register() {
                             onChange={(e) => setClave(e.target.value)}
                             required
                             placeholder="Crea una clave"
+                        />
+                    </div>
+                    <div>
+                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Confirmar clave</label>
+                        <input
+                            style={{
+                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
+                                outline: "none", fontSize: "1rem", background: "#f8fafc"
+                            }}
+                            type="password"
+                            value={confirmarClave}
+                            onChange={(e) => setConfirmarClave(e.target.value)}
+                            required
+                            placeholder="Repite la clave"
                         />
                     </div>
                     {error && <div style={{ color: "#ee5253", background: "#ffeaea", borderRadius: "5px", padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem" }}>{error}</div>}

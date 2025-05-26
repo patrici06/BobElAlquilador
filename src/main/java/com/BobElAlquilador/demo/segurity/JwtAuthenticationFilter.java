@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,16 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
-                username = jwtUtil.getUsernameFromToken(token);
+                username = jwtUtil.getEmailFromToken(token); // CAMBIO AQUÍ
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Leer roles directamente del JWT
-            String roles = jwtUtil.getRolesFromToken(token); // Ejemplo: "ROLE_PROPIETARIO,ROLE_CLIENTE"
-            List<SimpleGrantedAuthority> authorities = Arrays.stream(roles.split(","))
-                    .map(String::trim)
-                    .filter(r -> !r.isEmpty())
+            // Leer roles directamente como lista del JWT
+            List<String> roles = jwtUtil.getRolesFromToken(token);
+            List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 

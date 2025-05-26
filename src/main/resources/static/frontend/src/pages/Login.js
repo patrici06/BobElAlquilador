@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 
@@ -6,8 +6,16 @@ function Login() {
     const [correo, setCorreo] = useState("");
     const [clave, setClave] = useState("");
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState(""); // Nuevo estado para el mensaje de éxito
+    const [success, setSuccess] = useState("");
     const navigate = useNavigate();
+
+    // Validar token al cargar el componente
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/");
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,10 +24,7 @@ function Login() {
         try {
             const response = await login(correo, clave);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("email", response.data.email);
-            localStorage.setItem("rol", response.data.rol);
             setSuccess("Inicio de sesión exitoso");
-            // Espera 1.5 segundos antes de redirigir
             setTimeout(() => {
                 navigate("/");
             }, 1500);
@@ -27,8 +32,6 @@ function Login() {
             setError(err.response?.data?.mensaje);
         }
     };
-
-    // ... (aquí pueden ir tus estilos como antes)
 
     return (
         <div style={{ paddingBottom: "3rem", background: "#f5f6fa", minHeight: "100vh" }}>

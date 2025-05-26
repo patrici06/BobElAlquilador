@@ -34,21 +34,21 @@ public class PersonaService {
     }
 
     public Persona findByDniCliente(String dni) {
-        Persona p = pRepo.findById(dni).orElse(null);
+        Persona p = pRepo.findByDni(dni).orElse(null);
         if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_CLIENTE"))) {
             return p;
         }
         return null;
     }
     public Persona findByDniPropietario(String dni) {
-        Persona p = pRepo.findById(dni).orElse(null);
+        Persona p = pRepo.findByDni(dni).orElse(null);
         if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_PROPIETARIO"))) {
             return p;
         }
         return null;
     }
     public Persona findByDniEmpleado(String dni) {
-        Persona p = pRepo.findById(dni).orElse(null);
+        Persona p = pRepo.findByDni(dni).orElse(null);
         if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_EMPLEADO"))) {
             return p;
         }
@@ -60,7 +60,7 @@ public class PersonaService {
     public Persona registerNewCliente(RegisterRequest request) {
         validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
-                , request.getEmail(),request.getClave(), request.getTelefono());
+                , request.getEmail(),request.getClave(), request.getTelefono(),request.getFechaNacimiento());
         Rol rol = rolRepository.findByNombre("ROLE_CLIENTE")
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         Set<Rol> roles = new HashSet<>();

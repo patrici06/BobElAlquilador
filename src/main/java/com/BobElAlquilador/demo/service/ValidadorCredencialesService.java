@@ -5,6 +5,9 @@ import com.BobElAlquilador.demo.repository.PersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 @Service
 public class ValidadorCredencialesService {
         @Autowired
@@ -21,6 +24,13 @@ public class ValidadorCredencialesService {
             return true;
         }
 
+        public boolean usuarioMenorDeEdad (LocalDate fechaNacimiento) {
+            boolean ok = Period.between(fechaNacimiento, LocalDate.now()).getYears() <= 18;
+            if (!ok) {
+                throw new RuntimeException("La persona es menor de edad");
+            }
+            return true;
+        }
         public boolean dniYaRegistrado(String dni){
             if (pRepo.existsPersonaByDni(dni)) {
                 throw new RuntimeException("DNI ya registrado");

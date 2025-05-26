@@ -40,7 +40,7 @@ export function actualizarPerfil(data) {
     });
 }
 // Servicio de registro
-export function register({ dni, nombre, apellido, email, telefono, clave }) {
+export function register({ dni, nombre, apellido, email, telefono, clave, fechaNacimiento }) {
     return axios.post(`${API_BASE}/register`, {
         dni,
         nombre,
@@ -48,6 +48,7 @@ export function register({ dni, nombre, apellido, email, telefono, clave }) {
         email,
         telefono,
         clave,
+        fechaNacimiento
     });
 }
 export function registerEmpleado({dni, nombre, apellido, email}) {

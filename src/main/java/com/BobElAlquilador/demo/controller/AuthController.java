@@ -42,11 +42,8 @@ public class AuthController {
             );
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
-
             Map<String, String> response = new HashMap<>();
             response.put("token", jwt);
-            response.put("email", loginRequest.getEmail());
-            response.put("rol", userDetails.getAuthorities().toString());
             return ResponseEntity.ok(response);
 
         } catch (Exception ex) {

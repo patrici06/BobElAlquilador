@@ -2,6 +2,7 @@ package com.BobElAlquilador.demo.util;
 
 import com.BobElAlquilador.demo.model.Rol;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public class RegisterRequest {
@@ -11,7 +12,16 @@ public class RegisterRequest {
         private String email;
         private String clave;
         private String telefono;
+        private LocalDate fechaNacimiento;
         private Set<String> roles; // Ej: ["PROPIETARIO", "EMPLEADO"]
+
+        public LocalDate getFechaNacimiento() {
+                return fechaNacimiento;
+        }
+
+        public void setFechaNacimiento(LocalDate fechaNacimiento) {
+                this.fechaNacimiento = fechaNacimiento;
+        }
 
         public String getDni() {
                 return dni;
