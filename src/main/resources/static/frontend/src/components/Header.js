@@ -22,8 +22,8 @@ function Header() {
 
     const baseBtn = {
         padding: "0.6rem 1.2rem",
-        background: "#10ac84",
-        color: "#fff",
+        background: "#ac1010",
+        color: "#ffffff",
         border: "none",
         borderRadius: "6px",
         fontWeight: 600,
@@ -32,7 +32,7 @@ function Header() {
         marginRight: "0.7rem",
         transition: "background 0.2s"
     };
-    const hoverBtn = { background: "#098e6b" };
+    const hoverBtn = { background: "rgba(255,255,255,0.47)" };
     const [hoveredBtn, setHoveredBtn] = useState("");
 
     return (
@@ -47,7 +47,13 @@ function Header() {
             }}
         >
             <div style={{ display: "flex", alignItems: "center" }}>
-                <h2 style={{ margin: 0, marginRight: "1rem" }}>BobElAlquilador</h2>
+                {/* Imagen clickeable que redirige a la raíz */}
+                <img
+                    src="/Completo.png"
+                    alt="BobElAlquilador"
+                    style={{ height: "40px", marginRight: "1rem", cursor: "pointer" }}
+                    onClick={() => navigate("/")}
+                />
                 {token && (
                     <>
                         <button

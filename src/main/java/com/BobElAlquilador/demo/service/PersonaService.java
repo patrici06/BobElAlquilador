@@ -58,7 +58,7 @@ public class PersonaService {
         return this.pRepo.findById(email).orElse(null);
     }
     public Persona registerNewCliente(RegisterRequest request) {
-        validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail());
+        validadorCredencialesService.formatoValido(request.getDni(), request.getClave(), request.getEmail(), request.getFechaNacimiento());
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
                 , request.getEmail(),request.getClave(), request.getTelefono(),request.getFechaNacimiento());
         Rol rol = rolRepository.findByNombre("ROLE_CLIENTE")

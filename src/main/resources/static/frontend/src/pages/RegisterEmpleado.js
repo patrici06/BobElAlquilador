@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerEmpleado } from "../services/authService";
-import { getRolTexto, getUserRoles } from "../utils/authUtils";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 
 function RegisterEmpleado() {
     const [dni, setDni] = useState("");
@@ -10,12 +10,12 @@ function RegisterEmpleado() {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const [submitting, setSubmitting] = useState(false); // Nuevo estado para deshabilitar el botón
+    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    // Obtener roles directamente dentro del componente para que se actualicen si el usuario cambia
-    const rawRoles = localStorage.getItem("rol");
-    const roles = getUserRoles(rawRoles);
+    // Obtener roles del token JWT (si el usuario cambia, se actualiza al refrescar la página)
+    const token = localStorage.getItem("token");
+    const roles = getRolesFromJwt(token); // Siempre será un array
 
     // Solo permitir acceso a propietarios
     if (!roles.includes("ROLE_PROPIETARIO")) {
@@ -50,7 +50,7 @@ function RegisterEmpleado() {
         e.preventDefault();
         setError("");
         setSuccess("");
-        setSubmitting(true); // Desactiva el botón al enviar
+        setSubmitting(true);
         try {
             await registerEmpleado({ dni, nombre, apellido, email });
             setSuccess("Empleado registrado exitosamente. Redirigiendo...");
@@ -61,7 +61,7 @@ function RegisterEmpleado() {
             } else {
                 setError(err?.response?.data?.mensaje || "Error en el registro");
             }
-            setSubmitting(false); // Reactiva el botón si ocurre un error
+            setSubmitting(false);
         }
     };
 

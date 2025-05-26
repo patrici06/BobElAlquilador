@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { perfil, actualizarPerfil } from "../services/authService";
-import { getUserRoles } from "../utils/authUtils";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import styles from "./PerfilUsuario.module.css";
 
 function PerfilUsuario() {
     const { email } = useParams();
-    const rawRoles = localStorage.getItem("rol");
-    const roles = getUserRoles(rawRoles);
+    const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+    const roles = getRolesFromJwt(token);
 
-    const [usuario, setUsuario] = useState(null);
+    const [user, setUser] = useState(null);
     const [editData, setEditData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [editando, setEditando] = useState(false);
+    const [editing, setEditing] = useState(false);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     useEffect(() => {
         setLoading(true);
         perfil({ email })
-            .then(res => {
-                setUsuario(res.data);
+            .then((res) => {
+                setUser(res.data);
                 setEditData(res.data);
                 setLoading(false);
             })
@@ -34,11 +38,22 @@ function PerfilUsuario() {
     }, [email]);
 
     useEffect(() => {
-        if (editando) setEditData(prev => ({ ...prev, clave: "" }));
-    }, [editando]);
+        if (editing) {
+            setEditData((prev) => ({ ...prev, clave: "" }));
+            setConfirmPassword("");
+        }
+    }, [editing]);
 
     const handleChange = (e) => {
         setEditData({ ...editData, [e.target.name]: e.target.value });
+    };
+
+    const handlePasswordChange = (e) => {
+        setEditData({ ...editData, clave: e.target.value });
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
     };
 
     const handleSubmit = async (e) => {
@@ -46,307 +61,253 @@ function PerfilUsuario() {
         setSubmitting(true);
         setError("");
         setSuccess("");
-        const dataToSend = { email, ...editData };
-        if (!dataToSend.clave) delete dataToSend.clave;
+
+        if (editData.clave && editData.clave !== confirmPassword) {
+            setError("La nueva clave y la confirmación no coinciden.");
+            setSubmitting(false);
+            return;
+        }
+
+        const dataToSend = {
+            email: user.email,
+            nombre: editData.nombre,
+            apellido: editData.apellido,
+            ...(roles.includes("ROLE_CLIENTE") && { telefono: editData.telefono }),
+        };
+        if (editData.clave) dataToSend.clave = editData.clave;
+
         try {
             const resp = await actualizarPerfil(dataToSend);
-            setUsuario(resp.data);
+            setUser(resp.data);
             setSuccess("Datos actualizados correctamente.");
-            setEditando(false);
+            setEditing(false);
         } catch (err) {
             setError(err?.response?.data?.mensaje || "Error al actualizar usuario.");
         }
         setSubmitting(false);
     };
 
-    if (loading) return <div>Cargando datos...</div>;
-    if (!usuario) return <div>No se encontró el usuario.</div>;
+    const renderFeedback = (msg, type) => (
+        <div
+            className={type === "error" ? styles.errorMsg : styles.successMsg}
+            role="alert"
+            aria-live="assertive"
+        >
+            {msg}
+        </div>
+    );
+
+    const InputGroup = ({
+                            label,
+                            id,
+                            type,
+                            name,
+                            value,
+                            onChange,
+                            placeholder,
+                            autoComplete,
+                            readOnly = false,
+                            required = false,
+                            disabled = false,
+                            children,
+                            pattern,
+                        }) => (
+        <div className={styles.inputGroup}>
+            <label htmlFor={id} className={styles.label}>
+                {label}
+            </label>
+            <div className={styles.inputWrapper}>
+                <input
+                    id={id}
+                    name={name}
+                    type={type}
+                    className={styles.input}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    autoComplete={autoComplete}
+                    readOnly={readOnly}
+                    required={required}
+                    disabled={disabled}
+                    pattern={pattern}
+                />
+                {children}
+            </div>
+        </div>
+    );
+
+    const formatFechaNacimiento = (fecha) => {
+        if (!fecha) return "";
+        try {
+            const d = new Date(fecha);
+            return d.toLocaleDateString();
+        } catch {
+            return "";
+        }
+    };
+
+    if (loading) return <div className={styles.loading}>Cargando datos...</div>;
+    if (!user) return <div className={styles.loading}>No se encontró el usuario.</div>;
 
     return (
-        <div
-            style={{
-                maxWidth: "400px",
-                margin: "2rem auto",
-                background: "#232323",
-                borderRadius: "12px",
-                boxShadow: "0 4px 32px 0 rgba(0,0,0,0.08)",
-                padding: "2.5rem 2rem"
-            }}
-        >
-            <style>{`
-                input::placeholder {
-                    text-align: center;
-                }
-            `}</style>
-            <h2 style={{ textAlign: "center", color: "#e7e4d8" }}>Perfil de Usuario</h2>
-            {success && <div style={{
-                color: "#10ac84",
-                background: "#e6fffa",
-                borderRadius: "5px",
-                padding: "0.7rem",
-                textAlign: "center",
-                fontWeight: 500,
-                fontSize: "1rem",
-                width: "100%",
-                marginBottom: "1rem"
-            }}>
-                {success}
-            </div>}
-            {!editando ? (
-                <div style={{ textAlign: "center" }}>
-                    <p><strong>Nombre:</strong> {usuario.nombre}</p>
-                    <p><strong>Apellido:</strong> {usuario.apellido}</p>
-                    <p><strong>Email:</strong> {usuario.email}</p>
-                    <p><strong>DNI:</strong> {usuario.dni}</p>
-                    {roles.includes("ROLE_CLIENTE") && (
-                        <p>
-                            <strong>Teléfono:</strong>{" "}
-                            {usuario.telefono || (
-                                <span style={{ color: "#999" }}>No registrado</span>
+        <div className={styles.container}>
+            <main className={styles.centeredMain}>
+                <section className={styles.profileBox}>
+                    <h2 className={styles.title}>Perfil de Usuario</h2>
+                    {success && renderFeedback(success, "success")}
+                    {!editing ? (
+                        <div className={styles.profileData}>
+                            <p>
+                                <strong>Nombre:</strong> {user.nombre}
+                            </p>
+                            <p>
+                                <strong>Apellido:</strong> {user.apellido}
+                            </p>
+                            <p>
+                                <strong>Email:</strong> {user.email}
+                            </p>
+                            <p>
+                                <strong>DNI:</strong> {user.dni}
+                            </p>
+                            {user.fechaNacimiento && (
+                                <p>
+                                    <strong>Fecha de nacimiento:</strong>{" "}
+                                    {formatFechaNacimiento(user.fechaNacimiento)}
+                                </p>
                             )}
-                        </p>
-                    )}
-                    <button
-                        style={{
-                            width: "100%",
-                            padding: "0.8rem",
-                            background: "#10ac84",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "6px",
-                            fontWeight: 600,
-                            fontSize: "1.1rem",
-                            cursor: "pointer",
-                            marginTop: "0.7rem"
-                        }}
-                        onClick={() => setEditando(true)}
-                    >
-                        Editar datos
-                    </button>
-                </div>
-            ) : (
-                <form
-                    onSubmit={handleSubmit}
-                    autoComplete="off"
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1.2rem",
-                        alignItems: "center",
-                        width: "100%",
-                    }}
-                >
-                    {/* Nombre */}
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>Nombre</label>
-                        <input
-                            name="nombre"
-                            value={editData.nombre || ""}
-                            onChange={handleChange}
-                            style={{
-                                width: "100%",
-                                maxWidth: "350px",
-                                padding: "0.7rem",
-                                borderRadius: "6px",
-                                border: "1px solid #6ee7b7",
-                                background: "#363636",
-                                color: "#fafafa",
-                                fontWeight: 500,
-                                textAlign: "center",
-                                outline: "none"
-                            }}
-                            required
-                        />
-                    </div>
-                    {/* Apellido */}
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>Apellido</label>
-                        <input
-                            name="apellido"
-                            value={editData.apellido || ""}
-                            onChange={handleChange}
-                            style={{
-                                width: "100%",
-                                maxWidth: "350px",
-                                padding: "0.7rem",
-                                borderRadius: "6px",
-                                border: "1px solid #6ee7b7",
-                                background: "#363636",
-                                color: "#fafafa",
-                                fontWeight: 500,
-                                textAlign: "center",
-                                outline: "none"
-                            }}
-                            required
-                        />
-                    </div>
-                    {/* Email */}
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>Email</label>
-                        <input
-                            name="email"
-                            value={editData.email || ""}
-                            onChange={handleChange}
-                            style={{
-                                width: "100%",
-                                maxWidth: "350px",
-                                padding: "0.7rem",
-                                borderRadius: "6px",
-                                border: "1px solid #6ee7b7",
-                                background: "#363636",
-                                color: "#fafafa",
-                                fontWeight: 500,
-                                textAlign: "center",
-                                outline: "none"
-                            }}
-                            required
-                            type="email"
-                        />
-                    </div>
-                    {/* DNI */}
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>DNI</label>
-                        <input
-                            name="dni"
-                            value={editData.dni || ""}
-                            onChange={handleChange}
-                            style={{
-                                width: "100%",
-                                maxWidth: "350px",
-                                padding: "0.7rem",
-                                borderRadius: "6px",
-                                border: "1px solid #6ee7b7",
-                                background: "#363636",
-                                color: "#fafafa",
-                                fontWeight: 500,
-                                textAlign: "center",
-                                outline: "none"
-                            }}
-                            required
-                        />
-                    </div>
-                    {/* Teléfono */}
-                    {roles.includes("ROLE_CLIENTE") && (
-                        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>Teléfono</label>
-                            <input
-                                name="telefono"
-                                value={editData.telefono || ""}
-                                onChange={handleChange}
-                                style={{
-                                    width: "100%",
-                                    maxWidth: "350px",
-                                    padding: "0.7rem",
-                                    borderRadius: "6px",
-                                    border: "1px solid #6ee7b7",
-                                    background: "#363636",
-                                    color: "#fafafa",
-                                    fontWeight: 500,
-                                    textAlign: "center",
-                                    outline: "none"
-                                }}
-                                required
-                                type="tel"
-                                pattern="[0-9+()\- ]*"
-                                placeholder="Ej: 11 1234-5678"
-                            />
+                            {roles.includes("ROLE_CLIENTE") && (
+                                <p>
+                                    <strong>Teléfono:</strong>{" "}
+                                    {user.telefono || <span className={styles.textMuted}>No registrado</span>}
+                                </p>
+                            )}
+                            <button
+                                className={styles.button}
+                                onClick={() => setEditing(true)}
+                            >
+                                Editar datos
+                            </button>
                         </div>
-                    )}
-                    {/* Nueva clave */}
-                    <div style={{width: "100%",display: "flex",flexDirection: "column",alignItems: "center",position: "relative"}}>
-                        <label style={{ width: "100%", textAlign: "center", color: "#e7e4d8" }}>
-                            Nueva clave
-                        </label>
-                        <div style={{
-                            position: "relative",
-                            width: "100%",
-                            maxWidth: "350px",
-                            display: "flex",
-                            alignItems: "center",
-                        }}>
-                            <input
+                    ) : (
+                        <form
+                            className={styles.form}
+                            onSubmit={handleSubmit}
+                            autoComplete="off"
+                        >
+                            <InputGroup
+                                label="Nombre"
+                                id="nombre"
+                                name="nombre"
+                                type="text"
+                                value={editData.nombre || ""}
+                                onChange={handleChange}
+                                placeholder="Nombre"
+                                required
+                            />
+                            <InputGroup
+                                label="Apellido"
+                                id="apellido"
+                                name="apellido"
+                                type="text"
+                                value={editData.apellido || ""}
+                                onChange={handleChange}
+                                placeholder="Apellido"
+                                required
+                            />
+                            <InputGroup
+                                label="Email"
+                                id="email"
+                                name="email"
+                                type="email"
+                                value={editData.email || ""}
+                                readOnly
+                            />
+                            <InputGroup
+                                label="DNI"
+                                id="dni"
+                                name="dni"
+                                type="text"
+                                value={editData.dni || ""}
+                                readOnly
+                            />
+                            {/* LA FECHA DE NACIMIENTO NO SE INCLUYE EN EDICIÓN */}
+                            {roles.includes("ROLE_CLIENTE") && (
+                                <InputGroup
+                                    label="Teléfono"
+                                    id="telefono"
+                                    name="telefono"
+                                    type="tel"
+                                    value={editData.telefono || ""}
+                                    onChange={handleChange}
+                                    placeholder="Ej: 11 1234-5678"
+                                    required
+                                    pattern="[0-9+()\- ]*"
+                                />
+                            )}
+                            <InputGroup
+                                label="Nueva clave"
+                                id="clave"
                                 name="clave"
                                 type={showPassword ? "text" : "password"}
                                 value={editData.clave || ""}
-                                onChange={handleChange}
-                                style={{
-                                    width: "100%",
-                                    padding: "0.7rem 2.4rem 0.7rem 0.7rem",
-                                    borderRadius: "6px",
-                                    border: "1px solid #6ee7b7",
-                                    background: "#363636",
-                                    color: "#fafafa",
-                                    fontWeight: 500,
-                                    textAlign: "center",
-                                    outline: "none"
-                                }}
+                                onChange={handlePasswordChange}
                                 placeholder="Deja vacío para no cambiar"
                                 autoComplete="new-password"
-                            />
-                            <span
-                                style={{
-                                    position: "absolute",
-                                    right: "0.7rem",
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    cursor: "pointer",
-                                    color: "#bfbfbf"
-                                }}
-                                onClick={() => setShowPassword((v) => !v)}
-                                tabIndex={0}
-                                aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
                             >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </span>
-                        </div>
-                    </div>
-                    {/* Mensajes */}
-                    {error && <div style={{
-                        color: "#ee5253", background: "#ffeaea", borderRadius: "5px",
-                        padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem", width: "100%"
-                    }}>{error}</div>}
-                    {/* Botones */}
-                    <button
-                        type="submit"
-                        disabled={submitting}
-                        style={{
-                            width: "100%",
-                            maxWidth: "350px",
-                            padding: "0.8rem",
-                            background: submitting ? "#bdbdbd" : "#10ac84",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "6px",
-                            fontWeight: 600,
-                            fontSize: "1.1rem",
-                            cursor: submitting ? "not-allowed" : "pointer",
-                            marginTop: "0.7rem"
-                        }}
-                    >
-                        {submitting ? "Guardando..." : "Guardar cambios"}
-                    </button>
-                    <button
-                        type="button"
-                        disabled={submitting}
-                        onClick={() => { setEditando(false); setError(""); setSuccess(""); setEditData(usuario); }}
-                        style={{
-                            width: "100%",
-                            maxWidth: "350px",
-                            padding: "0.8rem",
-                            background: "#ee5253",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "6px",
-                            fontWeight: 600,
-                            fontSize: "1.1rem",
-                            cursor: submitting ? "not-allowed" : "pointer",
-                            marginTop: "0.7rem"
-                        }}
-                    >
-                        Cancelar
-                    </button>
-                </form>
-            )}
+                                <span
+                                    className={styles.eyeIcon}
+                                    onClick={() => setShowPassword((v) => !v)}
+                                    tabIndex={0}
+                                    aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
+                                >
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </InputGroup>
+                            <InputGroup
+                                label="Confirmar nueva clave"
+                                id="confirmClave"
+                                name="confirmClave"
+                                type={showConfirmPassword ? "text" : "password"}
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
+                                placeholder="Repite la nueva clave"
+                                autoComplete="new-password"
+                            >
+                                <span
+                                    className={styles.eyeIcon}
+                                    onClick={() => setShowConfirmPassword((v) => !v)}
+                                    tabIndex={0}
+                                    aria-label={showConfirmPassword ? "Ocultar clave" : "Mostrar clave"}
+                                >
+                                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </InputGroup>
+                            {error && renderFeedback(error, "error")}
+                            <button
+                                type="submit"
+                                className={styles.button}
+                                disabled={submitting}
+                            >
+                                {submitting ? "Guardando..." : "Guardar cambios"}
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.cancelButton}
+                                disabled={submitting}
+                                onClick={() => {
+                                    setEditing(false);
+                                    setError("");
+                                    setSuccess("");
+                                    setEditData(user);
+                                    setConfirmPassword("");
+                                }}
+                            >
+                                Cancelar
+                            </button>
+                        </form>
+                    )}
+                </section>
+            </main>
         </div>
     );
 }

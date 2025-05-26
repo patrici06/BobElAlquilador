@@ -12,10 +12,11 @@ import java.time.Period;
 public class ValidadorCredencialesService {
         @Autowired
         private PersonaRepository pRepo;
-        public void formatoValido(String dni, String claveIn, String correo){
+        public void formatoValido(String dni, String claveIn, String correo, LocalDate fechaNacimiento){
             dniYaRegistrado(dni);
             correoYaRegistrado(correo);
             formatoClaveValido(claveIn);
+            usuarioMenorDeEdad(fechaNacimiento);
         }
         public boolean formatoClaveValido(String clave){
             if (clave.length() < 8 || !clave.matches(".*[A-Z].*") || !clave.matches(".*[a-z].*") || !clave.matches(".*\\d.*")){

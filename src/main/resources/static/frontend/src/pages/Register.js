@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../services/authService";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import styles from "./Register.module.css";
 
 function Register() {
     const [dni, setDni] = useState("");
-    const [nombre, setNombre] = useState("");
-    const [apellido, setApellido] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [telefono, setTelefono] = useState("");
-    const [clave, setClave] = useState("");
-    const [confirmarClave, setConfirmarClave] = useState("");
-    const [fechaNacimiento, setFechaNacimiento] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [birthDate, setBirthDate] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -20,14 +25,15 @@ function Register() {
         setError("");
         setSuccess("");
 
-        // Validar que las contraseñas coincidan
-        if (clave !== confirmarClave) {
+        if (password !== confirmPassword) {
             setError("Las contraseñas no coinciden.");
             return;
         }
 
         try {
-            const response = await register({ dni, nombre, apellido, email, telefono, clave, fechaNacimiento });
+            const response = await register({
+                dni, nombre: firstName, apellido: lastName, email, telefono: phone, clave: password, fechaNacimiento: birthDate
+            });
             setSuccess(response.data.mensaje);
             localStorage.setItem("token", response.data.token);
             setTimeout(() => navigate("/"), 1800);
@@ -36,140 +42,129 @@ function Register() {
         }
     };
 
+    const renderFeedback = (msg, type) => (
+        <div
+            className={type === "error" ? styles.errorMsg : styles.successMsg}
+            role="alert"
+            aria-live="assertive"
+        >
+            {msg}
+        </div>
+    );
+
+    const InputGroup = ({ label, id, type, value, onChange, placeholder, required = true, autoComplete, children }) => (
+        <div className={styles.inputGroup}>
+            <label htmlFor={id} className={styles.label}>{label}</label>
+            <div className={styles.inputWrapper}>
+                <input
+                    id={id}
+                    type={type}
+                    className={styles.input}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    placeholder={placeholder}
+                    autoComplete={autoComplete}
+                />
+                {children}
+            </div>
+        </div>
+    );
+
     return (
-        <div style={{ paddingBottom: "3rem", background: "#f5f6fa", minHeight: "100vh" }}>
-            <main style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", background: "#f5f6fa" }}>
-                <form
-                    style={{
-                        background: "#fff", padding: "2.5rem 2rem", borderRadius: "12px",
-                        boxShadow: "0 4px 32px 0 rgba(0,0,0,0.08)", minWidth: "350px", display: "flex",
-                        flexDirection: "column", gap: "1.2rem"
-                    }}
-                    onSubmit={handleSubmit}
-                    autoComplete="off"
-                >
-                    <h1 style={{ textAlign: "center", color: "#222f3e", marginBottom: "0.5rem" }}>Registrarse</h1>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>DNI</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+        <div className={styles.container}>
+            <main className={styles.centeredMain}>
+                <form className={styles.form} onSubmit={handleSubmit} autoComplete="off">
+                    <h1 className={styles.title}>Registro</h1>
+                    <div className={styles.grid}>
+                        <InputGroup
+                            label="DNI"
+                            id="dni"
                             type="text"
                             value={dni}
-                            onChange={(e) => setDni(e.target.value)}
-                            required
-                            placeholder="Ingresa tu DNI"
+                            onChange={e => setDni(e.target.value)}
+                            placeholder="DNI"
                         />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Nombre</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+                        <InputGroup
+                            label="Nombre"
+                            id="firstName"
                             type="text"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                            placeholder="Ingresa tu nombre"
+                            value={firstName}
+                            onChange={e => setFirstName(e.target.value)}
+                            placeholder="Nombre"
                         />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Apellido</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+                        <InputGroup
+                            label="Apellido"
+                            id="lastName"
                             type="text"
-                            value={apellido}
-                            onChange={(e) => setApellido(e.target.value)}
-                            required
-                            placeholder="Ingresa tu apellido"
+                            value={lastName}
+                            onChange={e => setLastName(e.target.value)}
+                            placeholder="Apellido"
                         />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Email</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+                        <InputGroup
+                            label="Email"
+                            id="email"
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            placeholder="Ingresa tu email"
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="Email"
                         />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Teléfono</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+                        <InputGroup
+                            label="Teléfono"
+                            id="phone"
                             type="tel"
-                            value={telefono}
-                            onChange={(e) => setTelefono(e.target.value)}
-                            required
-                            placeholder="Ingresa tu teléfono"
+                            value={phone}
+                            onChange={e => setPhone(e.target.value)}
+                            placeholder="Teléfono"
                         />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Fecha de nacimiento</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
+                        <InputGroup
+                            label="Nacimiento"
+                            id="birthDate"
                             type="date"
-                            value={fechaNacimiento}
-                            onChange={(e) => setFechaNacimiento(e.target.value)}
-                            required
-                            placeholder="Selecciona tu fecha de nacimiento"
+                            value={birthDate}
+                            onChange={e => setBirthDate(e.target.value)}
+                            placeholder="Fecha de nacimiento"
                         />
+                        <InputGroup
+                            label="Clave"
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder="Clave"
+                            autoComplete="new-password"
+                        >
+              <span
+                  className={styles.eyeIcon}
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={0}
+                  aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+                        </InputGroup>
+                        <InputGroup
+                            label="Repetir Clave"
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            placeholder="Repetir clave"
+                            autoComplete="new-password"
+                        >
+              <span
+                  className={styles.eyeIcon}
+                  onClick={() => setShowConfirmPassword((v) => !v)}
+                  tabIndex={0}
+                  aria-label={showConfirmPassword ? "Ocultar clave" : "Mostrar clave"}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+                        </InputGroup>
                     </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Clave</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="password"
-                            value={clave}
-                            onChange={(e) => setClave(e.target.value)}
-                            required
-                            placeholder="Crea una clave"
-                        />
-                    </div>
-                    <div>
-                        <label style={{ fontWeight: 500, marginBottom: "0.35rem", color: "#222f3e" }}>Confirmar clave</label>
-                        <input
-                            style={{
-                                width: "100%", padding: "0.7rem", border: "1px solid #c8d6e5", borderRadius: "6px",
-                                outline: "none", fontSize: "1rem", background: "#f8fafc"
-                            }}
-                            type="password"
-                            value={confirmarClave}
-                            onChange={(e) => setConfirmarClave(e.target.value)}
-                            required
-                            placeholder="Repite la clave"
-                        />
-                    </div>
-                    {error && <div style={{ color: "#ee5253", background: "#ffeaea", borderRadius: "5px", padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem" }}>{error}</div>}
-                    {success && <div style={{ color: "#10ac84", background: "#e6fffa", borderRadius: "5px", padding: "0.7rem", textAlign: "center", fontWeight: 500, fontSize: "1rem" }}>{success}</div>}
-                    <button
-                        type="submit"
-                        style={{
-                            width: "100%", padding: "0.8rem", background: "#10ac84", color: "#fff", border: "none",
-                            borderRadius: "6px", fontWeight: 600, fontSize: "1.1rem", cursor: "pointer", marginTop: "0.7rem"
-                        }}
-                    >
+                    {error && renderFeedback(error, "error")}
+                    {success && renderFeedback(success, "success")}
+                    <button type="submit" className={styles.button}>
                         Registrarse
                     </button>
                 </form>

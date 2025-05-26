@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { subirMaquina } from "../services/authService";
-import { getUserRoles } from "../utils/authUtils";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 
 function SubirMaquina() {
     const [nombreMaquina, setNombreMaquina] = useState("");
@@ -16,8 +16,10 @@ function SubirMaquina() {
     const [submitting, setSubmitting] = useState(false);
 
     const navigate = useNavigate();
-    const rawRoles = localStorage.getItem("rol");
-    const roles = getUserRoles(rawRoles);
+
+    // Nueva lógica: obtener roles del token JWT
+    const token = localStorage.getItem("token");
+    const roles = getRolesFromJwt(token);
 
     // Solo permitir acceso a propietarios
     if (!roles.includes("ROLE_PROPIETARIO")) {
