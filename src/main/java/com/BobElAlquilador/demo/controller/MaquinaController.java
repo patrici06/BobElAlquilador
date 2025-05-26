@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/")
 public class MaquinaController {
@@ -27,6 +28,15 @@ public class MaquinaController {
             Map<String, Object> response = new HashMap<>();
             response.put("mensaje", "Error al subir maquina: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @GetMapping("/api/maquinas")
+    public ResponseEntity<?> obtenerMaquinas() {
+        try {
+            return ResponseEntity.ok(maquinaService.getAllMaquinas());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener máquinas: " + e.getMessage());
         }
     }
 }
