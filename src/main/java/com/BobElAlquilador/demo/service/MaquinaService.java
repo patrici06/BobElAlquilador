@@ -60,7 +60,8 @@ public class MaquinaService {
     }
 
     // Borrado Lógico
-    public void deleteMaquina(Maquina maquina) {
+    public void deleteMaquina(String nomMaquina) {
+        Maquina maquina = maquinaRepository.findById(nomMaquina).orElse(null);
         // Se deben Cancelar los alquileres (marcar como cancelado)
         maquina.borrar();
         AlquilerService alquilerService = new AlquilerService();

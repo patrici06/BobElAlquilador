@@ -39,4 +39,18 @@ public class MaquinaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener máquinas: " + e.getMessage());
         }
     }
+
+    // Este metodo usa el nombre de la maq, pero es completamente arbitrario, cambiar a conveniencia
+    // siempre teniendo en cuenta las repercusiones dentro de maquinaService
+    @DeleteMapping("/reservar")
+    public ResponseEntity<?> eliminarMaquina(@PathVariable String nombre) {
+        try {
+            maquinaService.deleteMaquina(nombre);
+            return ResponseEntity.status(HttpStatus.OK).body("Máquina '" + nombre + "' eliminada con éxito.");
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Error al eliminar maquina" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
 }
