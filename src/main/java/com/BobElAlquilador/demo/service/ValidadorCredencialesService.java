@@ -26,7 +26,7 @@ public class ValidadorCredencialesService {
         }
 
         public boolean usuarioMenorDeEdad (LocalDate fechaNacimiento) {
-            boolean ok = Period.between(fechaNacimiento, LocalDate.now()).getYears() <= 18;
+            boolean ok = Period.between(fechaNacimiento, LocalDate.now()).getYears() >= 18;
             if (!ok) {
                 throw new RuntimeException("La persona es menor de edad");
             }

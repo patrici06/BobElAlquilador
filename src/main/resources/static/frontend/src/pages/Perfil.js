@@ -1,34 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { perfil, actualizarPerfil } from "../services/authService";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import styles from "./PerfilUsuario.module.css";
 
-function PerfilUsuario() {
+export default function PerfilUsuario() {
     const { email } = useParams();
-    const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const roles = getRolesFromJwt(token);
 
+    // Estados controlados por input, igual que en Register
+    const [nombre, setNombre] = useState("");
+    const [apellido, setApellido] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const [dni, setDni] = useState("");
+    const [telefono, setTelefono] = useState("");
+    const [clave, setClave] = useState("");
+    const [confirmClave, setConfirmClave] = useState("");
     const [user, setUser] = useState(null);
-    const [editData, setEditData] = useState({});
+
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
     const [submitting, setSubmitting] = useState(false);
-
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [confirmPassword, setConfirmPassword] = useState("");
 
+    // Carga inicial
     useEffect(() => {
         setLoading(true);
         perfil({ email })
             .then((res) => {
                 setUser(res.data);
-                setEditData(res.data);
+                setNombre(res.data.nombre || "");
+                setApellido(res.data.apellido || "");
+                setUserEmail(res.data.email || "");
+                setDni(res.data.dni || "");
+                setTelefono(res.data.telefono || "");
+                setClave("");
+                setConfirmClave("");
                 setLoading(false);
             })
             .catch(() => {
@@ -38,22 +50,21 @@ function PerfilUsuario() {
     }, [email]);
 
     useEffect(() => {
-        if (editing) {
-            setEditData((prev) => ({ ...prev, clave: "" }));
-            setConfirmPassword("");
+        if (editing && user) {
+            setNombre(user.nombre || "");
+            setApellido(user.apellido || "");
+            setUserEmail(user.email || "");
+            setDni(user.dni || "");
+            setTelefono(user.telefono || "");
+            setClave("");
+            setConfirmClave("");
         }
-    }, [editing]);
+    }, [editing, user]);
 
-    const handleChange = (e) => {
-        setEditData({ ...editData, [e.target.name]: e.target.value });
-    };
-
-    const handlePasswordChange = (e) => {
-        setEditData({ ...editData, clave: e.target.value });
-    };
-
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
+    // Solo números para teléfono
+    const handlePhoneChange = (e) => {
+        const value = e.target.value.replace(/\D/g, "");
+        setTelefono(value);
     };
 
     const handleSubmit = async (e) => {
@@ -61,8 +72,7 @@ function PerfilUsuario() {
         setSubmitting(true);
         setError("");
         setSuccess("");
-
-        if (editData.clave && editData.clave !== confirmPassword) {
+        if (clave && clave !== confirmClave) {
             setError("La nueva clave y la confirmación no coinciden.");
             setSubmitting(false);
             return;
@@ -70,11 +80,11 @@ function PerfilUsuario() {
 
         const dataToSend = {
             email: user.email,
-            nombre: editData.nombre,
-            apellido: editData.apellido,
-            ...(roles.includes("ROLE_CLIENTE") && { telefono: editData.telefono }),
+            nombre,
+            apellido,
+            ...(roles.includes("ROLE_CLIENTE") && { telefono }),
         };
-        if (editData.clave) dataToSend.clave = editData.clave;
+        if (clave) dataToSend.clave = clave;
 
         try {
             const resp = await actualizarPerfil(dataToSend);
@@ -94,45 +104,6 @@ function PerfilUsuario() {
             aria-live="assertive"
         >
             {msg}
-        </div>
-    );
-
-    const InputGroup = ({
-                            label,
-                            id,
-                            type,
-                            name,
-                            value,
-                            onChange,
-                            placeholder,
-                            autoComplete,
-                            readOnly = false,
-                            required = false,
-                            disabled = false,
-                            children,
-                            pattern,
-                        }) => (
-        <div className={styles.inputGroup}>
-            <label htmlFor={id} className={styles.label}>
-                {label}
-            </label>
-            <div className={styles.inputWrapper}>
-                <input
-                    id={id}
-                    name={name}
-                    type={type}
-                    className={styles.input}
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    autoComplete={autoComplete}
-                    readOnly={readOnly}
-                    required={required}
-                    disabled={disabled}
-                    pattern={pattern}
-                />
-                {children}
-            </div>
         </div>
     );
 
@@ -194,94 +165,115 @@ function PerfilUsuario() {
                             onSubmit={handleSubmit}
                             autoComplete="off"
                         >
-                            <InputGroup
-                                label="Nombre"
-                                id="nombre"
-                                name="nombre"
-                                type="text"
-                                value={editData.nombre || ""}
-                                onChange={handleChange}
-                                placeholder="Nombre"
-                                required
-                            />
-                            <InputGroup
-                                label="Apellido"
-                                id="apellido"
-                                name="apellido"
-                                type="text"
-                                value={editData.apellido || ""}
-                                onChange={handleChange}
-                                placeholder="Apellido"
-                                required
-                            />
-                            <InputGroup
-                                label="Email"
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={editData.email || ""}
-                                readOnly
-                            />
-                            <InputGroup
-                                label="DNI"
-                                id="dni"
-                                name="dni"
-                                type="text"
-                                value={editData.dni || ""}
-                                readOnly
-                            />
-                            {/* LA FECHA DE NACIMIENTO NO SE INCLUYE EN EDICIÓN */}
-                            {roles.includes("ROLE_CLIENTE") && (
-                                <InputGroup
-                                    label="Teléfono"
-                                    id="telefono"
-                                    name="telefono"
-                                    type="tel"
-                                    value={editData.telefono || ""}
-                                    onChange={handleChange}
-                                    placeholder="Ej: 11 1234-5678"
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="nombre" className={styles.label}>Nombre</label>
+                                <input
+                                    id="nombre"
+                                    name="nombre"
+                                    type="text"
+                                    className={styles.input}
+                                    value={nombre}
+                                    onChange={e => setNombre(e.target.value)}
                                     required
-                                    pattern="[0-9+()\- ]*"
+                                    placeholder="Nombre"
                                 />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="apellido" className={styles.label}>Apellido</label>
+                                <input
+                                    id="apellido"
+                                    name="apellido"
+                                    type="text"
+                                    className={styles.input}
+                                    value={apellido}
+                                    onChange={e => setApellido(e.target.value)}
+                                    required
+                                    placeholder="Apellido"
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="email" className={styles.label}>Email</label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    className={styles.input}
+                                    value={userEmail}
+                                    readOnly
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="dni" className={styles.label}>DNI</label>
+                                <input
+                                    id="dni"
+                                    name="dni"
+                                    type="text"
+                                    className={styles.input}
+                                    value={dni}
+                                    readOnly
+                                />
+                            </div>
+                            {roles.includes("ROLE_CLIENTE") && (
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="telefono" className={styles.label}>Teléfono</label>
+                                    <input
+                                        id="telefono"
+                                        name="telefono"
+                                        type="text"
+                                        className={styles.input}
+                                        value={telefono}
+                                        onChange={handlePhoneChange}
+                                        placeholder="Ej: solo números"
+                                        required
+                                    />
+                                </div>
                             )}
-                            <InputGroup
-                                label="Nueva clave"
-                                id="clave"
-                                name="clave"
-                                type={showPassword ? "text" : "password"}
-                                value={editData.clave || ""}
-                                onChange={handlePasswordChange}
-                                placeholder="Deja vacío para no cambiar"
-                                autoComplete="new-password"
-                            >
-                                <span
-                                    className={styles.eyeIcon}
-                                    onClick={() => setShowPassword((v) => !v)}
-                                    tabIndex={0}
-                                    aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
-                                >
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
-                            </InputGroup>
-                            <InputGroup
-                                label="Confirmar nueva clave"
-                                id="confirmClave"
-                                name="confirmClave"
-                                type={showConfirmPassword ? "text" : "password"}
-                                value={confirmPassword}
-                                onChange={handleConfirmPasswordChange}
-                                placeholder="Repite la nueva clave"
-                                autoComplete="new-password"
-                            >
-                                <span
-                                    className={styles.eyeIcon}
-                                    onClick={() => setShowConfirmPassword((v) => !v)}
-                                    tabIndex={0}
-                                    aria-label={showConfirmPassword ? "Ocultar clave" : "Mostrar clave"}
-                                >
-                                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
-                            </InputGroup>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="clave" className={styles.label}>Nueva clave</label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        id="clave"
+                                        name="clave"
+                                        type={showPassword ? "text" : "password"}
+                                        className={styles.input}
+                                        value={clave}
+                                        onChange={e => setClave(e.target.value)}
+                                        placeholder="Deja vacío para no cambiar"
+                                        autoComplete="new-password"
+                                    />
+                                    <span
+                                        className={styles.eyeIcon}
+                                        onClick={() => setShowPassword(v => !v)}
+                                        tabIndex={0}
+                                        aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
+                                    >
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="confirmClave" className={styles.label}>Confirmar nueva clave</label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        id="confirmClave"
+                                        name="confirmClave"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        className={styles.input}
+                                        value={confirmClave}
+                                        onChange={e => setConfirmClave(e.target.value)}
+                                        placeholder="Repite la nueva clave"
+                                        autoComplete="new-password"
+                                    />
+                                    <span
+                                        className={styles.eyeIcon}
+                                        onClick={() => setShowConfirmPassword(v => !v)}
+                                        tabIndex={0}
+                                        aria-label={showConfirmPassword ? "Ocultar clave" : "Mostrar clave"}
+                                    >
+                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
+                            </div>
                             {error && renderFeedback(error, "error")}
                             <button
                                 type="submit"
@@ -298,8 +290,13 @@ function PerfilUsuario() {
                                     setEditing(false);
                                     setError("");
                                     setSuccess("");
-                                    setEditData(user);
-                                    setConfirmPassword("");
+                                    setNombre(user.nombre || "");
+                                    setApellido(user.apellido || "");
+                                    setUserEmail(user.email || "");
+                                    setDni(user.dni || "");
+                                    setTelefono(user.telefono || "");
+                                    setClave("");
+                                    setConfirmClave("");
                                 }}
                             >
                                 Cancelar
@@ -311,5 +308,3 @@ function PerfilUsuario() {
         </div>
     );
 }
-
-export default PerfilUsuario;

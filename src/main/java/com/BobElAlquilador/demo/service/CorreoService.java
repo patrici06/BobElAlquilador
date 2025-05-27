@@ -19,7 +19,6 @@ public class CorreoService {
         message.setText(cuerpo);
         mailSender.send(message);
     }
-
     public void enviarCancelacion(String receptor, Alquiler alq) {
         SimpleMailMessage message = new SimpleMailMessage();
         String nomMaq = alq.getMaquina().getNombre();

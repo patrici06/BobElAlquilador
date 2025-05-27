@@ -6,6 +6,11 @@ const API_BASE = "http://localhost:8080";
 export function login(email, clave) {
     return axios.post(`${API_BASE}/auth/login`, { email, clave });
 }
+// Servicio de 2FA
+export function verify2fa(email, code) {
+    // Asume endpoint POST /api/2fa/verify
+    return axios.post("/auth/2fa/verify", { email, code });
+}
 
 // Servicio subir maquina
 export function subirMaquina(maquinaObj) {
