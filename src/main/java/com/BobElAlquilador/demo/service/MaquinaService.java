@@ -38,19 +38,14 @@ public class MaquinaService {
                 .toList();
     }
 
-    public Maquina subir(MaquinaRequest req) {
-        Maquina nueva = new Maquina(
-                req.getNombreMaquina(),
-                req.getUbicacion(),
-                req.getFechaIngreso(),
-                req.getFotoUrl(),
-                req.getDescripcion(),
-                req.getTipo(),
-                req.getPrecioDia()
-        );
+    public Maquina subir(String nombreMaquina,String ubicacion,
+                         LocalDate fechaIngreso,String fotoUrl,
+                         String descripcion,String tipo, Double precioDia
+                         ) {
+        Maquina nueva = new Maquina(nombreMaquina, ubicacion, fechaIngreso, fotoUrl, descripcion, tipo, precioDia);
         nueva.setEstadoMaquina(EstadoMaquina.Disponible);
-        if (this.getMaquinaPorNombre(req.getNombreMaquina()) != null) {
-            throw new RuntimeException("La maquina '" + req.getNombreMaquina() + "' ya se encuentra registrada");
+        if (this.getMaquinaPorNombre(nombreMaquina) != null) {
+            throw new RuntimeException("La maquina '" + nombreMaquina + "' ya se encuentra registrada");
         }
         return maquinaRepository.save(nueva);
     }
