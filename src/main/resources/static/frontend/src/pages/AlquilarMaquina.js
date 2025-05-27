@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
+import {jwtDecode} from "jwt-decode";
 
 function AlquilarMaquina() {
     const [machines, setMachines] = useState([]);
@@ -12,6 +13,18 @@ function AlquilarMaquina() {
     const [error, setError] = useState('');
     const [diasOcupados, setDiasOcupados] = useState([]);
     const clienteDni = localStorage.getItem('dni');
+    const token = localStorage.getItem("token");
+
+    // Extraer el email del JWT si existe
+    let email = "";
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            email = decoded.email || decoded.sub || "";
+        } catch (e) {
+            email = "";
+        }
+    }
 
     // 1) Cargo la lista de máquinas
     useEffect(() => {
@@ -69,13 +82,13 @@ function AlquilarMaquina() {
             setError('Por favor selecciona ambas fechas.');
             return;
         }
-        const url = new URL('/api/alquileres/reservar', window.location.origin);
-        url.searchParams.append('clienteDni', clienteDni);
+        const url = new URL('http://localhost:8080/api/alquileres/reservar');
+        url.searchParams.append('email', email);
         url.searchParams.append('maquina', selectedMachine.nombre);
         url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
         url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
 
-        fetch(url, { method: 'POST' })
+        fetch(url, { method: 'POST', credentials: 'include' })
             .then(res => {
                 if (!res.ok) throw new Error('Error en la reserva');
                 return res.json();
