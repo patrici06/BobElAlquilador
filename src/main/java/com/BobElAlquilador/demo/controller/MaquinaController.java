@@ -36,12 +36,12 @@ public class MaquinaController {
             maquinaRequest.getFoto().transferTo(path);
             String fileDownloadUri = "/images/" + filename; // esto depende de tu configuración de static resource
             Maquina nueva = maquinaService.subir(maquinaRequest.getNombreMaquina(),
-                                                 maquinaRequest.getUbicacion(),
-                                                 maquinaRequest.getFechaIngreso(),
-                                                 fileDownloadUri,
-                                                 maquinaRequest.getDescripcion(),
-                                                 maquinaRequest.getTipo(),
-                                                 maquinaRequest.getPrecioDia());
+                    maquinaRequest.getUbicacion(),
+                    maquinaRequest.getFechaIngreso(),
+                    fileDownloadUri,
+                    maquinaRequest.getDescripcion(),
+                    maquinaRequest.getTipo(),
+                    maquinaRequest.getPrecioDia());
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
@@ -61,7 +61,7 @@ public class MaquinaController {
 
     // Este metodo usa el nombre de la maq, pero es completamente arbitrario, cambiar a conveniencia
     // siempre teniendo en cuenta las repercusiones dentro de maquinaService
-    @DeleteMapping("/reservar")
+    @DeleteMapping("/alquilar/{nombre}")
     public ResponseEntity<?> eliminarMaquina(@PathVariable String nombre) {
         try {
             maquinaService.deleteMaquina(nombre);

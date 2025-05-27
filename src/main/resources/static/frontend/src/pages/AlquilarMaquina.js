@@ -6,6 +6,7 @@ import {jwtDecode} from "jwt-decode";
 
 function AlquilarMaquina() {
     const [machines, setMachines] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedMachine, setSelectedMachine] = useState(null);
     const [view, setView] = useState('list');
     const [inicio, setInicio] = useState(null);
@@ -77,33 +78,63 @@ function AlquilarMaquina() {
             : undefined;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!inicio || !fin) {
             setError('Por favor selecciona ambas fechas.');
             return;
         }
-        const url = new URL('http://localhost:8080/api/alquileres/reservar');
-        url.searchParams.append('email', email);
-        url.searchParams.append('maquina', selectedMachine.nombre);
-        url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
-        url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
+        try {
+            const url = new URL('http://localhost:8080/api/alquileres/reservar');
+            url.searchParams.append('email', email);
+            url.searchParams.append('maquina', selectedMachine.nombre);
+            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
+            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
 
-        fetch(url, { method: 'POST', credentials: 'include' })
-            .then(res => {
-                if (!res.ok) throw new Error('Error en la reserva');
-                return res.json();
-            })
-            .then(() => setView('processing'))
-            .catch(err => setError(err.message));
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                const errorJson = await res.json();
+                throw new Error(errorJson.error || "Error en la reserva");
+            }
+
+            await res.json();
+            setView('processing');
+        }
+        catch(err) {
+            setError(err.message);
+        }
     };
+
+    machines.forEach(machine => {
+            console.log(`Checking: ${machine.nombre} - "${machine.descripcion}"`);
+            console.log('Match?', (machine.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()));
+        });
 
     return (
         <div className="container">
             {view === 'list' && (
                 <>
                     <h1>Máquinas Disponibles</h1>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
                     <div className="cards-container">
-                        {machines.map(machine => (
+                        {machines
+                            .filter(machine => {
+                                   const nombre = (machine.nombre || '').toLowerCase();
+                                   const descripcion = (machine.descripcion || '').toLowerCase();
+                                   const term = searchTerm.toLowerCase();
+                                   return nombre.includes(term) || descripcion.includes(term);
+                                 })
+                            //machine.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .map(machine => (
                             <div className="card" key={machine.nombre}>
                                 <img
                                     src={machine.fotoUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'}
@@ -127,7 +158,11 @@ function AlquilarMaquina() {
             {view === 'reserve' && selectedMachine && (
                 <div className="reserve-section">
                     <h1>Reservar: {selectedMachine.nombre}</h1>
-                    {error && <p className="error">{error}</p>}
+                    {error && (
+                        <div className="error-banner">
+                            <strong>¡Ups!</strong> {error}
+                        </div>
+                    )}
 
                     <div className="reserve-content">
                         <div className="calendar-container">

@@ -41,7 +41,7 @@ public class MaquinaService {
     public Maquina subir(String nombreMaquina,String ubicacion,
                          LocalDate fechaIngreso,String fotoUrl,
                          String descripcion,String tipo, Double precioDia
-                         ) {
+    ) {
         Maquina nueva = new Maquina(nombreMaquina, ubicacion, fechaIngreso, fotoUrl, descripcion, tipo, precioDia);
         nueva.setEstadoMaquina(EstadoMaquina.Disponible);
         if (this.getMaquinaPorNombre(nombreMaquina) != null) {

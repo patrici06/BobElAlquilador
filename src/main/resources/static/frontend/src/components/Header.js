@@ -133,6 +133,16 @@ function Header() {
                                 >
                                     Subir Maquina
                                 </button>
+                                <button
+                                    onClick={() => navigate("/alquilar")}
+                                    style={hoveredBtn === "Ver Maquinas"
+                                        ? {...baseBtn, ...hoverBtn}
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("Ver Maquinas")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Ver Maquinas
+                                </button>
                             </>
                         )}
                         {rawRoles.includes("ROLE_CLIENTE") && (
