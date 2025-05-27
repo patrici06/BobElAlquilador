@@ -90,7 +90,7 @@ function Header() {
                         <button
                             onClick={() => navigate("/login")}
                             style={hoveredBtn === "login"
-                                ? { ...baseBtn, ...hoverBtn }
+                                ? {...baseBtn, ...hoverBtn}
                                 : baseBtn}
                             onMouseEnter={() => setHoveredBtn("login")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -100,7 +100,7 @@ function Header() {
                         <button
                             onClick={() => navigate("/register")}
                             style={hoveredBtn === "register"
-                                ? { ...baseBtn, ...hoverBtn }
+                                ? {...baseBtn, ...hoverBtn}
                                 : baseBtn}
                             onMouseEnter={() => setHoveredBtn("register")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -116,7 +116,7 @@ function Header() {
                                 <button
                                     onClick={() => navigate("/register/empleado")}
                                     style={hoveredBtn === "registerEmpleado"
-                                        ? { ...baseBtn, ...hoverBtn }
+                                        ? {...baseBtn, ...hoverBtn}
                                         : baseBtn}
                                     onMouseEnter={() => setHoveredBtn("registerEmpleado")}
                                     onMouseLeave={() => setHoveredBtn("")}
@@ -126,7 +126,7 @@ function Header() {
                                 <button
                                     onClick={() => navigate("/propietario/subirMaquina")}
                                     style={hoveredBtn === "/propietario/subirMaquina"
-                                        ? { ...baseBtn, ...hoverBtn }
+                                        ? {...baseBtn, ...hoverBtn}
                                         : baseBtn}
                                     onMouseEnter={() => setHoveredBtn("/propietario/subirMaquina")}
                                     onMouseLeave={() => setHoveredBtn("")}
@@ -134,6 +134,18 @@ function Header() {
                                     Subir Maquina
                                 </button>
                             </>
+                        )}
+                        {rawRoles.includes("ROLE_CLIENTE") && (
+                                <button
+                                    onClick={() => navigate("/alquilar")}
+                                    style={hoveredBtn === "alquilar"
+                                        ? {...baseBtn, ...hoverBtn}
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("alquilar")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Alquilar Maquina
+                                </button>
                         )}
                         {/* Aquí puedes agregar funcionalidades propias de empleado si lo deseas */}
                         <button
@@ -143,8 +155,8 @@ function Header() {
                                 navigate("/");
                             }}
                             style={hoveredBtn === "logout"
-                                ? { ...baseBtn, ...hoverBtn, marginRight: 0 }
-                                : { ...baseBtn, marginRight: 0 }}
+                                ? {...baseBtn, ...hoverBtn, marginRight: 0}
+                                : {...baseBtn, marginRight: 0}}
                             onMouseEnter={() => setHoveredBtn("logout")}
                             onMouseLeave={() => setHoveredBtn("")}
                         >

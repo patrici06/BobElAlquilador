@@ -35,7 +35,8 @@ public class PersonaService {
 
     public Persona findByDniCliente(String dni) {
         Persona p = pRepo.findByDni(dni).orElse(null);
-        if (p != null && p.getRol().stream().anyMatch(r -> r.equals("ROLE_CLIENTE"))) {
+        if (p != null && p.getRol().stream()
+                                    .anyMatch(r -> "ROLE_CLIENTE".equals(r.getNombre()))) {
             return p;
         }
         return null;

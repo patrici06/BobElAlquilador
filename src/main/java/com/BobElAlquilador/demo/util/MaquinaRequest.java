@@ -1,6 +1,7 @@
 package com.BobElAlquilador.demo.util;
 
 import com.BobElAlquilador.demo.model.EstadoMaquina;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -9,7 +10,7 @@ public class MaquinaRequest {
     private String nombreMaquina;
     private String ubicacion;
     private LocalDate fechaIngreso;
-    private String fotoUrl;
+    private MultipartFile foto;
     private String descripcion;
     private String tipo;
     private EstadoMaquina estadoMaquina;
@@ -43,12 +44,12 @@ public class MaquinaRequest {
     }
 
     // Getter y Setter para fotoUrl
-    public String getFotoUrl() {
-        return fotoUrl;
+    public MultipartFile getFoto() {
+        return foto;
     }
 
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
+    public void setFoto(MultipartFile foto) {
+        this.foto = foto;
     }
 
     // Getter y Setter para descripcion

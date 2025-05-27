@@ -4,10 +4,16 @@ import com.BobElAlquilador.demo.model.Maquina;
 import com.BobElAlquilador.demo.service.MaquinaService;
 import com.BobElAlquilador.demo.util.MaquinaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +23,25 @@ import java.util.Map;
 public class MaquinaController {
     @Autowired
     private MaquinaService maquinaService;
+    @Value("${upload.dir}")
+    private String uploadDir;
 
     @PostMapping("/propietario/subirMaquina")
-    public ResponseEntity<?> subirMaquina(@RequestBody MaquinaRequest maquinaRequest) {
+    public ResponseEntity<?> subirMaquina(@ModelAttribute MaquinaRequest maquinaRequest) {
         try {
             // Ahora el método subir recibe el objeto MaquinaRequest completo (camelCase)
-            Maquina nueva = maquinaService.subir(maquinaRequest);
+            String filename  = System.currentTimeMillis() + "_" + StringUtils.cleanPath(maquinaRequest.getFoto().getOriginalFilename());
+            Path path = Paths.get(uploadDir, filename);
+            Files.createDirectories(path.getParent());
+            maquinaRequest.getFoto().transferTo(path);
+            String fileDownloadUri = "/images/" + filename; // esto depende de tu configuración de static resource
+            Maquina nueva = maquinaService.subir(maquinaRequest.getNombreMaquina(),
+                                                 maquinaRequest.getUbicacion(),
+                                                 maquinaRequest.getFechaIngreso(),
+                                                 fileDownloadUri,
+                                                 maquinaRequest.getDescripcion(),
+                                                 maquinaRequest.getTipo(),
+                                                 maquinaRequest.getPrecioDia());
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();

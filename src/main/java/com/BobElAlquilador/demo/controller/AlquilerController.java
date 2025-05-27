@@ -22,12 +22,12 @@ public class AlquilerController {
 
     @PostMapping("/reservar")
     public ResponseEntity<?> reservar(
-            @RequestParam String clienteDni,
+            @RequestParam String email,
             @RequestParam String maquina,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         try {
-            Alquiler nuevo = service.reservar(clienteDni, maquina, fechaInicio, fechaFin);
+            Alquiler nuevo = service.reservar(email, maquina, fechaInicio, fechaFin);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));

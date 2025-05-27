@@ -34,8 +34,7 @@ function Login() {
                 localStorage.setItem("token", response.data.token);
                 setSuccess("Inicio de sesión exitoso");
                 setTimeout(() => navigate("/"), 1500);
-            }
-            // Si status es 206, requiere 2FA (esto sucede en axios, fetch y la mayoría de libs modernas)
+            }// Si status es 206, requiere 2FA (esto sucede en axios, fetch y la mayoría de libs modernas)
             else if (response.status === 206) {
                 setStep("2fa");
                 setPendingEmail(email);
