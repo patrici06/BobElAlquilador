@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+
+// === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
+function getMachineImageSrc(fotoUrl) {
+    if (!fotoUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+    if (fotoUrl.startsWith('http') || fotoUrl.startsWith('data:')) return fotoUrl;
+    // Si es relativa, prepend el host del backend
+    return `http://localhost:8080${fotoUrl.startsWith('/') ? '' : '/'}${fotoUrl}`;
+}
 
 function AlquilarMaquina() {
     const [machines, setMachines] = useState([]);
@@ -109,9 +117,9 @@ function AlquilarMaquina() {
     };
 
     machines.forEach(machine => {
-            console.log(`Checking: ${machine.nombre} - "${machine.descripcion}"`);
-            console.log('Match?', (machine.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()));
-        });
+        console.log(`Checking: ${machine.nombre} - "${machine.descripcion}"`);
+        console.log('Match?', (machine.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()));
+    });
 
     return (
         <div className="container">
@@ -128,29 +136,28 @@ function AlquilarMaquina() {
                     <div className="cards-container">
                         {machines
                             .filter(machine => {
-                                   const nombre = (machine.nombre || '').toLowerCase();
-                                   const descripcion = (machine.descripcion || '').toLowerCase();
-                                   const term = searchTerm.toLowerCase();
-                                   return nombre.includes(term) || descripcion.includes(term);
-                                 })
-                            //machine.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+                                const nombre = (machine.nombre || '').toLowerCase();
+                                const descripcion = (machine.descripcion || '').toLowerCase();
+                                const term = searchTerm.toLowerCase();
+                                return nombre.includes(term) || descripcion.includes(term);
+                            })
                             .map(machine => (
-                            <div className="card" key={machine.nombre}>
-                                <img
-                                    src={machine.fotoUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'}
-                                    alt={machine.nombre}
-                                    loading="lazy"
-                                />
-                                <div className="card-title">{machine.nombre}</div>
-                                <div className="card-type">{machine.tipo}</div>
-                                <button
-                                    className="button-primary"
-                                    onClick={() => handleReserveClick(machine)}
-                                >
-                                    Alquilar
-                                </button>
-                            </div>
-                        ))}
+                                <div className="card" key={machine.nombre}>
+                                    <img
+                                        src={getMachineImageSrc(machine.fotoUrl)}
+                                        alt={machine.nombre}
+                                        loading="lazy"
+                                    />
+                                    <div className="card-title">{machine.nombre}</div>
+                                    <div className="card-type">{machine.tipo}</div>
+                                    <button
+                                        className="button-primary"
+                                        onClick={() => handleReserveClick(machine)}
+                                    >
+                                        Alquilar
+                                    </button>
+                                </div>
+                            ))}
                     </div>
                 </>
             )}
@@ -211,7 +218,7 @@ function AlquilarMaquina() {
                         <div className="machine-info">
                             <h2>Detalles de la Máquina</h2>
                             <img
-                                src={selectedMachine.fotoUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'}
+                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
                                 alt={selectedMachine.nombre}
                                 loading="lazy"
                                 className="machine-photo"
