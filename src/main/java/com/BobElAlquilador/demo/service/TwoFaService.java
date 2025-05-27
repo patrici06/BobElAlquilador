@@ -14,10 +14,10 @@ public class TwoFaService {
     private final Map<String, String> codeCache =  new ConcurrentHashMap<>();
 
     public String generarYEnviarCodigo(String email) {
-        String code = String.format("½06s", new Random().nextInt(999999));
-        codeCache.put(email, code);
-        correoService.enviarMail(email, "Clave 2FA", code);
-        return code;
+    String code = String.format("%06d", new Random().nextInt(1_000_000));
+    codeCache.put(email, code);
+    correoService.enviarMail(email, "Clave 2FA", code);
+    return code;
     }
     public boolean validateCode(String email, String code) {
         return code.equals(codeCache.getOrDefault(email, "")); // Y borrar después de usar

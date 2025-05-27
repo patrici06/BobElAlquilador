@@ -21,7 +21,8 @@
 	</properties>
 
 	<dependencies>
-		<!-- Sistema Correo Electronico -->
+
+		<!-- Sistema Correo Electronico-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
