@@ -6,6 +6,7 @@ import {jwtDecode} from "jwt-decode";
 
 function AlquilarMaquina() {
     const [machines, setMachines] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedMachine, setSelectedMachine] = useState(null);
     const [view, setView] = useState('list');
     const [inicio, setInicio] = useState(null);
@@ -107,13 +108,33 @@ function AlquilarMaquina() {
         }
     };
 
+    machines.forEach(machine => {
+            console.log(`Checking: ${machine.nombre} - "${machine.descripcion}"`);
+            console.log('Match?', (machine.descripcion || '').toLowerCase().includes(searchTerm.toLowerCase()));
+        });
+
     return (
         <div className="container">
             {view === 'list' && (
                 <>
                     <h1>Máquinas Disponibles</h1>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
                     <div className="cards-container">
-                        {machines.map(machine => (
+                        {machines
+                            .filter(machine => {
+                                   const nombre = (machine.nombre || '').toLowerCase();
+                                   const descripcion = (machine.descripcion || '').toLowerCase();
+                                   const term = searchTerm.toLowerCase();
+                                   return nombre.includes(term) || descripcion.includes(term);
+                                 })
+                            //machine.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .map(machine => (
                             <div className="card" key={machine.nombre}>
                                 <img
                                     src={machine.fotoUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'}
