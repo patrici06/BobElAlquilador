@@ -77,24 +77,34 @@ function AlquilarMaquina() {
             : undefined;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!inicio || !fin) {
             setError('Por favor selecciona ambas fechas.');
             return;
         }
-        const url = new URL('http://localhost:8080/api/alquileres/reservar');
-        url.searchParams.append('email', email);
-        url.searchParams.append('maquina', selectedMachine.nombre);
-        url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
-        url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
+        try {
+            const url = new URL('http://localhost:8080/api/alquileres/reservar');
+            url.searchParams.append('email', email);
+            url.searchParams.append('maquina', selectedMachine.nombre);
+            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
+            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
 
-        fetch(url, { method: 'POST', credentials: 'include' })
-            .then(res => {
-                if (!res.ok) throw new Error('Error en la reserva');
-                return res.json();
-            })
-            .then(() => setView('processing'))
-            .catch(err => setError(err.message));
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                const errorJson = await res.json();
+                throw new Error(errorJson.error || "Error en la reserva");
+            }
+
+            await res.json();
+            setView('processing');
+        }
+        catch(err) {
+            setError(err.message);
+        }
     };
 
     return (
@@ -127,7 +137,11 @@ function AlquilarMaquina() {
             {view === 'reserve' && selectedMachine && (
                 <div className="reserve-section">
                     <h1>Reservar: {selectedMachine.nombre}</h1>
-                    {error && <p className="error">{error}</p>}
+                    {error && (
+                        <div className="error-banner">
+                            <strong>¡Ups!</strong> {error}
+                        </div>
+                    )}
 
                     <div className="reserve-content">
                         <div className="calendar-container">
