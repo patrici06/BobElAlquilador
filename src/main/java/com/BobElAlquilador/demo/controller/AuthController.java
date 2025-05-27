@@ -49,14 +49,14 @@ public class AuthController {
                             loginRequest.getEmail(), loginRequest.getClave())
             );
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
-            boolean esPropietario = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .anyMatch(auth -> auth.equals("ROLE_PROPIETARIO"));
+            //boolean esPropietario = userDetails.getAuthorities().stream()
+            //        .map(GrantedAuthority::getAuthority)
+            //        .anyMatch(auth -> auth.equals("ROLE_PROPIETARIO"));
 
-            if (esPropietario) {
-                String code = twoFaService.generarYEnviarCodigo(loginRequest.getEmail());
-                return ResponseEntity.status(206).body("Se envió un código a su email");
-            }
+            //if (esPropietario) {
+            //    String code = twoFaService.generarYEnviarCodigo(loginRequest.getEmail());
+            //    return ResponseEntity.status(206).body("Se envió un código a su email");
+            //}
             String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
             Map<String, String> response = new HashMap<>();
             response.put("token", jwt);
