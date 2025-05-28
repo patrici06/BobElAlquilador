@@ -49,7 +49,7 @@ export default function Register() {
                 fechaNacimiento: birthDate,
             });
             setSuccess(response.data.mensaje);
-            localStorage.setItem("token", response.data.token);
+            sessionStorage.setItem("token", response.data.token);
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
             setError(err?.response?.data?.mensaje || "Error al registrarse");

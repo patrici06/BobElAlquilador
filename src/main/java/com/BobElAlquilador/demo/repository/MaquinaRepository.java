@@ -8,7 +8,9 @@ import java.util.Optional;
 @Repository
 public interface MaquinaRepository extends JpaRepository<Maquina, String> {
     //Buscar Maquinas por Tipo
-    public List<Maquina> findByTipo (String tipo);
+    List<Maquina> findByTipos_Nombre(String nombreTipo);
+
     //Buscar por ubicación
-    public List<Maquina> findByUbicacion (String ubicacion);
+    List<Maquina> findByUbicacion(String ubicacion);
+
 }

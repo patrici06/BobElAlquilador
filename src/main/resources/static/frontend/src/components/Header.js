@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 
 function Header() {
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const rawRoles = getRolesFromJwt(token);
 
     // Extraer el email del JWT si existe
@@ -160,8 +160,7 @@ function Header() {
                         {/* Aquí puedes agregar funcionalidades propias de empleado si lo deseas */}
                         <button
                             onClick={() => {
-                                localStorage.removeItem("token");
-                                localStorage.removeItem("rol");
+                                sessionStorage.removeItem("token");
                                 navigate("/");
                             }}
                             style={hoveredBtn === "logout"
