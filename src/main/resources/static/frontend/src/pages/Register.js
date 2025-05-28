@@ -49,7 +49,7 @@ export default function Register() {
                 fechaNacimiento: birthDate,
             });
             setSuccess(response.data.mensaje);
-            localStorage.setItem("token", response.data.token);
+            sessionStorage.setItem("token", response.data.token);
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
             setError(err?.response?.data?.mensaje || "Error al registrarse");
@@ -188,6 +188,17 @@ export default function Register() {
                     {error && <div className="errorMsg" role="alert" aria-live="assertive">{error}</div>}
                     {success && <div className="successMsg" role="alert" aria-live="assertive">{success}</div>}
                     <button type="submit" className="button">Registrarse</button>
+                    <div className="login-link">
+                        ¿Ya tenes una cuenta?{" "}
+                        <span
+                            className="login-link-anchor"
+                            tabIndex={0}
+                            onClick={() => navigate("/login")}
+                            role="button"
+                        >
+                            Iniciar sesión
+                        </span>
+                    </div>
                 </form>
             </main>
         </div>

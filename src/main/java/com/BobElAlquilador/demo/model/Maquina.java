@@ -1,41 +1,55 @@
 package com.BobElAlquilador.demo.model;
 
-import com.BobElAlquilador.demo.service.AlquilerService;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 //// Maquina = {Nombre(pk), ubicación(fk)?, FechaIngreso?, URL/PATH+Foto, Descripción,
 /// nombreEstado(fk), precioxDía, políticaCancelar}
+//Actualizar que requiere Marca(ManytoOne) y Tipo (ManytoMany)
 @Entity
 @Table (name = "maquina")
 public class Maquina extends DbEstado{
     @Id
-    private String nombre_maquina;
+    @Column (name  = "nombre_maquina")
+    private String nombreMaquina;
 
     private String ubicacion;
-    private LocalDate fecha_ingreso;
+    private LocalDate fechaIngreso;
     @Lob
     private String fotoUrl;
     @Lob
     private String descripcion;
-    private String tipo;
     @Enumerated(EnumType.STRING)
     private EstadoMaquina estadoMaquina;
     private double precio_dia;
+
+    @ManyToOne
+    @JoinColumn()
+    private Marca marca;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name= "maquina_tipos",
+                joinColumns = @JoinColumn(name="nombre_maquina",referencedColumnName="nombre_maquina"),
+                inverseJoinColumns = @JoinColumn(name="tipo_id", referencedColumnName = "id")
+    )
+    private Set<Tipo> tipos;
+
     public Maquina() {
         super();
     }
 
-    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, String tipo, double precio) {
-        this.nombre_maquina = nombre;
+    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, Set<Tipo> tipo, double precio, Marca marca) {
+        this.nombreMaquina = nombre;
         this.ubicacion = ubicacion;
-        this.fecha_ingreso = fecha;
+        this.fechaIngreso = fecha;
         this.fotoUrl = fotoUrl;
         this.descripcion = descripcion;
-        this.tipo = tipo;
+        this.tipos = tipo;
         this.precio_dia = precio;
         this.estadoMaquina = EstadoMaquina.Disponible;
+        this.marca = marca;
     }
 
     public EstadoMaquina getEstadoMaquina (){
@@ -53,18 +67,16 @@ public class Maquina extends DbEstado{
 
     public void setEstadoMaquinaDescompuesta(){this.estadoMaquina = EstadoMaquina.Descompuesta;}
 
-    public String getTipo(){ return tipo; }
+    public Set<Tipo> getTipo(){ return tipos; }
 
-    public void setTipo(String tipo){
-        this.tipo = tipo;
-    }
+    public void setTipo(Tipo tipo){ this.tipos.add(tipo);}
 
     public String getNombre() {
-        return nombre_maquina;
+        return nombreMaquina;
     }
 
     public void setNombre(String nombre) {
-        this.nombre_maquina = nombre;
+        this.nombreMaquina = nombre;
     }
 
     public String getUbicacion() {
@@ -76,11 +88,11 @@ public class Maquina extends DbEstado{
     }
 
     public LocalDate getFechaIngreso() {
-        return fecha_ingreso;
+        return fechaIngreso;
     }
 
     public void setFechaIngreso(LocalDate fechaIngreso) {
-        this.fecha_ingreso = fechaIngreso;
+        this.fechaIngreso = fechaIngreso;
     }
 
     public String getFotoUrl() {

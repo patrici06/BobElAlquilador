@@ -1,9 +1,12 @@
 package com.BobElAlquilador.demo.util;
 
 import com.BobElAlquilador.demo.model.EstadoMaquina;
+import com.BobElAlquilador.demo.model.Marca;
+import com.BobElAlquilador.demo.model.Tipo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public class MaquinaRequest {
 
@@ -12,9 +15,26 @@ public class MaquinaRequest {
     private LocalDate fechaIngreso;
     private MultipartFile foto;
     private String descripcion;
-    private String tipo;
+    private Set<Integer> tiposIds;
+    private Integer marcaId;
     private EstadoMaquina estadoMaquina;
     private double precioDia;
+
+    public Set<Integer> getTiposIds() {
+        return tiposIds;
+    }
+
+    public void setTiposIds(Set<Integer> tiposIds) {
+        this.tiposIds = tiposIds;
+    }
+
+    public Integer getMarcaId() {
+        return marcaId;
+    }
+
+    public void setMarcaId(Integer marcaId) {
+        this.marcaId = marcaId;
+    }
 
     // Getter y Setter para nombreMaquina
     public String getNombreMaquina() {
@@ -59,15 +79,6 @@ public class MaquinaRequest {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    // Getter y Setter para tipo
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 
     // Getter y Setter para estadoMaquina

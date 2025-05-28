@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { subirMaquina } from "../services/authService";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
@@ -10,28 +10,56 @@ function SubirMaquina() {
     const [fechaIngreso, setFechaIngreso] = useState("");
     const [foto, setFoto] = useState(null);
     const [descripcion, setDescripcion] = useState("");
-    const [tipo, setTipo] = useState("");
+    const [tipos, setTipos] = useState([]); // Todos los tipos traídos de la API
+    const [tiposSeleccionados, setTiposSeleccionados] = useState([]); // IDs seleccionados
+    const [marcas, setMarcas] = useState([]); // Todas las marcas traídas de la API
+    const [marcaSeleccionada, setMarcaSeleccionada] = useState(""); // ID seleccionado
     const [precioDia, setPrecioDia] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token);
+
+    // Cargar marcas y tipos desde la API al montar el componente
+    useEffect(() => {
+        // Cambia la URL si tu backend es distinto
+        fetch("http://localhost:8080/api/tipos")
+            .then(res => res.json())
+            .then(data => setTipos(data))
+            .catch(() => setTipos([]));
+
+        fetch("http://localhost:8080/api/marcas")
+            .then(res => res.json())
+            .then(data => setMarcas(data))
+            .catch(() => setMarcas([]));
+    }, []);
 
     if (!roles.includes("ROLE_PROPIETARIO")) {
         return (
             <div className={styles.deniedContainer}>
                 <div className={styles.deniedBox}>
-                    <h2 className={styles.deniedTitle}>
-                        403: Permiso denegado
-                    </h2>
+                    <h2 className={styles.deniedTitle}>403: Permiso denegado</h2>
                     <p className={styles.deniedText}>No tienes permisos para acceder a esta página.</p>
                 </div>
             </div>
         );
     }
+
+    const handleTipoChange = (e) => {
+        const id = e.target.value;
+        setTiposSeleccionados(prev =>
+            prev.includes(id)
+                ? prev.filter(t => t !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleMarcaChange = (e) => {
+        setMarcaSeleccionada(e.target.value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -46,7 +74,13 @@ function SubirMaquina() {
             formData.append("fechaIngreso", fechaIngreso);
             if (foto) formData.append("foto", foto);
             formData.append("descripcion", descripcion);
-            formData.append("tipo", tipo);
+
+            // Marcas: solo una
+            formData.append("marcaId", marcaSeleccionada);
+
+            // Tipos: varios, enviar como lista de ids
+            tiposSeleccionados.forEach(id => formData.append("tiposIds", id));
+
             formData.append("precioDia", precioDia);
 
             await subirMaquina(formData);
@@ -56,7 +90,7 @@ function SubirMaquina() {
             if (err?.response?.status === 403) {
                 setError("No tienes permisos para registrar máquinas.");
             } else {
-                setError(err?.response?.data?.mensaje);
+                setError(err?.response?.data?.mensaje || "Error al registrar máquina");
             }
             setSubmitting(false);
         }
@@ -130,17 +164,51 @@ function SubirMaquina() {
                             placeholder="Descripción"
                         />
                     </div>
+
+                    {/* Selector de marca (radio) */}
                     <div className={styles.inputGroup}>
-                        <label htmlFor="tipo" className={styles.label}>Tipo de máquina</label>
-                        <input
-                            id="tipo"
-                            type="text"
-                            className={styles.input}
-                            value={tipo}
-                            onChange={e => setTipo(e.target.value)}
-                            placeholder="Tipo de máquina"
-                        />
+                        <label className={styles.label}>Marca</label>
+                        <div>
+                            {marcas.length === 0
+                                ? <span>Cargando marcas...</span>
+                                : marcas.map(marca => (
+                                    <label key={marca.id} style={{ marginRight: 15 }}>
+                                        <input
+                                            type="radio"
+                                            name="marca"
+                                            value={marca.id}
+                                            checked={marcaSeleccionada === String(marca.id)}
+                                            onChange={handleMarcaChange}
+                                            required
+                                        />
+                                        {marca.nombre}
+                                    </label>
+                                ))
+                            }
+                        </div>
                     </div>
+
+                    {/* Selector de tipos de máquina (checkboxes) */}
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>Tipos de máquina</label>
+                        <div>
+                            {tipos.length === 0
+                                ? <span>Cargando tipos...</span>
+                                : tipos.map(tipo => (
+                                    <label key={tipo.id} style={{ marginRight: 15 }}>
+                                        <input
+                                            type="checkbox"
+                                            value={tipo.id}
+                                            checked={tiposSeleccionados.includes(String(tipo.id))}
+                                            onChange={handleTipoChange}
+                                        />
+                                        {tipo.nombreTipo}
+                                    </label>
+                                ))
+                            }
+                        </div>
+                    </div>
+
                     <div className={styles.inputGroup}>
                         <label htmlFor="precioDia" className={styles.label}>Precio por día</label>
                         <input

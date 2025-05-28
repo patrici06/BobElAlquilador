@@ -4,7 +4,12 @@ import { registerEmpleado } from "../services/authService";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import styles from "./RegisterEmpleado.module.css";
 
-function RegisterEmpleado() {
+export default function RegisterEmpleado() {
+    // Usa sessionStorage o localStorage, según corresponda a tu app
+    const token = sessionStorage.getItem("token");
+    const roles = getRolesFromJwt(token);
+
+    // Estados controlados por input
     const [dni, setDni] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -12,13 +17,9 @@ function RegisterEmpleado() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
+
     const navigate = useNavigate();
 
-    // Obtener roles del token JWT (si el usuario cambia, se actualiza al refrescar la página)
-    const token = localStorage.getItem("token");
-    const roles = getRolesFromJwt(token); // Siempre será un array
-
-    // Solo permitir acceso a propietarios
     if (!roles.includes("ROLE_PROPIETARIO")) {
         return (
             <div className={styles.deniedContainer}>
@@ -55,35 +56,12 @@ function RegisterEmpleado() {
     };
 
     const renderFeedback = (msg, type) => (
-        <div className={type === "error" ? styles.errorMsg : styles.successMsg} role="alert" aria-live="assertive">
+        <div
+            className={type === "error" ? styles.errorMsg : styles.successMsg}
+            role="alert"
+            aria-live="assertive"
+        >
             {msg}
-        </div>
-    );
-
-    const InputGroup = ({
-                            label,
-                            id,
-                            type,
-                            value,
-                            onChange,
-                            placeholder,
-                            required = true,
-                            autoComplete,
-                        }) => (
-        <div className={styles.inputGroup}>
-            <label htmlFor={id} className={styles.label}>
-                {label}
-            </label>
-            <input
-                id={id}
-                type={type}
-                className={styles.input}
-                value={value}
-                onChange={onChange}
-                required={required}
-                placeholder={placeholder}
-                autoComplete={autoComplete}
-            />
         </div>
     );
 
@@ -92,39 +70,59 @@ function RegisterEmpleado() {
             <main className={styles.centeredMain}>
                 <form className={styles.form} onSubmit={handleSubmit} autoComplete="off">
                     <h1 className={styles.title}>Registrar Empleado</h1>
-                    <InputGroup
-                        label="DNI"
-                        id="dni"
-                        type="text"
-                        value={dni}
-                        onChange={e => setDni(e.target.value)}
-                        placeholder="Ingresa el DNI"
-                    />
-                    <InputGroup
-                        label="Nombre"
-                        id="firstName"
-                        type="text"
-                        value={firstName}
-                        onChange={e => setFirstName(e.target.value)}
-                        placeholder="Ingresa el nombre"
-                    />
-                    <InputGroup
-                        label="Apellido"
-                        id="lastName"
-                        type="text"
-                        value={lastName}
-                        onChange={e => setLastName(e.target.value)}
-                        placeholder="Ingresa el apellido"
-                    />
-                    <InputGroup
-                        label="Email"
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        placeholder="Ingresa el email"
-                        autoComplete="new-email"
-                    />
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="dni" className={styles.label}>DNI</label>
+                        <input
+                            id="dni"
+                            name="dni"
+                            type="text"
+                            className={styles.input}
+                            value={dni}
+                            onChange={e => setDni(e.target.value.replace(/\D/g, ""))}
+                            required
+                            placeholder="Ingresa el DNI"
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="firstName" className={styles.label}>Nombre</label>
+                        <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            className={styles.input}
+                            value={firstName}
+                            onChange={e => setFirstName(e.target.value)}
+                            required
+                            placeholder="Ingresa el nombre"
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="lastName" className={styles.label}>Apellido</label>
+                        <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            className={styles.input}
+                            value={lastName}
+                            onChange={e => setLastName(e.target.value)}
+                            required
+                            placeholder="Ingresa el apellido"
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="email" className={styles.label}>Email</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            className={styles.input}
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            required
+                            placeholder="Ingresa el email"
+                            autoComplete="new-email"
+                        />
+                    </div>
                     {error && renderFeedback(error, "error")}
                     {success && renderFeedback(success, "success")}
                     <button
@@ -139,5 +137,3 @@ function RegisterEmpleado() {
         </div>
     );
 }
-
-export default RegisterEmpleado;
