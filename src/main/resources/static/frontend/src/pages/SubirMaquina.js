@@ -20,7 +20,7 @@ function SubirMaquina() {
     const [submitting, setSubmitting] = useState(false);
 
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token);
 
     // Cargar marcas y tipos desde la API al montar el componente
