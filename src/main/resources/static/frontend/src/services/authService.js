@@ -9,12 +9,12 @@ export function login(email, clave) {
 // Servicio de 2FA
 export function verify2fa(email, code) {
     // Asume endpoint POST /api/2fa/verify
-    return axios.post("/auth/2fa/verify", { email, code });
+    return axios.post(`${API_BASE}/auth/2fa/verify`, { email, code });
 }
 
 // Servicio subir maquina
 export function subirMaquina(maquinaObj) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     return axios.post(
         `${API_BASE}/propietario/subirMaquina`,
         maquinaObj,
@@ -27,7 +27,7 @@ export function subirMaquina(maquinaObj) {
 }
 //Servicio para ver la info de perfil
 export function perfil({ email }) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     return axios.get(`${API_BASE}/perfil/${email}`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -36,7 +36,7 @@ export function perfil({ email }) {
 }
 //Servicio para actualizar la información
 export function actualizarPerfil(data) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     // data debe contener el campo email
     return axios.post(`${API_BASE}/perfil/${data.email}`, data, {
         headers: {
@@ -57,7 +57,7 @@ export function register({ dni, nombre, apellido, email, telefono, clave, fechaN
     });
 }
 export function registerEmpleado({dni, nombre, apellido, email}) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     return axios.post(
         `${API_BASE}/register/empleado`,
         { dni, nombre, apellido, email },

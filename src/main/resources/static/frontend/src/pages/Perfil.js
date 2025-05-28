@@ -107,14 +107,12 @@ export default function PerfilUsuario() {
         </div>
     );
 
+    // ¡SOLUCIÓN! Formatear fecha sin usar new Date para evitar problemas de zona horaria
     const formatFechaNacimiento = (fecha) => {
         if (!fecha) return "";
-        try {
-            const d = new Date(fecha);
-            return d.toLocaleDateString();
-        } catch {
-            return "";
-        }
+        // Espera formato "YYYY-MM-DD"
+        const [a, m, d] = fecha.split("-");
+        return `${d}/${m}/${a}`;
     };
 
     if (loading) return <div className={styles.loading}>Cargando datos...</div>;

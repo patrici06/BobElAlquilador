@@ -1,0 +1,171 @@
+.header {
+    padding: 1rem;
+    background: #282c34;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.roles {
+    background: #ac1010;
+    color: #fff;
+    border-radius: 5px;
+    padding: 0.3rem 0.8rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 150px;
+    display: inline-block;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.button {
+    padding: 0.6rem 1.4rem;
+    background: linear-gradient(90deg, #ac1010 60%, #c93030 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.03rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    box-shadow: 0 2px 8px 0 rgba(172,16,16,0.07);
+    transition: background 0.18s, color 0.18s, transform 0.12s, box-shadow 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 170px;
+    max-width: 170px;
+    min-height: 44px;
+    outline: none;
+    user-select: none;
+    text-align: center;
+    margin: 0;
+}
+.button + .button {
+    margin-left: 0.5rem;
+}
+.button[data-hovered="true"],
+.button:hover:not(:disabled) {
+    background: linear-gradient(90deg, #fff 60%, #f0adad 100%);
+    color: #ac1010;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 16px 0 rgba(172,16,16,0.10);
+    border: 1.4px solid #ac1010;
+}
+.button:active {
+    background: linear-gradient(90deg, #c93030 0%, #ac1010 100%);
+    color: #fff;
+    transform: scale(0.99);
+}
+.button:disabled {
+    background: #bdbdbd;
+    color: #fff;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    z-index: 20;
+}
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+    transition: 0.2s;
+}
+
+/* Mobile styles */
+@media (max-width: 700px) {
+    .nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #282c34;
+        flex-direction: column;
+        align-items: stretch;
+        /* Ajuste: El ancho del nav se calcula según el ancho de los botones + margen */
+        width: calc(170px + 2rem);
+        max-width: 90vw;
+        padding: 1.2rem 1rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+        gap: 0.8rem;
+        transform: translateY(-30px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s, transform 0.18s;
+        z-index: 15;
+        margin-right: 0.8rem; /* pequeño margen al lateral */
+        border-radius: 10px 0 10px 10px;
+    }
+    .navOpen {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .hamburger {
+        display: flex;
+    }
+    .left {
+        min-width: 0;
+    }
+    .roles {
+        max-width: 80px;
+        font-size: 0.87rem;
+        padding: 0.25rem 0.5rem;
+        margin-left: 0.2rem;
+    }
+    .button {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        margin: 0 0 0.4rem 0;
+        border-radius: 8px;
+        justify-content: center;
+    }
+    .button + .button {
+        margin-left: 0;
+        margin-top: 0.2rem;
+    }
+}
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 13;
+    background: rgba(0,0,0,0.18);
+}

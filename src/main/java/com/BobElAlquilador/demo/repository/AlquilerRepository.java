@@ -18,7 +18,7 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> 
 
     @Query("""
     SELECT a FROM Alquiler a
-    WHERE a.maquina.nombre_maquina = :maquinaName
+    WHERE a.maquina.nombreMaquina = :maquinaName
       AND a.estado IN :estados
     """)
     List<Alquiler> findByMaquinaNombreAndEstadoIn(
@@ -34,7 +34,7 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> 
     // Metodo necesario para la HU Alquilar Maquina
     @Query("""
       SELECT a FROM Alquiler a
-      WHERE a.maquina.nombre_maquina = :maquinaName
+      WHERE a.maquina.nombreMaquina = :maquinaName
         AND a.estado = com.BobElAlquilador.demo.model.EstadoAlquiler.Pendiente
         AND a.alquilerId.fechaInicio < :fin
         AND a.alquilerId.fechaFin > :inicio

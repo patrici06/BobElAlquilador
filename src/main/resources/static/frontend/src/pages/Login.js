@@ -3,11 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { login, verify2fa } from "../services/authService";
 import styles from "./Login.module.css";
 
-/**
- * Este componente es compatible con 2FA vía email.
- * - Si el backend responde 206 (o similar), solicita el código 2FA.
- * - Si no, continúa el flujo normal.
- */
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -15,11 +10,12 @@ function Login() {
     const [step, setStep] = useState("login"); // "login" | "2fa"
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const [pendingEmail, setPendingEmail] = useState(""); // Guarda el email cuando está esperando 2FA
+    const [pendingEmail, setPendingEmail] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (token) navigate("/");
     }, [navigate]);
 
@@ -27,26 +23,28 @@ function Login() {
         e.preventDefault();
         setError("");
         setSuccess("");
+        setLoading(true); // desactiva el botón
+
         try {
             const response = await login(email, password);
-            // Si login exitoso y no requiere 2FA
             if (response.data.token) {
-                localStorage.setItem("token", response.data.token);
+                sessionStorage.setItem("token", response.data.token);
                 setSuccess("Inicio de sesión exitoso");
+                // NO reactivamos el botón, redirigimos tras un delay
                 setTimeout(() => navigate("/"), 1500);
-            } else {
-                setError("Respuesta inesperada del servidor.");
-            }
-        } catch (err) {
-            // Si status 206, requiere 2FA
-            if (err.response?.status === 206) {
+            } else if (response.status === 206) {
                 setStep("2fa");
                 setPendingEmail(email);
                 setSuccess("Código enviado a tu correo. Por favor ingresa el código recibido.");
                 setError("");
+                setLoading(false); // Reactivamos solo para 2fa
             } else {
-                setError(err.response?.data?.mensaje || "Error al iniciar sesión.");
+                setError("Respuesta inesperada del servidor.");
+                setLoading(false);
             }
+        } catch (err) {
+            setError(err.response?.data?.mensaje || "Error al iniciar sesión.");
+            setLoading(false); // Reactivamos solo ante error
         }
     };
 
@@ -54,15 +52,22 @@ function Login() {
         e.preventDefault();
         setError("");
         setSuccess("");
+        setLoading(true);
+
         try {
             const response = await verify2fa(pendingEmail, code);
             if (response.data.token) {
-                localStorage.setItem("token", response.data.token);
+                sessionStorage.setItem("token", response.data.token);
                 setSuccess("Inicio de sesión exitoso");
+                // NO reactivamos el botón, redirigimos tras un delay
                 setTimeout(() => navigate("/"), 1500);
+            } else {
+                setError("Código incorrecto o error de servidor.");
+                setLoading(false);
             }
         } catch (err) {
-            setError(err.response?.data?.mensaje);
+            setError(err.response?.data?.mensaje || "Error al verificar código.");
+            setLoading(false);
         }
     };
 
@@ -93,6 +98,7 @@ function Login() {
                                 required
                                 placeholder="Ingresa tu correo"
                                 autoFocus
+                                disabled={loading}
                             />
                         </div>
                         <div className={styles.inputGroup}>
@@ -105,12 +111,19 @@ function Login() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 placeholder="Ingresa tu clave"
+                                disabled={loading}
                             />
                         </div>
                         {error && renderFeedback(error, "error")}
                         {success && renderFeedback(success, "success")}
-                        <button type="submit" className={styles.button}>
-                            Iniciar Sesión
+                        <button
+                            type="submit"
+                            className={styles.button}
+                            disabled={loading}
+                            tabIndex={loading ? -1 : 0}
+                            style={loading ? { pointerEvents: "none", opacity: 0.7 } : {}}
+                        >
+                            {loading ? "Aguarde..." : "Iniciar Sesión"}
                         </button>
                     </form>
                 ) : (
@@ -127,12 +140,19 @@ function Login() {
                                 required
                                 placeholder="Ingresa el código de 6 dígitos"
                                 autoFocus
+                                disabled={loading}
                             />
                         </div>
                         {error && renderFeedback(error, "error")}
                         {success && renderFeedback(success, "success")}
-                        <button type="submit" className={styles.button}>
-                            Verificar
+                        <button
+                            type="submit"
+                            className={styles.button}
+                            disabled={loading}
+                            tabIndex={loading ? -1 : 0}
+                            style={loading ? { pointerEvents: "none", opacity: 0.7 } : {}}
+                        >
+                            {loading ? "Aguarde..." : "Verificar"}
                         </button>
                     </form>
                 )}
