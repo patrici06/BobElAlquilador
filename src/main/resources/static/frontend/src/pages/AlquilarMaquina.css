@@ -7,7 +7,14 @@
 }
 
 .calendar-container {
-    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 360px;
 }
 
 
@@ -36,6 +43,21 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
+.card-status {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    background-color: #f0f4f8;
+    color: #333;
+    border: 1px solid #d1d9e6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s, color 0.3s;
+}
+
 .card img {
     width: 100%;
     height: 200px;
@@ -46,30 +68,45 @@
 
 .machine-info {
     flex: 1;
+    max-width: 460px;
     background: #f9f9f9;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    padding: 25px 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .machine-info h2 {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-weight: 700;
-    color: #e63946;
+    margin: 0 0 20px;
+    font-weight: 800;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.machine-info p {
+    margin: 0;
+    font-weight: 600;
+    color: #444;
+    line-height: 1.4;
+}
+
+.machine-info p strong {
+    color: #222;
 }
 
 .machine-photo {
     width: 100%;
-    height: 180px;
+    height: 220px;
+    border-radius: 12px;
     object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .big-calendar {
-    font-size: 1.2rem !important; /* Aumenta el tamaño del calendario */
+    font-size: 14px;
 }
 
 .card-title {
@@ -87,52 +124,153 @@
 
 .button-primary {
     background-color: #e63946;
-    color: white;
+    color: #fff;
     border: none;
-    padding: 10px 16px;
+    padding: 12px 20px;
+    font-size: 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+.dia-ocupado {
+    background-color: #ffcdd2 !important;
+    color: #b71c1c !important;
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
+
 .button-primary:hover {
-    background-color: #d62828;
+    background-color: #d62839;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .button-secondary {
-    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    background-color: #fff;
     color: #e63946;
-    border: 1.5px solid #e63946;
-    padding: 10px 16px;
+    border: 2px solid #e63946;
+    padding: 12px 20px;
+    font-size: 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 .button-secondary:hover {
     background-color: #e63946;
-    color: white;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-.reserve-section {
+.availability-section, .reserve-section {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 40px auto;
+    padding: 30px 25px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
 
-.reserve-content {
+.availability-section h1, .reserve-section h1 {
+    font-weight: 700;
+    color: #e63946;
+    font-size: 2.4rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.availability-content, .reserve-content {
     display: flex;
     gap: 40px;
-    margin-top: 20px;
     align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.payment-section {
-    max-width: 400px;
+.processing-section, .payment-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 20px;
+    background: linear-gradient(135deg, #f7f8fa, #e63946);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(230, 57, 70, 0.3);
+    color: #fff;
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 480px;
+    margin: 40px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-label {
+/* Texto grande y animado */
+.processing-section h1,
+.payment-section h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    animation: pulse 2.5s infinite ease-in-out;
+}
+
+/* Animación pulse para el título */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* Texto del párrafo del payment */
+.payment-section p {
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px #2a7a32;
+}
+
+/* Botón primario épico para payment */
+.payment-section .button-primary {
+    background: #2a7a32;
+    box-shadow: 0 8px 20px rgba(42, 122, 50, 0.7);
+    padding: 14px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    transition: all 0.4s ease;
+}
+
+.payment-section .button-primary:hover {
+    background: #1f5c26;
+    box-shadow: 0 10px 30px rgba(31, 92, 38, 0.9);
+    transform: scale(1.1);
+}
+
+/* Emoji grande para éxito */
+.payment-section h1::before {
+    content: "✅ ";
+    font-size: 3.5rem;
+    display: inline-block;
+    margin-right: 12px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+label, .calendar-container label {
     font-weight: 700;
     margin-bottom: 8px;
     display: block;
@@ -153,35 +291,49 @@ input[type="date"] {
 }
 
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 5px solid #ccc;
-    border-top-color: #2196F3;
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top: 6px solid #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 20px auto;
+    filter: drop-shadow(0 0 5px #fff);
 }
+
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.dia-ocupado .react-datepicker-day {
-    background-color: #f87171;
-    color: white;
-    border-radius: 50%;
-    width: 320px;
+.react-datepicker__input-container input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    background-color: #fff; /* Asegura fondo blanco */
+    box-sizing: border-box;
+}
+
+.react-datepicker__input-container input:focus {
+    border-color: #d32f2f;
+    outline: none;
 }
 
 .error-banner {
     background-color: #fde2e2;
     color: #b91c1c;
     border: 1px solid #fca5a5;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    font-weight: 600;
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-size: 1rem;
 }
 .error-banner strong {
     margin-right: 0.5rem;

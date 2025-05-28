@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
 import { jwtDecode } from "jwt-decode";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -23,6 +24,7 @@ function AlquilarMaquina() {
     const [diasOcupados, setDiasOcupados] = useState([]);
     const clienteDni = localStorage.getItem('dni');
     const token = localStorage.getItem("token");
+    const rawRoles = getRolesFromJwt(token);
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -37,11 +39,15 @@ function AlquilarMaquina() {
 
     // 1) Cargo la lista de máquinas
     useEffect(() => {
-        fetch('http://localhost:8080/api/maquinas')
+        const endpoint = rawRoles.includes("ROLE_PROPIETARIO")
+            ? 'http://localhost:8080/api/maquinas'      // Todas las máquinas
+            : 'http://localhost:8080/api/maquinas/disponibles'; // Solo disponibles
+
+        fetch(endpoint)
             .then(res => res.json())
             .then(data => setMachines(data))
             .catch(console.error);
-    }, []);
+    }, [rawRoles]);
 
     // 2) Cuando cambio a la vista "processing", disparo el timeout para pasar a "payment"
     useEffect(() => {
@@ -66,6 +72,52 @@ function AlquilarMaquina() {
             .then(data => {
                 // data = [{inicio: "2025-06-01", fin: "2025-06-05"}, ...]
                 // Convertimos cada rango en lista de fechas
+                const ocupados = [];
+                data.forEach(({ inicio, fin }) => {
+                    let curr = new Date(inicio);
+                    const last = new Date(fin);
+                    while (curr <= last) {
+                        ocupados.push(new Date(curr));
+                        curr.setDate(curr.getDate() + 1);
+                    }
+                });
+                setDiasOcupados(ocupados);
+            })
+            .catch(console.error);
+    };
+
+    const handleEliminarMaquina = async (nombre) => {
+        if (window.confirm(`¿Estás seguro de eliminar la máquina "${nombre}"?`)) {
+            try {
+                const response = await fetch(`http://localhost:8080/maquina/eliminar/${encodeURIComponent(nombre)}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    alert('Máquina eliminada con éxito');
+
+                    // 🔄 Si estás mostrando una lista, actualizala:
+                    setMachines((prev) => prev.filter((m) => m.nombre !== nombre));
+                } else {
+                    const error = await response.json();
+                    alert('Error al eliminar: ' + (error.mensaje || 'Error desconocido'));
+                }
+            } catch (error) {
+                alert('Error al eliminar: ' + error.message);
+            }
+        }
+    };
+
+    const handleViewAvailabilityClick = (machine) => {
+        setSelectedMachine(machine);
+        setError('');
+        setInicio(null);
+        setFin(null);
+        setView('availability');
+
+        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
+            .then(res => res.json())
+            .then(data => {
                 const ocupados = [];
                 data.forEach(({ inicio, fin }) => {
                     let curr = new Date(inicio);
@@ -150,16 +202,81 @@ function AlquilarMaquina() {
                                     />
                                     <div className="card-title">{machine.nombre}</div>
                                     <div className="card-type">{machine.tipo}</div>
-                                    <button
-                                        className="button-primary"
-                                        onClick={() => handleReserveClick(machine)}
-                                    >
-                                        Alquilar
-                                    </button>
+                                    {rawRoles.includes("ROLE_PROPIETARIO") && (
+                                        <div className="card-status">Estado: {machine.estado}</div>
+                                    )}
+                                    {rawRoles.includes("ROLE_CLIENTE") && (
+                                        <button
+                                            className="button-primary"
+                                            onClick={() => handleReserveClick(machine)}
+                                        >
+                                            Alquilar
+                                        </button>
+                                    )}
+                                    {rawRoles.includes("ROLE_PROPIETARIO") && (
+                                        <>
+                                            <button
+                                                className="button-secondary"
+                                                onClick={() => handleViewAvailabilityClick(machine)}
+                                            >
+                                                Ver Disponibilidad
+                                            </button>
+
+                                            {machine.estado !== "Eliminado" && (
+                                                <button
+                                                    className="button-secondary"
+                                                    onClick={() => handleEliminarMaquina(machine.nombre)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             ))}
                     </div>
                 </>
+            )}
+
+            {view === 'availability' && selectedMachine && (
+                <div className="availability-section">
+                    <h1>Disponibilidad: {selectedMachine.nombre}</h1>
+
+                    <div className="availability-content">
+                        <div className="calendar-container">
+                            <DatePicker
+                                selected={null}               // No hay selección aquí
+                                excludeDates={diasOcupados}   // Días ocupados marcados
+                                dayClassName={marcarDiasOcupados} // Para que se vean distintos
+                                inline                       // Muestra el calendario abierto
+                                minDate={new Date()}         // Desde hoy en adelante
+                                dateFormat="yyyy-MM-dd"
+                                calendarClassName="big-calendar"
+                            />
+                            <button
+                                className="button-secondary"
+                                onClick={() => setView('list')}
+                                style={{ marginTop: '10px' }}
+                            >
+                                Volver
+                            </button>
+                        </div>
+
+                        <div className="machine-info">
+                            <h2>Detalles de la Máquina</h2>
+                            <img
+                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
+                                alt={selectedMachine.nombre}
+                                loading="lazy"
+                                className="machine-photo"
+                            />
+                            <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
+                            <p><strong>Tipo:</strong> {selectedMachine.tipo}</p>
+                            <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
+                            <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {view === 'reserve' && selectedMachine && (

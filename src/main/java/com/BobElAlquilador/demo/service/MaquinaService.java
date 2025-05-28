@@ -54,14 +54,18 @@ public class MaquinaService {
         maquinaRepository.save(maquina);
     }
 
-    // Borrado Lógico
-    public void deleteMaquina(String nomMaquina) {
-        Maquina maquina = maquinaRepository.findById(nomMaquina).orElse(null);
-        // Se deben Cancelar los alquileres (marcar como cancelado)
-        maquina.borrar();
-        AlquilerService alquilerService = new AlquilerService();
-        alquilerService.cancelarAlquileresMaquina(maquina);
-        // Puede que requiera la cancelación de todos los Alquileres pendientes.
-        this.saveMaquina(maquina);
-    }
+
+    //LO SAQUE DE ACA PORQUE GENERABA UN CICLO EN SPRING; LO MOVI PARA MAQUINAALQUILERCORDINATOR
+//    // Borrado Lógico
+//    public void deleteMaquina(String nomMaquina) {
+//        Maquina maquina = maquinaRepository.findById(nomMaquina).orElse(null);
+//        if (maquina == null) {
+//            throw new RuntimeException("La máquina no existe");
+//        }
+//        // Se deben Cancelar los alquileres (marcar como cancelado)
+//        maquina.borrar();
+//        alquilerService.cancelarAlquileresMaquina(maquina);
+//        // Puede que requiera la cancelación de todos los Alquileres pendientes.
+//        this.saveMaquina(maquina);
+//    }
 }
