@@ -34,19 +34,17 @@ function Login() {
                 localStorage.setItem("token", response.data.token);
                 setSuccess("Inicio de sesión exitoso");
                 setTimeout(() => navigate("/"), 1500);
-            } else {
-                setError("Respuesta inesperada del servidor.");
-            }
-        } catch (err) {
-            // Si status 206, requiere 2FA
-            if (err.response?.status === 206) {
+            }// Si status es 206, requiere 2FA (esto sucede en axios, fetch y la mayoría de libs modernas)
+            else if (response.status === 206) {
                 setStep("2fa");
                 setPendingEmail(email);
                 setSuccess("Código enviado a tu correo. Por favor ingresa el código recibido.");
                 setError("");
             } else {
-                setError(err.response?.data?.mensaje || "Error al iniciar sesión.");
+                setError("Respuesta inesperada del servidor.");
             }
+        } catch (err) {
+            setError(err.response?.data?.mensaje || "Error al iniciar sesión.");
         }
     };
 

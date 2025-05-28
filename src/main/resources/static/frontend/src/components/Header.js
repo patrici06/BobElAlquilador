@@ -162,10 +162,14 @@ function Header() {
                                 </button>
                             </>
                         )}
+<<<<<<< HEAD
 
                         {/*------------------------ CLIENTE ------------------------*/}  
                         {rolPrincipal === "ROLE_CLIENTE" && (
                             <>
+=======
+                        {rawRoles.includes("ROLE_CLIENTE") && (
+>>>>>>> main
                                 <button
                                     onClick={() => navigate("/alquilar")}
                                     style={hoveredBtn === "alquilar"
@@ -176,6 +180,7 @@ function Header() {
                                 >
                                     Alquilar Maquina
                                 </button>
+<<<<<<< HEAD
                                 {!tieneConversacion && (
                                     <button
                                         onClick={() => navigate('/nuevaConversacion')}
@@ -205,6 +210,10 @@ function Header() {
                             </button>
                         )}
 
+=======
+                        )}
+                        {/* Aquí puedes agregar funcionalidades propias de empleado si lo deseas */}
+>>>>>>> main
                         <button
                             onClick={() => {
                                 localStorage.removeItem("token");

@@ -22,7 +22,7 @@ public class AlquilerService {
     @Autowired
     private MaquinaService maquinaService;
 
-    public Alquiler reservar(String dni, String maquinaName, LocalDate inicio, LocalDate fin) {
+    public Alquiler reservar(String email, String maquinaName, LocalDate inicio, LocalDate fin) {
         // 1. Validar fechas lógicas
         if(fin.isBefore(inicio)) {
             throw new RuntimeException("Rango de fechas invalido");
@@ -41,9 +41,9 @@ public class AlquilerService {
         }
 
         // 4. Crear entidad con estado Pendiente
-        Persona cliente = personaService.findByDniCliente(dni);
+        Persona cliente = personaService.findByEmail(email);
         if(cliente == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontró un cliente con ese DNI");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontró un cliente con ese email");
         }
         Maquina maquina = maquinaService.getMaquinaPorNombre(maquinaName);
         if(maquina == null) {

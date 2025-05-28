@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +23,12 @@ public class AlquilerController {
 
     @PostMapping("/reservar")
     public ResponseEntity<?> reservar(
-            @RequestParam String clienteDni,
+            @RequestParam String email,
             @RequestParam String maquina,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         try {
-            Alquiler nuevo = service.reservar(clienteDni, maquina, fechaInicio, fechaFin);
+            Alquiler nuevo = service.reservar(email, maquina, fechaInicio, fechaFin);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
