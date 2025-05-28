@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Tipo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Column(unique = true)
     private String nombre;
     public Tipo (){
@@ -19,11 +19,11 @@ public class Tipo implements Serializable {
     public Tipo(String nombreTipo) {
         this.nombre = nombreTipo;
     }
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

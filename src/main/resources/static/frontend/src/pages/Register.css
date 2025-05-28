@@ -133,6 +133,29 @@
     font-size: 1rem;
 }
 
+.login-link {
+    margin-top: 1.1rem;
+    text-align: center;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+}
+
+.login-link-anchor {
+    color: #ac1010;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 0.18em;
+    font-weight: 600;
+    transition: color 0.17s;
+}
+.login-link-anchor:hover,
+.login-link-anchor:focus {
+    color: #7d0b0b;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* Responsive */
 @media (max-width: 500px) {
     .form {

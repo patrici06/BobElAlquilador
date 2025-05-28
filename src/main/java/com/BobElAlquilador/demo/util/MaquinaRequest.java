@@ -15,17 +15,27 @@ public class MaquinaRequest {
     private LocalDate fechaIngreso;
     private MultipartFile foto;
     private String descripcion;
-    private Set<Tipo> tipos;
-    private Marca marca;
+    private Set<Integer> tiposIds;
+    private Integer marcaId;
     private EstadoMaquina estadoMaquina;
     private double precioDia;
 
-    public Marca getMarca() {
-        return marca;
+    public Set<Integer> getTiposIds() {
+        return tiposIds;
     }
-    public void setMarca(Marca marca) {
-        this.marca = marca;
+
+    public void setTiposIds(Set<Integer> tiposIds) {
+        this.tiposIds = tiposIds;
     }
+
+    public Integer getMarcaId() {
+        return marcaId;
+    }
+
+    public void setMarcaId(Integer marcaId) {
+        this.marcaId = marcaId;
+    }
+
     // Getter y Setter para nombreMaquina
     public String getNombreMaquina() {
         return nombreMaquina;
@@ -69,15 +79,6 @@ public class MaquinaRequest {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    // Getter y Setter para tipo
-    public Set<Tipo> getTipo() {
-        return tipos;
-    }
-
-    public void setTipo(Set<Tipo> tipos ) {
-        this.tipos = tipos;
     }
 
     // Getter y Setter para estadoMaquina

@@ -1,9 +1,12 @@
 package com.BobElAlquilador.demo.controller;
 
 import com.BobElAlquilador.demo.model.Maquina;
+import com.BobElAlquilador.demo.model.Marca;
 import com.BobElAlquilador.demo.model.Tipo;
 import com.BobElAlquilador.demo.service.MaquinaAlquilerCordinator;
 import com.BobElAlquilador.demo.service.MaquinaService;
+import com.BobElAlquilador.demo.service.MarcaService;
+import com.BobElAlquilador.demo.service.TipoService;
 import com.BobElAlquilador.demo.util.MaquinaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -30,7 +34,10 @@ public class MaquinaController {
     private String uploadDir;
     @Autowired
     private MaquinaAlquilerCordinator maquinaAlquilerCordinator;
-
+    @Autowired
+    private TipoService tiposService;
+    @Autowired
+    private MarcaService marcaService;
     @PostMapping("/propietario/subirMaquina")
     public ResponseEntity<?> subirMaquina(@ModelAttribute MaquinaRequest maquinaRequest) {
         try {
@@ -40,14 +47,22 @@ public class MaquinaController {
             Files.createDirectories(path.getParent());
             maquinaRequest.getFoto().transferTo(path);
             String fileDownloadUri = "/images/" + filename;// esto depende de tu configuración de static resource
+
+            Set<Tipo> tiposFiltrados = tiposService.getAllTipos().stream()
+                    .filter(tipo -> maquinaRequest.getTiposIds().contains(tipo.getId()))
+                    .collect(Collectors.toSet());
+            if (tiposFiltrados.isEmpty()) {
+                throw new RuntimeException("Tipo no encontrado");
+            }Marca marca = marcaService.getMarcaById(maquinaRequest.getMarcaId()).orElse(null);
+            if(marca == null){ throw new RuntimeException("Marca no encontrada");}
             Maquina nueva = maquinaService.subir(maquinaRequest.getNombreMaquina(),
                     maquinaRequest.getUbicacion(),
                     maquinaRequest.getFechaIngreso(),
                     fileDownloadUri,
                     maquinaRequest.getDescripcion(),
-                    maquinaRequest.getTipo(),
+                    tiposFiltrados,
                     maquinaRequest.getPrecioDia(),
-                    maquinaRequest.getMarca()
+                    marca
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
