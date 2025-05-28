@@ -15,7 +15,7 @@ function RegisterEmpleado() {
     const navigate = useNavigate();
 
     // Obtener roles del token JWT (si el usuario cambia, se actualiza al refrescar la página)
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token); // Siempre será un array
 
     // Solo permitir acceso a propietarios
