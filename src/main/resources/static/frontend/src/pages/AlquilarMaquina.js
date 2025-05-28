@@ -28,8 +28,8 @@ function AlquilarMaquina() {
     const [fin, setFin] = useState(null);
     const [error, setError] = useState('');
     const [diasOcupados, setDiasOcupados] = useState([]);
-    const clienteDni = localStorage.getItem('dni');
-    const token = localStorage.getItem("token");
+    const clienteDni = sessionStorage.getItem('dni');
+    const token = sessionStorage.getItem("token");
     const rawRoles = getRolesFromJwt(token);
 
     // Extraer el email del JWT si existe
