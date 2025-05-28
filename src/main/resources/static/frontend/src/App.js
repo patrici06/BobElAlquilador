@@ -10,6 +10,10 @@ import RegisterEmpleado from "./pages/RegisterEmpleado";
 import Perfil from "./pages/Perfil";
 import PerfilUsuario from "./pages/Perfil";
 import AlquilarMaquina from './pages/AlquilarMaquina';
+import Conversaciones from "./pages/Conversaciones";
+import ConversacionDetalle from "./pages/ConversacionDetalle";
+import ConsultasPendientes from "./pages/ConsultasPendientes";
+
 
 // ...otros imports
 
@@ -29,6 +33,15 @@ function App() {
                 <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
                 <Route path="/perfil/:email" element={<PerfilUsuario />} />
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
+
+
+                <Route path="/conversaciones" element={<Conversaciones />} />
+                <Route path="/conversacion/:idConversacion" element={<ConversacionDetalle />} />
+                <Route path="/nuevaConversacion" element={<ConversacionDetalle nueva={true} />} /> 
+                <Route path="/consultasPendientes" element={<ConsultasPendientes />} />
+
+
+
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}

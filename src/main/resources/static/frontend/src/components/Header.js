@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRolTexto } from "../utils/authUtils";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import { jwtDecode } from "jwt-decode";
+import { useLocation } from "react-router-dom";
 
 function Header() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const rawRoles = getRolesFromJwt(token);
+    const tieneConversacion = localStorage.getItem("conversacionActiva") === "true";
+    const location = useLocation();
+
+    // Determinar el rol principal (priorizar EMPLEADO sobre CLIENTE)
+    let rolPrincipal = "";
+    if (rawRoles.includes("ROLE_EMPLEADO")) {
+        rolPrincipal = "ROLE_EMPLEADO";
+    } else if (rawRoles.includes("ROLE_CLIENTE")) {
+        rolPrincipal = "ROLE_CLIENTE";
+    } else if (rawRoles.includes("ROLE_PROPIETARIO")) {
+        rolPrincipal = "ROLE_PROPIETARIO";
+    }
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -20,6 +33,12 @@ function Header() {
         }
     }
 
+    useEffect(() => {
+        if (window.location.pathname === "/") {
+            localStorage.removeItem("conversacionActiva");
+        }
+    }, []);
+    
     const baseBtn = {
         padding: "0.6rem 1.2rem",
         background: "#ac1010",
@@ -47,7 +66,6 @@ function Header() {
             }}
         >
             <div style={{ display: "flex", alignItems: "center" }}>
-                {/* Imagen clickeable que redirige a la raíz */}
                 <img
                     src="/Completo.png"
                     alt="BobElAlquilador"
@@ -77,9 +95,7 @@ function Header() {
                                 marginLeft: "0.5rem"
                             }}
                         >
-                            {rawRoles.length > 0
-                                ? rawRoles.map(getRolTexto).join(", ")
-                                : "Sin rol"}
+                            {rolPrincipal ? getRolTexto(rolPrincipal) : "Sin rol"}
                         </span>
                     </>
                 )}
@@ -90,7 +106,7 @@ function Header() {
                         <button
                             onClick={() => navigate("/login")}
                             style={hoveredBtn === "login"
-                                ? { ...baseBtn, ...hoverBtn }
+                                ? {...baseBtn, ...hoverBtn}
                                 : baseBtn}
                             onMouseEnter={() => setHoveredBtn("login")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -100,7 +116,7 @@ function Header() {
                         <button
                             onClick={() => navigate("/register")}
                             style={hoveredBtn === "register"
-                                ? { ...baseBtn, ...hoverBtn }
+                                ? {...baseBtn, ...hoverBtn}
                                 : baseBtn}
                             onMouseEnter={() => setHoveredBtn("register")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -111,12 +127,13 @@ function Header() {
                 )}
                 {token && (
                     <>
-                        {rawRoles.includes("ROLE_PROPIETARIO") && (
+                        {/*------------------------ PROPIETARIO ------------------------*/}  
+                        {rolPrincipal === "ROLE_PROPIETARIO" && (
                             <>
                                 <button
                                     onClick={() => navigate("/register/empleado")}
                                     style={hoveredBtn === "registerEmpleado"
-                                        ? { ...baseBtn, ...hoverBtn }
+                                        ? {...baseBtn, ...hoverBtn}
                                         : baseBtn}
                                     onMouseEnter={() => setHoveredBtn("registerEmpleado")}
                                     onMouseLeave={() => setHoveredBtn("")}
@@ -126,16 +143,68 @@ function Header() {
                                 <button
                                     onClick={() => navigate("/propietario/subirMaquina")}
                                     style={hoveredBtn === "/propietario/subirMaquina"
-                                        ? { ...baseBtn, ...hoverBtn }
+                                        ? {...baseBtn, ...hoverBtn}
                                         : baseBtn}
                                     onMouseEnter={() => setHoveredBtn("/propietario/subirMaquina")}
                                     onMouseLeave={() => setHoveredBtn("")}
                                 >
                                     Subir Maquina
                                 </button>
+                                <button
+                                    onClick={() => navigate("/alquilar")}
+                                    style={hoveredBtn === "Ver Maquinas"
+                                        ? {...baseBtn, ...hoverBtn}
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("Ver Maquinas")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Ver Maquinas
+                                </button>
                             </>
                         )}
-                        {/* Aquí puedes agregar funcionalidades propias de empleado si lo deseas */}
+
+                        {/*------------------------ CLIENTE ------------------------*/}  
+                        {rolPrincipal === "ROLE_CLIENTE" && (
+                            <>
+                                <button
+                                    onClick={() => navigate("/alquilar")}
+                                    style={hoveredBtn === "alquilar"
+                                        ? {...baseBtn, ...hoverBtn}
+                                        : baseBtn}
+                                    onMouseEnter={() => setHoveredBtn("alquilar")}
+                                    onMouseLeave={() => setHoveredBtn("")}
+                                >
+                                    Alquilar Maquina
+                                </button>
+                                {!tieneConversacion && (
+                                    <button
+                                        onClick={() => navigate('/nuevaConversacion')}
+                                        style={hoveredBtn === "iniciarConversacion"
+                                            ? {...baseBtn, ...hoverBtn}
+                                            : baseBtn}
+                                        onMouseEnter={() => setHoveredBtn("iniciarConversacion")}
+                                        onMouseLeave={() => setHoveredBtn("")}
+                                    >
+                                        Consultar
+                                    </button>
+                                )}
+                            </>
+                        )}
+
+                        {/*------------------------ EMPLEADO ------------------------*/}  
+                        {rolPrincipal === "ROLE_EMPLEADO" && (
+                            <button
+                                onClick={() => navigate('/consultasPendientes')}
+                                style={hoveredBtn === "verConsultas"
+                                    ? {...baseBtn, ...hoverBtn}
+                                    : baseBtn}
+                                onMouseEnter={() => setHoveredBtn("verConsultas")}
+                                onMouseLeave={() => setHoveredBtn("")}
+                            >
+                                Bandeja de entrada
+                            </button>
+                        )}
+
                         <button
                             onClick={() => {
                                 localStorage.removeItem("token");
@@ -143,8 +212,8 @@ function Header() {
                                 navigate("/");
                             }}
                             style={hoveredBtn === "logout"
-                                ? { ...baseBtn, ...hoverBtn, marginRight: 0 }
-                                : { ...baseBtn, marginRight: 0 }}
+                                ? {...baseBtn, ...hoverBtn, marginRight: 0}
+                                : {...baseBtn, marginRight: 0}}
                             onMouseEnter={() => setHoveredBtn("logout")}
                             onMouseLeave={() => setHoveredBtn("")}
                         >

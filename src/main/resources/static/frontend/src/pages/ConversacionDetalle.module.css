@@ -1,0 +1,75 @@
+.container {
+    padding: 2rem;
+    background-color: #f5f6fa;
+    min-height: 100vh;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #ac1010;
+}
+
+.loading, .error {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.info {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.mensajes {
+    list-style: none;
+    padding: 0;
+}
+
+.mensaje {
+    background: #fff;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.nuevoMensaje {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.textarea {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    min-height: 80px;
+    font-size: 1.1rem; 
+    font-family: 'Arial', sans-serif;
+}
+
+.button {
+    padding: 0.7rem;
+    background: #ac1010;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.exito {
+    text-align: center;
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.1rem;
+}
+
+.contenido {
+    font-size: 1.1rem;  
+}

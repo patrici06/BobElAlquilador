@@ -1,0 +1,45 @@
+.container {
+    padding: 2rem;
+    background-color: #f5f6fa;
+    min-height: 100vh;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #ac1010;
+}
+
+.loading, .error, .empty {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.item {
+    background: #fff;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.item:hover {
+    background-color: #f9f9f9;
+    transform: scale(1.02);
+}
+
+.item div {
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+}
+
