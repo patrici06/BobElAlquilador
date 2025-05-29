@@ -10,6 +10,7 @@ import RegisterEmpleado from "./pages/RegisterEmpleado";
 import Perfil from "./pages/Perfil";
 import PerfilUsuario from "./pages/Perfil";
 import AlquilarMaquina from './pages/AlquilarMaquina';
+import MisAlquileres from './pages/MisAlquileres';
 
 // ...otros imports
 
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
                 <Route path="/perfil/:email" element={<PerfilUsuario />} />
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
+                <Route path="/mis-alquileres" element={<MisAlquileres />} />
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}

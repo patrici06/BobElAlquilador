@@ -94,6 +94,7 @@ function Header() {
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
+                <>
                     <button
                         onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
                         className={styles.button}
@@ -103,6 +104,17 @@ function Header() {
                     >
                         Alquilar Maquina
                     </button>
+
+                    <button
+                        onClick={() => { setMenuOpen(false); navigate("/mis-alquileres"); }}
+                        className={styles.button}
+                        onMouseEnter={() => setHoveredBtn("mis-alquileres")}
+                        onMouseLeave={() => setHoveredBtn("")}
+                        data-hovered={hoveredBtn === "mis-alquileres"}
+                    >
+                        Mis Alquileres
+                    </button>
+                </>
                 )}
                 <button
                     onClick={() => {
