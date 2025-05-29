@@ -2,47 +2,33 @@ import axios from "axios";
 
 const API_BASE = "http://localhost:8080";
 
-export function getConversacionesCliente(email) {
-    const token = localStorage.getItem("token");
-    return axios.get(`${API_BASE}/conversacion/cliente/${email}`, {     // endpoint definido en el back
-        headers: { Authorization: `Bearer ${token}` }                   // indica que el cliente esta autenticado
-    });
-}
-
-export function getConversacionesEmpleado(email) {
-    const token = localStorage.getItem("token");
-    return axios.get(`${API_BASE}/conversacion/empleado/${email}`, {
+// Crear una nueva pregunta (iteracion)
+export function crearPregunta(email, pregunta) {
+    const token = sessionStorage.getItem("token"); // Usar sessionStorage, como tu Header
+    return axios.post(`${API_BASE}/cliente/${email}/preguntas`, pregunta, {
         headers: { Authorization: `Bearer ${token}` }
     });
 }
 
-export function getConversacionPorId(idConversacion) {
-    const token = localStorage.getItem("token");
-    return axios.get(`${API_BASE}/conversacion/${idConversacion}`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-}
+// // Obtener todas las preguntas (iteraciones) del cliente
+// export function obtenerPreguntasCliente(email) {
+//     const token = sessionStorage.getItem("token");
+//     return axios.get(`${API_BASE}/cliente/${email}/preguntas`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//     });
+// }
 
-export function crearConversacion(conversacionData) {
-    const token = localStorage.getItem("token");
-    return axios.post(`${API_BASE}/conversacion/crear`, conversacionData, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-}
+// // (opcional) Obtener conversaciones pendientes (si activas ese endpoint)
+// export function obtenerConversacionesPendientes() {
+//     const token = sessionStorage.getItem("token");
+//     return axios.get(`${API_BASE}/cliente/pendientes`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//     });
+// }
 
-export function borrarConversacion(idConversacion) {
-    const token = localStorage.getItem("token");
-    return axios.delete(`${API_BASE}/conversacion/borrar/${idConversacion}`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-}
-
-export function getConversacionesPendientesEmpleado() {
-    
-    const token = localStorage.getItem("token");
-    console.log("Token que se usa para autenticación:", token);
-
-    return axios.get(`${API_BASE}/conversacion/pendientes`, {
+export function obtenerTodasPreguntas() {
+    const token = sessionStorage.getItem("token");
+    return axios.get(`${API_BASE}/{email}/preguntas`, {
         headers: { Authorization: `Bearer ${token}` }
     });
 }

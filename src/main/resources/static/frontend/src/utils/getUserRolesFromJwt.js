@@ -1,10 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-/**
- * Extrae los roles desde un JWT sin verificar la firma (solo decodifica).
- * @param {string} token - El JWT a decodificar.
- * @returns {Array<string>} - Un array con los roles del usuario.
- */
+
 export function getRolesFromJwt(token) {
     if (!token) return [];
     try {
@@ -21,3 +17,4 @@ export function getRolesFromJwt(token) {
         return [];
     }
 }
+

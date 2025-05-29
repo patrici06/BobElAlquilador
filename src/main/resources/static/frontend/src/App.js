@@ -10,12 +10,17 @@ import RegisterEmpleado from "./pages/RegisterEmpleado";
 import Perfil from "./pages/Perfil";
 import PerfilUsuario from "./pages/Perfil";
 import AlquilarMaquina from './pages/AlquilarMaquina';
-import Conversaciones from "./pages/Conversaciones";
+//import Conversaciones from "./pages/Conversaciones"
 import ConversacionDetalle from "./pages/ConversacionDetalle";
-import ConsultasPendientes from "./pages/ConsultasPendientes";
+//import ConsultasPendientes from "./pages/ConsultasPendientes";
+import BandejaDeRespuestas from "./pages/BandejaDeRespuestas";
+
+// Simulacion porq no andaba el back
+import SimuladorClienteTest from './pages/SimuladorClienteTest';
+import SimuladorEmpleado from './pages/SimuladorEmpleado';
+import BandejaDeEntrada from './pages/BandejaDeEntrada';
 
 
-// ...otros imports
 
 function App() {
     const location = useLocation();
@@ -35,14 +40,23 @@ function App() {
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
 
 
-                <Route path="/conversaciones" element={<Conversaciones />} />
+                {/*<Route path="/conversaciones" element={<Conversaciones />} />
                 <Route path="/conversacion/:idConversacion" element={<ConversacionDetalle />} />
                 <Route path="/nuevaConversacion" element={<ConversacionDetalle nueva={true} />} /> 
                 <Route path="/consultasPendientes" element={<ConsultasPendientes />} />
+                */}
+
+                {/*Simulacion porq no andaba el back*/}
+                <Route path="/conversacion/nueva" element={<ConversacionDetalle />} />
+                <Route path="/simulador-cliente" element={<SimuladorClienteTest />} />
+                <Route path="/simulador-empleado" element={<SimuladorEmpleado />} />
+                <Route path="/bandeja-entrada" element={<BandejaDeEntrada />} />
+                
+                <Route path="/bandeja-respuestas" element={<BandejaDeRespuestas />} />
+                <Route path="/simular-bandeja-respuestas-cliente" element={<BandejaDeRespuestas />} />
 
 
 
-                {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}
         </div>

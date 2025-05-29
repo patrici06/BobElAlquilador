@@ -94,15 +94,27 @@ function Header() {
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
-                    <button
-                        onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
-                        className={styles.button}
-                        onMouseEnter={() => setHoveredBtn("alquilar")}
-                        onMouseLeave={() => setHoveredBtn("")}
-                        data-hovered={hoveredBtn === "alquilar"}
-                    >
-                        Alquilar Maquina
-                    </button>
+                    <>
+                        <button
+                            onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("alquilar")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "alquilar"}
+                        >
+                            Alquilar Maquina
+                        </button>
+
+                        <button
+                            onClick={() => { setMenuOpen(false); navigate("/conversacion/nueva"); }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("consultar")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "consultar"}
+                        >
+                            Consultar
+                        </button>
+                    </>
                 )}
                 <button
                     onClick={() => {
