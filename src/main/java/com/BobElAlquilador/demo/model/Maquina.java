@@ -26,7 +26,7 @@ public class Maquina extends DbEstado{
     private double precio_dia;
 
     @ManyToOne
-    @JoinColumn()
+    @JoinColumn(name = "marca_id")
     private Marca marca;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -66,6 +66,12 @@ public class Maquina extends DbEstado{
     public void setEstadoMaquinaMantenimiento(){ this.estadoMaquina = EstadoMaquina.Mantenimiento;}
 
     public void setEstadoMaquinaDescompuesta(){this.estadoMaquina = EstadoMaquina.Descompuesta;}
+
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public void setMarca(Marca marca) {}
 
     public Set<Tipo> getTipo(){ return tipos; }
 

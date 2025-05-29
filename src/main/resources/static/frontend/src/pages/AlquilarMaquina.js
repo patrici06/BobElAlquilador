@@ -14,7 +14,7 @@ function getMachineImageSrc(fotoUrl) {
 }
 
 function AlquilarMaquina() {
-    // --- NUEVO: Filtros de tipo y marca (se agregaron estos estados y los useEffect para traer tipos y marcas)
+    // --- Filtros de tipo y marca ---
     const [tipos, setTipos] = useState([]);
     const [marcas, setMarcas] = useState([]);
     const [selectedTipo, setSelectedTipo] = useState('');
@@ -55,7 +55,7 @@ function AlquilarMaquina() {
             .catch(console.error);
     }, [token]);
 
-    // 1.1) Cargar tipos y marcas para los filtros (CAMBIO: se agregan estos useEffect)
+    // 1.1) Cargar tipos y marcas para los filtros
     useEffect(() => {
         fetch("http://localhost:8080/api/tipos")
             .then(res => res.json())
@@ -193,14 +193,8 @@ function AlquilarMaquina() {
         // Filtrado de tipo: si se seleccionó un tipo, la máquina debe tenerlo en su set
         let tipoMatch = true;
         if (selectedTipo) {
-            if (Array.isArray(machine.tipos) && machine.tipos.length > 0) {
-                // Compara solo el id como string
-                tipoMatch = machine.tipos.some(t =>
-                    String(t.id) === String(selectedTipo)
-                );
-            } else {
-                tipoMatch = false;
-            }
+            const tipoArray = Array.isArray(machine.tipo) ? machine.tipo : [];
+            tipoMatch = tipoArray.some(t => String(t.id) === String(selectedTipo));
         }
 
         let marcaMatch = true;
@@ -223,7 +217,6 @@ function AlquilarMaquina() {
             {view === 'list' && (
                 <>
                     <h1>Máquinas Disponibles</h1>
-                    {/* CAMBIO: Filtros agregados en la barra de búsqueda */}
                     <div className="search-bar-container" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
                         <input
                             type="text"
@@ -267,9 +260,8 @@ function AlquilarMaquina() {
                         </select>
                     </div>
                     <div className="cards-container">
-                        {/* CAMBIO: Usamos filteredMachines y mostramos todos los tipos de la máquina */}
                         {filteredMachines.length === 0 ? (
-                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontraron máquinas.</div>
+                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontro una maquina bajo esas caracteristicas.</div>
                         ) : (
                             filteredMachines.map(machine => (
                                 <div className="card" key={machine.nombre}>
@@ -279,11 +271,10 @@ function AlquilarMaquina() {
                                         loading="lazy"
                                     />
                                     <div className="card-title">{machine.nombre}</div>
-                                    {/* CAMBIO: Mostrar todos los tipos si hay varios */}
                                     <div className="card-type">
-                                        {Array.isArray(machine.tipos) && machine.tipos.length > 0
-                                            ? machine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                            : (machine.tipo ? (machine.tipo.nombreTipo || machine.tipo.nombre) : 'Sin tipo')}
+                                        {Array.isArray(machine.tipo) && machine.tipo.length > 0
+                                            ? machine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                                            : 'Sin tipo'}
                                     </div>
                                     {rawRoles.includes("ROLE_PROPIETARIO") && (
                                         <div className="card-status">Estado: {machine.estado}</div>
@@ -321,7 +312,6 @@ function AlquilarMaquina() {
                     </div>
                 </>
             )}
-
             {view === 'availability' && selectedMachine && (
                 <div className="availability-section">
                     <h1>Disponibilidad: {selectedMachine.nombre}</h1>
@@ -355,11 +345,10 @@ function AlquilarMaquina() {
                                 className="machine-photo"
                             />
                             <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            {/* CAMBIO: Mostrar todos los tipos si hay varios */}
                             <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipos) && selectedMachine.tipos.length > 0
-                                    ? selectedMachine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : (selectedMachine.tipo ? (selectedMachine.tipo.nombreTipo || selectedMachine.tipo.nombre) : 'Sin tipo')
+                                Array.isArray(selectedMachine.tipo) && selectedMachine.tipo.length > 0
+                                    ? selectedMachine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                                    : 'Sin tipo'
                             }</p>
                             <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
                             <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
@@ -367,7 +356,6 @@ function AlquilarMaquina() {
                     </div>
                 </div>
             )}
-
             {view === 'reserve' && selectedMachine && (
                 <div className="reserve-section">
                     <h1>Reservar: {selectedMachine.nombre}</h1>
@@ -430,11 +418,10 @@ function AlquilarMaquina() {
                                 className="machine-photo"
                             />
                             <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            {/* CAMBIO: Mostrar todos los tipos si hay varios */}
                             <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipos) && selectedMachine.tipos.length > 0
-                                    ? selectedMachine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : (selectedMachine.tipo ? (selectedMachine.tipo.nombreTipo || selectedMachine.tipo.nombre) : 'Sin tipo')
+                                Array.isArray(selectedMachine.tipo) && selectedMachine.tipo.length > 0
+                                    ? selectedMachine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                                    : 'Sin tipo'
                             }</p>
                             <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
                             <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
@@ -442,14 +429,12 @@ function AlquilarMaquina() {
                     </div>
                 </div>
             )}
-
             {view === 'processing' && (
                 <div className="processing-section">
                     <h1>Procesando Pago...</h1>
                     <div className="spinner"></div>
                 </div>
             )}
-
             {view === 'payment' && (
                 <div className="payment-section">
                     <h1>✅ Pago Exitoso</h1>
