@@ -26,6 +26,7 @@ function MisAlquileres() {
                 if (!res.ok) {
                     throw new Error(data.message || "Error al obtener alquileres.");
                 }
+                console.log(data);
                 setAlquileres(data);
                 setError("");
             })
@@ -57,6 +58,7 @@ function MisAlquileres() {
                             <th>Inicio</th>
                             <th>Fin</th>
                             <th>Estado</th>
+                            <th>Precio</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,6 +68,7 @@ function MisAlquileres() {
                                 <td>{new Date(a.alquilerId?.fechaInicio).toLocaleDateString()}</td>
                                 <td>{new Date(a.alquilerId?.fechaFin).toLocaleDateString()}</td>
                                 <td>{a.estado}</td>
+                                <td>{a.precioTotal.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}</td>
                             </tr>
                         ))}
                     </tbody>
