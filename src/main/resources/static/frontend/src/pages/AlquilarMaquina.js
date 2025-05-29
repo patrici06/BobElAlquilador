@@ -30,7 +30,7 @@ function AlquilarMaquina() {
     const [diasOcupados, setDiasOcupados] = useState([]);
     const clienteDni = sessionStorage.getItem('dni');
     const token = sessionStorage.getItem("token");
-    const rawRoles = getRolesFromJwt(token);
+    const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -53,7 +53,7 @@ function AlquilarMaquina() {
             .then(res => res.json())
             .then(data => setMachines(data))
             .catch(console.error);
-    }, [rawRoles]);
+    }, [token]);
 
     // 1.1) Cargar tipos y marcas para los filtros (CAMBIO: se agregan estos useEffect)
     useEffect(() => {

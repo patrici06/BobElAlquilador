@@ -116,4 +116,12 @@ public class Maquina extends DbEstado{
     public double calcularPrecio(long cantDias) {
         return this.precio_dia * cantDias;
     }
+
+    // Supongo que si borra una maquina es porque esta descompuesta
+    // Es decir, esta el DBestado que es activo / eliminado (borrar)
+    // Y el estado de maquina (disponible / descompuesta / mantenimiento)
+    public void borrarMaquina() {
+        this.borrar();
+        this.estadoMaquina = EstadoMaquina.Descompuesta;
+    }
 }

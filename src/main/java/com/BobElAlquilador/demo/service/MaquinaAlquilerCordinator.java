@@ -19,7 +19,7 @@ public class MaquinaAlquilerCordinator {
             throw new RuntimeException("La máquina no existe");
         }
         // Borrado lógico
-        maquina.borrar();
+        maquina.borrarMaquina();
 
         // Cancelar los alquileres pendientes o activos
         alquilerService.cancelarAlquileresMaquina(maquina);
