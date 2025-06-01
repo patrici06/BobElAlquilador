@@ -87,7 +87,7 @@ public class AlquilerController {
         }
     }
 
-    @GetMapping("todos-los-alquileres")
+    @GetMapping("/todos-los-alquileres")
     public ResponseEntity<?> obtenerAlquileres(HttpServletRequest request) {
         try {
             String authHeader = request.getHeader("Authorization");
