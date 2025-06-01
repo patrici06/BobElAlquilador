@@ -76,9 +76,6 @@ public class AlquilerService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado");
         }
         String dni = cliente.getDni();
-        return repo.findByCliente_DniAndEstadoIn(
-            dni,
-            List.of(EstadoAlquiler.Pendiente, EstadoAlquiler.Activo)
-        );
+        return repo.findByCliente_Dni(dni);
     }
 }

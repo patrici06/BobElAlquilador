@@ -27,9 +27,7 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> 
             @Param("estados") List<EstadoAlquiler> estados);
 
 
-    // Metodo para devolver los alquileres activos / pendientes realizados por un cliente
-    // HU: Listar mis alquileres
-    List<Alquiler> findByCliente_DniAndEstadoIn(String dni, Collection<EstadoAlquiler> estados);
+    List<Alquiler> findByCliente_Dni(String dni);
 
     // Encuentra alquileres que solapen un rango dado para la misma máquina
     // Metodo necesario para la HU Alquilar Maquina
