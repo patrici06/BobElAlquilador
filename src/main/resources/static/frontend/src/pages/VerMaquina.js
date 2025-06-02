@@ -136,7 +136,7 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
                 <div className="reserve-content">
                     <div className="calendar-container">
 
-                        {raw.includes("ROLE_CLIENTE") ? (
+                        {raw.includes("ROLE_CLIENTE") && !readonly ? (
                             <>
                                 <label>Fecha Inicio:</label>
                                 <DatePicker
