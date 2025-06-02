@@ -10,12 +10,13 @@ export default function PerfilUsuario() {
     const token = localStorage.getItem("token");
     const roles = getRolesFromJwt(token);
 
-    // Estados controlados por input, igual que en Register
+    // Estados controlados por input
     const [nombre, setNombre] = useState("");
     const [apellido, setApellido] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [dni, setDni] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [claveAnterior, setClaveAnterior] = useState("");
     const [clave, setClave] = useState("");
     const [confirmClave, setConfirmClave] = useState("");
     const [user, setUser] = useState(null);
@@ -27,8 +28,8 @@ export default function PerfilUsuario() {
     const [submitting, setSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
 
-    // Carga inicial
     useEffect(() => {
         setLoading(true);
         perfil({ email })
@@ -41,6 +42,7 @@ export default function PerfilUsuario() {
                 setTelefono(res.data.telefono || "");
                 setClave("");
                 setConfirmClave("");
+                setClaveAnterior("");
                 setLoading(false);
             })
             .catch(() => {
@@ -58,6 +60,7 @@ export default function PerfilUsuario() {
             setTelefono(user.telefono || "");
             setClave("");
             setConfirmClave("");
+            setClaveAnterior("");
         }
     }, [editing, user]);
 
@@ -77,14 +80,20 @@ export default function PerfilUsuario() {
             setSubmitting(false);
             return;
         }
-
+        // Verifica que se ingrese la clave anterior si se quiere cambiar la clave
+        if (clave && !claveAnterior) {
+            setError("Debes ingresar la clave anterior para cambiar la contraseña.");
+            setSubmitting(false);
+            return;
+        }
         const dataToSend = {
             email: user.email,
             nombre,
             apellido,
             ...(roles.includes("ROLE_CLIENTE") && { telefono }),
+            ...(clave && { clave }),
+            ...(clave && { claveAnterior }),
         };
-        if (clave) dataToSend.clave = clave;
 
         try {
             const resp = await actualizarPerfil(dataToSend);
@@ -107,10 +116,8 @@ export default function PerfilUsuario() {
         </div>
     );
 
-    // ¡SOLUCIÓN! Formatear fecha sin usar new Date para evitar problemas de zona horaria
     const formatFechaNacimiento = (fecha) => {
         if (!fecha) return "";
-        // Espera formato "YYYY-MM-DD"
         const [a, m, d] = fecha.split("-");
         return `${d}/${m}/${a}`;
     };
@@ -126,18 +133,10 @@ export default function PerfilUsuario() {
                     {success && renderFeedback(success, "success")}
                     {!editing ? (
                         <div className={styles.profileData}>
-                            <p>
-                                <strong>Nombre:</strong> {user.nombre}
-                            </p>
-                            <p>
-                                <strong>Apellido:</strong> {user.apellido}
-                            </p>
-                            <p>
-                                <strong>Email:</strong> {user.email}
-                            </p>
-                            <p>
-                                <strong>DNI:</strong> {user.dni}
-                            </p>
+                            <p><strong>Nombre:</strong> {user.nombre}</p>
+                            <p><strong>Apellido:</strong> {user.apellido}</p>
+                            <p><strong>Email:</strong> {user.email}</p>
+                            <p><strong>DNI:</strong> {user.dni}</p>
                             {user.fechaNacimiento && (
                                 <p>
                                     <strong>Fecha de nacimiento:</strong>{" "}
@@ -226,6 +225,33 @@ export default function PerfilUsuario() {
                                     />
                                 </div>
                             )}
+
+                            {/* Clave anterior */}
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="claveAnterior" className={styles.label}>Clave anterior</label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        id="claveAnterior"
+                                        name="claveAnterior"
+                                        type={showOldPassword ? "text" : "password"}
+                                        className={styles.input}
+                                        value={claveAnterior}
+                                        onChange={e => setClaveAnterior(e.target.value)}
+                                        placeholder="Ingresa la clave anterior"
+                                        autoComplete="current-password"
+                                    />
+                                    <span
+                                        className={styles.eyeIcon}
+                                        onClick={() => setShowOldPassword(v => !v)}
+                                        tabIndex={0}
+                                        aria-label={showOldPassword ? "Ocultar clave" : "Mostrar clave"}
+                                    >
+                                        {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Nueva clave */}
                             <div className={styles.inputGroup}>
                                 <label htmlFor="clave" className={styles.label}>Nueva clave</label>
                                 <div className={styles.inputWrapper}>
@@ -249,6 +275,8 @@ export default function PerfilUsuario() {
                                     </span>
                                 </div>
                             </div>
+
+                            {/* Confirmar nueva clave */}
                             <div className={styles.inputGroup}>
                                 <label htmlFor="confirmClave" className={styles.label}>Confirmar nueva clave</label>
                                 <div className={styles.inputWrapper}>
@@ -295,6 +323,7 @@ export default function PerfilUsuario() {
                                     setTelefono(user.telefono || "");
                                     setClave("");
                                     setConfirmClave("");
+                                    setClaveAnterior("");
                                 }}
                             >
                                 Cancelar

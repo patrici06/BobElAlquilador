@@ -57,6 +57,20 @@
     box-sizing: border-box;
 }
 
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.eyeIcon {
+    margin-left: -2.5rem;
+    cursor: pointer;
+    color: #666;
+    font-size: 1.2em;
+    z-index: 2;
+}
+
 .button {
     width: 100%;
     padding: 0.8rem;
