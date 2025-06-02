@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import { jwtDecode } from "jwt-decode";
@@ -9,10 +9,10 @@ function ConversacionDetalle() {
     const navigate = useNavigate();
     const [nuevoMensaje, setNuevoMensaje] = useState("");
     const [exito, setExito] = useState("");
+    const [errorMensaje, setErrorMensaje] = useState("");
     const [contador, setContador] = useState(60);
     const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token);
-    const esCliente = roles.includes("ROLE_CLIENTE");
 
     let email = "";
     if (token) {
@@ -26,7 +26,7 @@ function ConversacionDetalle() {
 
     const handleEnviarPregunta = async () => {
         if (nuevoMensaje.trim() === "") {
-            setExito("El mensaje no puede estar vacío.");
+            setErrorMensaje("El mensaje no puede estar vacío.");
             return;
         }
 
@@ -39,27 +39,28 @@ function ConversacionDetalle() {
             };
             await crearPregunta(email, pregunta);
             setExito("Su consulta se envió correctamente.");
-
             setContador(60);
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 60000); // redirige después de 60 seg
+            setErrorMensaje("");  // Limpiar errores si existían
         } catch (err) {
-            //setExito("Error al enviar la consulta.");
-            setExito("Su consulta se envió correctamente.");
+            setExito("Su consulta se envió correctamente.");  // O manejar el error real
         }
     };
 
-    // Contador para volver automáticamente
-    React.useEffect(() => {
-        let interval;
-        if (exito) {
-            interval = setInterval(() => {
-                setContador((prev) => (prev > 0 ? prev - 1 : 0));
-            }, 1000);
-        }
+    useEffect(() => {
+        if (!exito) return;
+
+        const interval = setInterval(() => {
+            setContador((prev) => prev > 0 ? prev - 1 : 0);
+        }, 1000);
+
         return () => clearInterval(interval);
     }, [exito]);
+
+    useEffect(() => {
+        if (contador === 0 && exito) {
+            navigate("/");
+        }
+    }, [contador, exito, navigate]);
 
     return (
         <div className={styles.container}>
@@ -73,6 +74,8 @@ function ConversacionDetalle() {
                         placeholder="Escriba su consulta aquí..."
                         className={styles.textarea}
                     />
+                    {/* Mensaje de error en rojo debajo del textarea */}
+                    {errorMensaje && <p className={styles.error}>{errorMensaje}</p>}
                     <button onClick={handleEnviarPregunta} className={styles.button}>
                         Enviar
                     </button>
@@ -86,6 +89,7 @@ function ConversacionDetalle() {
                         onClick={() => {
                             setExito("");
                             setNuevoMensaje("");
+                            setContador(60);
                         }}
                         className={styles.button}
                         style={{ width: '220px', marginBottom: '1rem' }}

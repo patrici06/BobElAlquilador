@@ -103,6 +103,18 @@ function Header() {
                         >
                             Ver Maquinas
                         </button>
+                        <button
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/conversacion/nueva");
+                            }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("Consultar")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "Consultar"}
+                        >
+                            Ver Maquinas
+                        </button>
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
@@ -119,18 +131,6 @@ function Header() {
                         >
                             Alquilar Maquina
                         </button>
-                    </>
-                    <>
-                        <button
-                            onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
-                            className={styles.button}
-                            onMouseEnter={() => setHoveredBtn("alquilar")}
-                            onMouseLeave={() => setHoveredBtn("")}
-                            data-hovered={hoveredBtn === "alquilar"}
-                        >
-                            Alquilar Maquina
-                        </button>
-
                         <button
                             onClick={() => { setMenuOpen(false); navigate("/conversacion/nueva"); }}
                             className={styles.button}
@@ -140,7 +140,6 @@ function Header() {
                         >
                             Consultar
                         </button>
-
                         <button
                             onClick={() => { setMenuOpen(false); navigate("/bandeja-respuestas"); }}
                             className={styles.button}
@@ -150,7 +149,6 @@ function Header() {
                         >
                             Bandeja de Respuestas
                         </button>
-
                     </>
                 )}
                 {rawRoles.includes("ROLE_EMPLEADO") && (
@@ -193,7 +191,6 @@ function Header() {
                 >
                     Cerrar sesión
                 </button>
-                
             </>
         );
     };
@@ -219,8 +216,6 @@ function Header() {
                     </span>
                 )}
             </div>
-
-            {/* Botón de menú hamburguesa para mobile */}
             <button
                 className={styles.hamburger}
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -230,13 +225,9 @@ function Header() {
                 <span />
                 <span />
             </button>
-
-            {/* Navegación (responsive) */}
             <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
                 {renderButtons()}
             </nav>
-
-            {/* Cierra el menú al hacer click fuera en mobile */}
             {menuOpen && (
                 <div
                     className={styles.backdrop}

@@ -11,6 +11,10 @@ import Perfil from "./pages/Perfil";
 import PerfilUsuario from "./pages/Perfil";
 import AlquilarMaquina from './pages/AlquilarMaquina';
 import MisAlquileres from './pages/MisAlquileres';
+{/*import Bandeja from './pages/Bandeja';
+import BandejaRespuestas from './pages/BandejaRespuestas';
+*/}import ConversacionDetalle from './pages/ConversacionDetalle';  
+import ConsultasPendientes from './pages/ConsultasPendientes';  
 
 // ...otros imports
 
@@ -31,6 +35,12 @@ function App() {
                 <Route path="/perfil/:email" element={<PerfilUsuario />} />
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
                 <Route path="/mis-alquileres" element={<MisAlquileres />} />
+                <Route path="/conversacion/nueva" element={<ConversacionDetalle nueva={true} />} />
+                <Route path="/consultasPendientes" element={<ConsultasPendientes />} />
+                {/*<Route path="/bandeja" element={<Bandeja />} />
+                <Route path="/bandeja-respuestas" element={<BandejaRespuestas />} />
+*/}
+
                 {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}

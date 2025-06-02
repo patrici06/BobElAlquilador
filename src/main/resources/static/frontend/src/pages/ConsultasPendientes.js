@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
-import { obtenerConversacionesPendientes } from "../services/conversacionService";
+import { obtenerTodasPreguntas } from "../services/conversacionService";
 import styles from "./ConsultasPendientes.module.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -19,7 +19,7 @@ function ConsultasPendientes() {
             console.log("Roles:", roles);
 
             try {
-                const res = await obtenerConversacionesPendientes();
+                const res = await obtenerTodasPreguntas();
                 const data = Array.isArray(res.data) ? res.data : [res.data];
                 console.log("Respuesta completa del backend:", res.data);
 
