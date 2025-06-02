@@ -19,6 +19,8 @@ public class Alquiler extends DbEstado {
     private Persona cliente;
 
     private Double precioTotal;
+
+    @Enumerated(EnumType.STRING)
     private EstadoAlquiler estado;
 
     public Alquiler() {

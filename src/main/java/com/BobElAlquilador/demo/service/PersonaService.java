@@ -72,12 +72,9 @@ public class PersonaService {
     public Persona changeUserData(RegisterRequest request) {
         Persona persona = pRepo.findById(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (!persona.getEmail().equals(request.getEmail())&&
-             validadorCredencialesService.correoYaRegistrado(request.getEmail())
-        ){
-            persona.setEmail(request.getEmail());
+        if (!passwordEncoder.matches(request.getClaveAnterior(), persona.getClave())) {
+            throw new RuntimeException("La clave erronea o invalida.");
         }
-        if (!persona.getDni().equals(request.getDni())){validadorCredencialesService.dniYaRegistrado(request.getDni());}
         if (     request.getClave() != null &&
                 !request.getClave().isEmpty() &&
                 validadorCredencialesService.formatoClaveValido(request.getClave()))

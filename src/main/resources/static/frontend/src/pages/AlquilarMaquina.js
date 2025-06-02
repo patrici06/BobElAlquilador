@@ -4,6 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
 import { jwtDecode } from "jwt-decode";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
+import MachineAvailability from './VerMaquina';
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -14,7 +15,7 @@ function getMachineImageSrc(fotoUrl) {
 }
 
 function AlquilarMaquina() {
-    // --- NUEVO: Filtros de tipo y marca (se agregaron estos estados y los useEffect para traer tipos y marcas)
+    // --- Filtros de tipo y marca ---
     const [tipos, setTipos] = useState([]);
     const [marcas, setMarcas] = useState([]);
     const [selectedTipo, setSelectedTipo] = useState('');
@@ -28,9 +29,9 @@ function AlquilarMaquina() {
     const [fin, setFin] = useState(null);
     const [error, setError] = useState('');
     const [diasOcupados, setDiasOcupados] = useState([]);
-    const clienteDni = localStorage.getItem('dni');
-    const token = localStorage.getItem("token");
-    const rawRoles = getRolesFromJwt(token);
+    const clienteDni = sessionStorage.getItem('dni');
+    const token = sessionStorage.getItem("token");
+    const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -53,9 +54,9 @@ function AlquilarMaquina() {
             .then(res => res.json())
             .then(data => setMachines(data))
             .catch(console.error);
-    }, [rawRoles]);
+    }, [token]);
 
-    // 1.1) Cargar tipos y marcas para los filtros (CAMBIO: se agregan estos useEffect)
+    // 1.1) Cargar tipos y marcas para los filtros
     useEffect(() => {
         fetch("http://localhost:8080/api/tipos")
             .then(res => res.json())
@@ -83,25 +84,6 @@ function AlquilarMaquina() {
         setInicio(null);
         setFin(null);
         setView('reserve');
-
-        // Traer días ocupados
-        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
-            .then(res => res.json())
-            .then(data => {
-                // data = [{inicio: "2025-06-01", fin: "2025-06-05"}, ...]
-                // Convertimos cada rango en lista de fechas
-                const ocupados = [];
-                data.forEach(({ inicio, fin }) => {
-                    let curr = new Date(inicio);
-                    const last = new Date(fin);
-                    while (curr <= last) {
-                        ocupados.push(new Date(curr));
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                });
-                setDiasOcupados(ocupados);
-            })
-            .catch(console.error);
     };
 
     const handleEliminarMaquina = async (nombre) => {
@@ -130,58 +112,12 @@ function AlquilarMaquina() {
         setInicio(null);
         setFin(null);
         setView('availability');
-
-        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
-            .then(res => res.json())
-            .then(data => {
-                const ocupados = [];
-                data.forEach(({ inicio, fin }) => {
-                    let curr = new Date(inicio);
-                    const last = new Date(fin);
-                    while (curr <= last) {
-                        ocupados.push(new Date(curr));
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                });
-                setDiasOcupados(ocupados);
-            })
-            .catch(console.error);
     };
 
     const marcarDiasOcupados = (date) => {
         return diasOcupados.some(d => d.toDateString() === date.toDateString())
             ? 'dia-ocupado'
             : undefined;
-    };
-
-    const handleSubmit = async () => {
-        if (!inicio || !fin) {
-            setError('Por favor selecciona ambas fechas.');
-            return;
-        }
-        try {
-            const url = new URL('http://localhost:8080/api/alquileres/reservar');
-            url.searchParams.append('email', email);
-            url.searchParams.append('maquina', selectedMachine.nombre);
-            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
-            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
-
-            const res = await fetch(url, {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (!res.ok) {
-                const errorJson = await res.json();
-                throw new Error(errorJson.error || "Error en la reserva");
-            }
-
-            await res.json();
-            setView('processing');
-        }
-        catch(err) {
-            setError(err.message);
-        }
     };
 
     // --- Filtrado teniendo en cuenta que una máquina puede tener múltiples tipos (Set)
@@ -193,14 +129,8 @@ function AlquilarMaquina() {
         // Filtrado de tipo: si se seleccionó un tipo, la máquina debe tenerlo en su set
         let tipoMatch = true;
         if (selectedTipo) {
-            if (Array.isArray(machine.tipos) && machine.tipos.length > 0) {
-                // Compara solo el id como string
-                tipoMatch = machine.tipos.some(t =>
-                    String(t.id) === String(selectedTipo)
-                );
-            } else {
-                tipoMatch = false;
-            }
+            const tipoArray = Array.isArray(machine.tipo) ? machine.tipo : [];
+            tipoMatch = tipoArray.some(t => String(t.id) === String(selectedTipo));
         }
 
         let marcaMatch = true;
@@ -223,7 +153,6 @@ function AlquilarMaquina() {
             {view === 'list' && (
                 <>
                     <h1>Máquinas Disponibles</h1>
-                    {/* CAMBIO: Filtros agregados en la barra de búsqueda */}
                     <div className="search-bar-container" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
                         <input
                             type="text"
@@ -267,9 +196,8 @@ function AlquilarMaquina() {
                         </select>
                     </div>
                     <div className="cards-container">
-                        {/* CAMBIO: Usamos filteredMachines y mostramos todos los tipos de la máquina */}
                         {filteredMachines.length === 0 ? (
-                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontraron máquinas.</div>
+                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontro una maquina bajo esas caracteristicas.</div>
                         ) : (
                             filteredMachines.map(machine => (
                                 <div className="card" key={machine.nombre}>
@@ -279,11 +207,10 @@ function AlquilarMaquina() {
                                         loading="lazy"
                                     />
                                     <div className="card-title">{machine.nombre}</div>
-                                    {/* CAMBIO: Mostrar todos los tipos si hay varios */}
                                     <div className="card-type">
-                                        {Array.isArray(machine.tipos) && machine.tipos.length > 0
-                                            ? machine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                            : (machine.tipo ? (machine.tipo.nombreTipo || machine.tipo.nombre) : 'Sin tipo')}
+                                        {Array.isArray(machine.tipo) && machine.tipo.length > 0
+                                            ? machine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                                            : 'Sin tipo'}
                                     </div>
                                     {rawRoles.includes("ROLE_PROPIETARIO") && (
                                         <div className="card-status">Estado: {machine.estado}</div>
@@ -321,135 +248,28 @@ function AlquilarMaquina() {
                     </div>
                 </>
             )}
-
             {view === 'availability' && selectedMachine && (
-                <div className="availability-section">
-                    <h1>Disponibilidad: {selectedMachine.nombre}</h1>
-
-                    <div className="availability-content">
-                        <div className="calendar-container">
-                            <DatePicker
-                                selected={null}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                inline
-                                minDate={new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <button
-                                className="button-secondary"
-                                onClick={() => setView('list')}
-                                style={{ marginTop: '10px' }}
-                            >
-                                Volver
-                            </button>
-                        </div>
-
-                        <div className="machine-info">
-                            <h2>Detalles de la Máquina</h2>
-                            <img
-                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
-                                alt={selectedMachine.nombre}
-                                loading="lazy"
-                                className="machine-photo"
-                            />
-                            <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            {/* CAMBIO: Mostrar todos los tipos si hay varios */}
-                            <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipos) && selectedMachine.tipos.length > 0
-                                    ? selectedMachine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : (selectedMachine.tipo ? (selectedMachine.tipo.nombreTipo || selectedMachine.tipo.nombre) : 'Sin tipo')
-                            }</p>
-                            <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
-                            <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
-                        </div>
-                    </div>
-                </div>
+                <MachineAvailability
+                    machine={selectedMachine}
+                    onClose={() => setView('list')}
+                    onReserveSuccess={() => setView('processing')}
+                    readonly={true}
+                />
             )}
-
             {view === 'reserve' && selectedMachine && (
-                <div className="reserve-section">
-                    <h1>Reservar: {selectedMachine.nombre}</h1>
-                    {error && (
-                        <div className="error-banner">
-                            <strong>¡Ups!</strong> {error}
-                        </div>
-                    )}
-
-                    <div className="reserve-content">
-                        <div className="calendar-container">
-                            <label>Fecha Inicio:</label>
-                            <DatePicker
-                                selected={inicio}
-                                onChange={date => setInicio(date)}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                selectsStart
-                                startDate={inicio}
-                                endDate={fin}
-                                minDate={new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <br />
-
-                            <label>Fecha Fin:</label>
-                            <DatePicker
-                                selected={fin}
-                                onChange={date => setFin(date)}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                selectsEnd
-                                startDate={inicio}
-                                endDate={fin}
-                                minDate={inicio || new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <br />
-
-                            <button className="button-primary" onClick={handleSubmit}>
-                                Realizar Reserva
-                            </button>
-                            <button
-                                className="button-secondary"
-                                onClick={() => setView('list')}
-                                style={{ marginLeft: '10px' }}
-                            >
-                                Volver
-                            </button>
-                        </div>
-
-                        <div className="machine-info">
-                            <h2>Detalles de la Máquina</h2>
-                            <img
-                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
-                                alt={selectedMachine.nombre}
-                                loading="lazy"
-                                className="machine-photo"
-                            />
-                            <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            {/* CAMBIO: Mostrar todos los tipos si hay varios */}
-                            <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipos) && selectedMachine.tipos.length > 0
-                                    ? selectedMachine.tipos.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : (selectedMachine.tipo ? (selectedMachine.tipo.nombreTipo || selectedMachine.tipo.nombre) : 'Sin tipo')
-                            }</p>
-                            <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
-                            <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
-                        </div>
-                    </div>
-                </div>
+                <MachineAvailability
+                    machine={selectedMachine}
+                    onClose={() => setView('list')}
+                    onReserveSuccess={() => setView('processing')}
+                    readonly={false}
+                />
             )}
-
             {view === 'processing' && (
                 <div className="processing-section">
                     <h1>Procesando Pago...</h1>
                     <div className="spinner"></div>
                 </div>
             )}
-
             {view === 'payment' && (
                 <div className="payment-section">
                     <h1>✅ Pago Exitoso</h1>

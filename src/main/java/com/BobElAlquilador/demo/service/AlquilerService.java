@@ -69,4 +69,13 @@ public class AlquilerService {
     public List<Alquiler> obtenerReservasActivasOPendientes(String maquinaNombre) {
         return repo.findByMaquinaNombreAndEstadoIn(maquinaNombre, List.of(EstadoAlquiler.Pendiente, EstadoAlquiler.Activo));
     }
+
+    public List<Alquiler> obtenerMisAlquileres(String email) {
+        Persona cliente = personaService.findByEmail(email);
+        if (cliente == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado");
+        }
+        String dni = cliente.getDni();
+        return repo.findByCliente_Dni(dni);
+    }
 }

@@ -75,7 +75,7 @@ public class MaquinaController {
     @GetMapping("/api/maquinas")
     public ResponseEntity<?> obtenerMaquinas() {
         try {
-            return ResponseEntity.ok(maquinaService.getMaquinasDisponibles());
+            return ResponseEntity.ok(maquinaService.getAllMaquinas());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener máquinas: " + e.getMessage());
         }
@@ -92,7 +92,7 @@ public class MaquinaController {
 
     // Este metodo usa el nombre de la maq, pero es completamente arbitrario, cambiar a conveniencia
     // siempre teniendo en cuenta las repercusiones dentro de maquinaService
-    @DeleteMapping("/alquilar/{nombre}")
+    @DeleteMapping("/maquina/eliminar/{nombre}")
     public ResponseEntity<?> eliminarMaquina(@PathVariable String nombre) {
         try {
             maquinaAlquilerCordinator.eliminarMaquinaConCancelacion(nombre);

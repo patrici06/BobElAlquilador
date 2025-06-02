@@ -1,0 +1,226 @@
+import React, { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './AlquilarMaquina.css'
+import {jwtDecode} from "jwt-decode";
+import {getRolesFromJwt} from "../utils/getUserRolesFromJwt";
+
+// === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
+function getMachineImageSrc(fotoUrl) {
+    if (!fotoUrl) return 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+    if (fotoUrl.startsWith('http') || fotoUrl.startsWith('data:')) return fotoUrl;
+    // Si es relativa, prepend el host del backend
+    return `http://localhost:8080${fotoUrl.startsWith('/') ? '' : '/'}${fotoUrl}`;
+}
+
+/**
+ * MachineAvailability recibe por props:
+ *   - machine: el objeto máquina completo (con nombre, fotoUrl, tipo, precioDia, descripción, etc).
+ *   - onClose: callback para ocultar esta vista (por ejemplo volver al listado padre).
+ *   - onReserveSuccess: callback que indica “la reserva se efectuó correctamente” y dispara la vista de processing/pago en el padre.
+ *   - readonly: boolean (opcional) que, si es true, solo muestra disponibilidad sin botones de reservar.
+ *
+ * Dentro se encarga de:
+ *   1) Hacer fetch a /api/alquileres/ocupadas?maquina=<nombre>
+ *   2) Calcular el array de "diasOcupados" (Date[]).
+ *   3) Renderizar el calendario con DatePicker, marcando esos días ocupados.
+ *   4) Mostrar debajo el “detalle de la máquina” (imagen, nombre, tipo, precio, descripción…).
+ */
+export default function MachineAvailability({ machine, onClose, onReserveSuccess, readonly = false }) {
+    const [diasOcupados, setDiasOcupados] = useState([]);
+
+    const [inicio, setInicio] = useState(null);
+    const [fin, setFin] = useState(null);
+    const [error, setError] = useState('');
+    const [view, setView] = useState('form');
+    const token = sessionStorage.getItem("token");
+    const raw = React.useMemo(() => getRolesFromJwt(token), [token]);
+
+    // Extraer el email del JWT si existe
+    let email = "";
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            email = decoded.email || decoded.sub || "";
+        } catch (e) {
+            email = "";
+        }
+    }
+
+    useEffect(() => {
+        if (!machine) return;
+
+        // 1) Traer días ocupados
+        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
+            .then(res => res.json())
+            .then(data => {
+                // data = [{inicio: "2025-06-01", fin: "2025-06-05"}, ...]
+                const ocupados = [];
+                data.forEach(({ inicio, fin }) => {
+                    let curr = new Date(inicio);
+                    const last = new Date(fin);
+                    while (curr <= last) {
+                        ocupados.push(new Date(curr));
+                        curr.setDate(curr.getDate() + 1);
+                    }
+                });
+                setDiasOcupados(ocupados);
+            })
+            .catch(console.error);
+    }, [machine]);
+
+    // 2) Función para marcar cada día ocupado en el calendario
+    const marcarDiasOcupados = date =>
+        diasOcupados.some(d => d.toDateString() === date.toDateString())
+            ? 'dia-ocupado'
+            : undefined;
+
+    if (!machine) {
+        return null;
+    }
+
+    const handleSubmit = async () => {
+        setError('');
+        if (!inicio || !fin) {
+            setError('Por favor selecciona ambas fechas.');
+            return;
+        }
+        if (!email) {
+            setError('Por favor ingresa tu email.');
+            return;
+        }
+        try {
+            const url = new URL('http://localhost:8080/api/alquileres/reservar');
+            url.searchParams.append('email', email);
+            url.searchParams.append('maquina', machine.nombre);
+            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
+            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
+
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                const errorJson = await res.json();
+                throw new Error(errorJson.error || "Error en la reserva");
+            }
+
+            await res.json();
+
+            // En lugar de setView('processing'), avisamos al padre:
+            if (typeof onReserveSuccess === 'function') {
+                onReserveSuccess();
+            }
+        }
+        catch(err) {
+            setError(err.message);
+        }
+    };
+
+    return (
+            <div className="reserve-section">
+                {/* Título con el nombre de la máquina */}
+                {raw.includes("ROLE_CLIENTE") ? (
+                    <h1>Reservar: {machine.nombre}</h1>
+                ) : (
+                    <h1>Disponibilidad: {machine.nombre}</h1>
+                )}
+
+                {error && (
+                    <div className="error-banner">
+                        {error}
+                    </div>
+                )}
+
+                <div className="reserve-content">
+                    <div className="calendar-container">
+
+                        {raw.includes("ROLE_CLIENTE") && !readonly ? (
+                            <>
+                                <label>Fecha Inicio:</label>
+                                <DatePicker
+                                    selected={inicio}
+                                    onChange={date => setInicio(date)}
+                                    excludeDates={diasOcupados}
+                                    dayClassName={marcarDiasOcupados}
+                                    selectsStart
+                                    startDate={inicio}
+                                    endDate={fin}
+                                    minDate={new Date()}
+                                    dateFormat="yyyy-MM-dd"
+                                    calendarClassName="big-calendar"
+                                />
+                                <br />
+
+                                <label>Fecha Fin:</label>
+                                <DatePicker
+                                    selected={fin}
+                                    onChange={date => setFin(date)}
+                                    excludeDates={diasOcupados}
+                                    dayClassName={marcarDiasOcupados}
+                                    selectsEnd
+                                    startDate={inicio}
+                                    endDate={fin}
+                                    minDate={inicio || new Date()}
+                                    dateFormat="yyyy-MM-dd"
+                                    calendarClassName="big-calendar"
+                                />
+                                <br />
+
+                                <button className="button-primary" onClick={handleSubmit}>
+                                    Realizar Reserva
+                                </button>
+                            </>
+                        ) : (
+                            <DatePicker
+                                selected={null}
+                                excludeDates={diasOcupados}
+                                dayClassName={marcarDiasOcupados}
+                                inline
+                                minDate={new Date()}
+                                dateFormat="yyyy-MM-dd"
+                                calendarClassName="big-calendar"
+                            />
+                        )}
+
+                        <button
+                            className="button-secondary"
+                            onClick={onClose}
+                            style={{marginTop: '10px'}}
+                        >
+                            Volver
+                        </button>
+                    </div>
+
+                    {/* Detalle de la máquina */}
+                    <div className="machine-info">
+                        <h2>Detalles de la Máquina</h2>
+                        <img
+                            src={getMachineImageSrc(machine.fotoUrl)}
+                            alt={machine.nombre}
+                            loading="lazy"
+                            className="machine-photo"
+                        />
+                        <p>
+                            <strong>Nombre:</strong> {machine.nombre}
+                        </p>
+                        <p>
+                            <strong>Tipo:</strong>{' '}
+                            {Array.isArray(machine.tipo) && machine.tipo.length > 0
+                                ? machine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                                : 'Sin tipo'}
+                        </p>
+                        <p>
+                            <strong>Precio por día:</strong> $
+                            {machine.precioDia || 'No disponible'}
+                        </p>
+                        <p>
+                            <strong>Descripción:</strong>{' '}
+                            {machine.descripcion || 'No disponible'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+    );
+}

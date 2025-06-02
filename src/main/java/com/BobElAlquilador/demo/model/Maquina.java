@@ -26,7 +26,7 @@ public class Maquina extends DbEstado{
     private double precio_dia;
 
     @ManyToOne
-    @JoinColumn()
+    @JoinColumn(name = "marca_id")
     private Marca marca;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -66,6 +66,12 @@ public class Maquina extends DbEstado{
     public void setEstadoMaquinaMantenimiento(){ this.estadoMaquina = EstadoMaquina.Mantenimiento;}
 
     public void setEstadoMaquinaDescompuesta(){this.estadoMaquina = EstadoMaquina.Descompuesta;}
+
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public void setMarca(Marca marca) {}
 
     public Set<Tipo> getTipo(){ return tipos; }
 
@@ -115,5 +121,13 @@ public class Maquina extends DbEstado{
 
     public double calcularPrecio(long cantDias) {
         return this.precio_dia * cantDias;
+    }
+
+    // Supongo que si borra una maquina es porque esta descompuesta
+    // Es decir, esta el DBestado que es activo / eliminado (borrar)
+    // Y el estado de maquina (disponible / descompuesta / mantenimiento)
+    public void borrarMaquina() {
+        this.borrar();
+        this.estadoMaquina = EstadoMaquina.Descompuesta;
     }
 }

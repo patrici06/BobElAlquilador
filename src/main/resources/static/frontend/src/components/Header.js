@@ -54,7 +54,10 @@ function Header() {
         return (
             <>
                 <button
-                    onClick={() => { setMenuOpen(false); navigate(`/perfil/${email}`); }}
+                    onClick={() => {
+                        setMenuOpen(false);
+                        navigate(`/perfil/${email}`);
+                    }}
                     className={styles.button}
                     onMouseEnter={() => setHoveredBtn("perfil")}
                     onMouseLeave={() => setHoveredBtn("")}
@@ -65,7 +68,10 @@ function Header() {
                 {rawRoles.includes("ROLE_PROPIETARIO") && (
                     <>
                         <button
-                            onClick={() => { setMenuOpen(false); navigate("/register/empleado"); }}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/register/empleado");
+                            }}
                             className={styles.button}
                             onMouseEnter={() => setHoveredBtn("registerEmpleado")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -74,7 +80,10 @@ function Header() {
                             Registrar Empleado
                         </button>
                         <button
-                            onClick={() => { setMenuOpen(false); navigate("/propietario/subirMaquina"); }}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/propietario/subirMaquina");
+                            }}
                             className={styles.button}
                             onMouseEnter={() => setHoveredBtn("/propietario/subirMaquina")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -83,7 +92,10 @@ function Header() {
                             Subir Maquina
                         </button>
                         <button
-                            onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/alquilar");
+                            }}
                             className={styles.button}
                             onMouseEnter={() => setHoveredBtn("Ver Maquinas")}
                             onMouseLeave={() => setHoveredBtn("")}
@@ -94,6 +106,20 @@ function Header() {
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
+                    <>
+                        <button
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/alquilar");
+                            }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("alquilar")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "alquilar"}
+                        >
+                            Alquilar Maquina
+                        </button>
+                    </>
                     <>
                         <button
                             onClick={() => { setMenuOpen(false); navigate("/alquilar"); }}
@@ -142,6 +168,20 @@ function Header() {
                 )}
                 <button
                     onClick={() => {
+                        setMenuOpen(false);
+                        navigate("/mis-alquileres");
+                    }}
+                    className={styles.button}
+                    onMouseEnter={() => setHoveredBtn("mis-alquileres")}
+                    onMouseLeave={() => setHoveredBtn("")}
+                    data-hovered={hoveredBtn === "mis-alquileres"}
+                >
+                    {rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO")
+                        ? "Ver Alquileres"
+                        : "Mis Alquileres"}
+                </button>
+                <button
+                    onClick={() => {
                         sessionStorage.removeItem("token");
                         setMenuOpen(false);
                         navigate("/");
@@ -166,7 +206,10 @@ function Header() {
                     src="/Completo.png"
                     alt="BobElAlquilador"
                     className={styles.logo}
-                    onClick={() => { setMenuOpen(false); navigate("/"); }}
+                    onClick={() => {
+                        setMenuOpen(false);
+                        navigate("/");
+                    }}
                 />
                 {token && (
                     <span className={styles.roles}>

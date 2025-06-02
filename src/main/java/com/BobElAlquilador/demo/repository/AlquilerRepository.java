@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -26,9 +27,7 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> 
             @Param("estados") List<EstadoAlquiler> estados);
 
 
-    // Metodo para devolver los alquileres activos / pendientes realizados por un cliente
-    // HU: Listar mis alquileres
-    List<Alquiler> findByCliente_DniAndEstado(String dni, EstadoAlquiler estado);
+    List<Alquiler> findByCliente_Dni(String dni);
 
     // Encuentra alquileres que solapen un rango dado para la misma máquina
     // Metodo necesario para la HU Alquilar Maquina
