@@ -4,6 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
 import { jwtDecode } from "jwt-decode";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
+import MachineAvailability from './VerMaquina';
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -83,25 +84,6 @@ function AlquilarMaquina() {
         setInicio(null);
         setFin(null);
         setView('reserve');
-
-        // Traer días ocupados
-        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
-            .then(res => res.json())
-            .then(data => {
-                // data = [{inicio: "2025-06-01", fin: "2025-06-05"}, ...]
-                // Convertimos cada rango en lista de fechas
-                const ocupados = [];
-                data.forEach(({ inicio, fin }) => {
-                    let curr = new Date(inicio);
-                    const last = new Date(fin);
-                    while (curr <= last) {
-                        ocupados.push(new Date(curr));
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                });
-                setDiasOcupados(ocupados);
-            })
-            .catch(console.error);
     };
 
     const handleEliminarMaquina = async (nombre) => {
@@ -130,58 +112,12 @@ function AlquilarMaquina() {
         setInicio(null);
         setFin(null);
         setView('availability');
-
-        fetch(`http://localhost:8080/api/alquileres/ocupadas?maquina=${encodeURIComponent(machine.nombre)}`)
-            .then(res => res.json())
-            .then(data => {
-                const ocupados = [];
-                data.forEach(({ inicio, fin }) => {
-                    let curr = new Date(inicio);
-                    const last = new Date(fin);
-                    while (curr <= last) {
-                        ocupados.push(new Date(curr));
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                });
-                setDiasOcupados(ocupados);
-            })
-            .catch(console.error);
     };
 
     const marcarDiasOcupados = (date) => {
         return diasOcupados.some(d => d.toDateString() === date.toDateString())
             ? 'dia-ocupado'
             : undefined;
-    };
-
-    const handleSubmit = async () => {
-        if (!inicio || !fin) {
-            setError('Por favor selecciona ambas fechas.');
-            return;
-        }
-        try {
-            const url = new URL('http://localhost:8080/api/alquileres/reservar');
-            url.searchParams.append('email', email);
-            url.searchParams.append('maquina', selectedMachine.nombre);
-            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
-            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
-
-            const res = await fetch(url, {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (!res.ok) {
-                const errorJson = await res.json();
-                throw new Error(errorJson.error || "Error en la reserva");
-            }
-
-            await res.json();
-            setView('processing');
-        }
-        catch(err) {
-            setError(err.message);
-        }
     };
 
     // --- Filtrado teniendo en cuenta que una máquina puede tener múltiples tipos (Set)
@@ -313,121 +249,20 @@ function AlquilarMaquina() {
                 </>
             )}
             {view === 'availability' && selectedMachine && (
-                <div className="availability-section">
-                    <h1>Disponibilidad: {selectedMachine.nombre}</h1>
-
-                    <div className="availability-content">
-                        <div className="calendar-container">
-                            <DatePicker
-                                selected={null}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                inline
-                                minDate={new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <button
-                                className="button-secondary"
-                                onClick={() => setView('list')}
-                                style={{ marginTop: '10px' }}
-                            >
-                                Volver
-                            </button>
-                        </div>
-
-                        <div className="machine-info">
-                            <h2>Detalles de la Máquina</h2>
-                            <img
-                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
-                                alt={selectedMachine.nombre}
-                                loading="lazy"
-                                className="machine-photo"
-                            />
-                            <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipo) && selectedMachine.tipo.length > 0
-                                    ? selectedMachine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : 'Sin tipo'
-                            }</p>
-                            <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
-                            <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
-                        </div>
-                    </div>
-                </div>
+                <MachineAvailability
+                    machine={selectedMachine}
+                    onClose={() => setView('list')}
+                    onReserveSuccess={() => setView('processing')}
+                    readonly={true}
+                />
             )}
             {view === 'reserve' && selectedMachine && (
-                <div className="reserve-section">
-                    <h1>Reservar: {selectedMachine.nombre}</h1>
-                    {error && (
-                        <div className="error-banner">
-                            <strong>¡Ups!</strong> {error}
-                        </div>
-                    )}
-
-                    <div className="reserve-content">
-                        <div className="calendar-container">
-                            <label>Fecha Inicio:</label>
-                            <DatePicker
-                                selected={inicio}
-                                onChange={date => setInicio(date)}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                selectsStart
-                                startDate={inicio}
-                                endDate={fin}
-                                minDate={new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <br />
-
-                            <label>Fecha Fin:</label>
-                            <DatePicker
-                                selected={fin}
-                                onChange={date => setFin(date)}
-                                excludeDates={diasOcupados}
-                                dayClassName={marcarDiasOcupados}
-                                selectsEnd
-                                startDate={inicio}
-                                endDate={fin}
-                                minDate={inicio || new Date()}
-                                dateFormat="yyyy-MM-dd"
-                                calendarClassName="big-calendar"
-                            />
-                            <br />
-
-                            <button className="button-primary" onClick={handleSubmit}>
-                                Realizar Reserva
-                            </button>
-                            <button
-                                className="button-secondary"
-                                onClick={() => setView('list')}
-                                style={{ marginLeft: '10px' }}
-                            >
-                                Volver
-                            </button>
-                        </div>
-
-                        <div className="machine-info">
-                            <h2>Detalles de la Máquina</h2>
-                            <img
-                                src={getMachineImageSrc(selectedMachine.fotoUrl)}
-                                alt={selectedMachine.nombre}
-                                loading="lazy"
-                                className="machine-photo"
-                            />
-                            <p><strong>Nombre:</strong> {selectedMachine.nombre}</p>
-                            <p><strong>Tipo:</strong> {
-                                Array.isArray(selectedMachine.tipo) && selectedMachine.tipo.length > 0
-                                    ? selectedMachine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
-                                    : 'Sin tipo'
-                            }</p>
-                            <p><strong>Precio por día:</strong> ${selectedMachine.precioDia || 'No disponible'}</p>
-                            <p><strong>Descripción:</strong> {selectedMachine.descripcion || 'No disponible'}</p>
-                        </div>
-                    </div>
-                </div>
+                <MachineAvailability
+                    machine={selectedMachine}
+                    onClose={() => setView('list')}
+                    onReserveSuccess={() => setView('processing')}
+                    readonly={false}
+                />
             )}
             {view === 'processing' && (
                 <div className="processing-section">
