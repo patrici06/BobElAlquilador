@@ -49,7 +49,7 @@ function App() {
                 {/*Simulacion porq no andaba el back*/}
                 <Route path="/conversacion/nueva" element={<ConversacionDetalle />} />
                 <Route path="/simulador-cliente" element={<SimuladorClienteTest />} />
-                <Route path="/simulador-empleado" element={<SimuladorEmpleado />} />
+                //<Route path="/simulador-empleado" element={<SimuladorEmpleado />} />
                 <Route path="/bandeja-entrada" element={<BandejaDeEntrada />} />
                 
                 <Route path="/bandeja-respuestas" element={<BandejaDeRespuestas />} />

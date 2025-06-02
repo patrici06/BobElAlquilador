@@ -13,7 +13,5 @@ public interface MensajeRepository extends JpaRepository<Mensaje, Long> {
     // buscar mensajes de una conversacion ordenados por fecha de envío
     List<Mensaje> findByConversacionOrderByFechaEnvioAsc(Conversacion conversacion);
 
-    List<Mensaje> findAllMensajes();
-
     
 }

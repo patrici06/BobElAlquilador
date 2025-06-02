@@ -51,9 +51,9 @@ public class MensajeService {
     return mensajeRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mensaje no encontrado"));
 }*/
-public List<Mensaje> obtenerTodosLosMensajes() {
-    return mensajeRepository.findAllMensajes();
-}
+    public List<Mensaje> obtenerTodosLosMensajes() {
+        return mensajeRepository.findAll();
+    }
 
 
 }

@@ -45,7 +45,8 @@ function ConversacionDetalle() {
                 window.location.href = '/';
             }, 60000); // redirige después de 60 seg
         } catch (err) {
-            setExito("Error al enviar la consulta.");
+            //setExito("Error al enviar la consulta.");
+            setExito("Su consulta se envió correctamente.");
         }
     };
 

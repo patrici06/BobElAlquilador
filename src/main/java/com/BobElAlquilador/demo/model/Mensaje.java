@@ -25,8 +25,6 @@ public class Mensaje extends DbEstado {
     @Column(nullable = false)                // guarda fecha y hora de envío del mensaje
     private LocalDateTime fechaEnvio;
 
-    @Column(nullable = false)
-    private Integer miEstado;
 
     public Mensaje() {
         super();
@@ -37,7 +35,6 @@ public class Mensaje extends DbEstado {
         this.contenido = contenido;
         this.rolEmisor = rolEmisor;
         this.fechaEnvio = fechaEnvio;
-        this.miEstado = 0;
     }
 
     public Long getId_mensaje() {
@@ -80,11 +77,4 @@ public class Mensaje extends DbEstado {
         this.fechaEnvio = fechaEnvio;
     }
 
-    public Integer getMiEstado() { 
-        return miEstado;
-    }
-
-    public void setMiEstado(Integer miEstado) { 
-        this.miEstado = miEstado;
-    }
 }

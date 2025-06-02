@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+/*import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function SimuladorCliente() {
@@ -17,3 +17,4 @@ function SimuladorCliente() {
 }
 
 export default SimuladorCliente;
+*/

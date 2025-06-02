@@ -114,6 +114,30 @@ function Header() {
                         >
                             Consultar
                         </button>
+
+                        <button
+                            onClick={() => { setMenuOpen(false); navigate("/bandeja-respuestas"); }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("bandeja-respuestas")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "bandeja-respuestas"}
+                        >
+                            Bandeja de Respuestas
+                        </button>
+
+                    </>
+                )}
+                {rawRoles.includes("ROLE_EMPLEADO") && (
+                    <>
+                        <button
+                            onClick={() => { setMenuOpen(false); navigate("/bandeja"); }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("bandeja")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "bandeja"}
+                        >
+                            Bandeja de entrada
+                        </button>
                     </>
                 )}
                 <button
@@ -129,6 +153,7 @@ function Header() {
                 >
                     Cerrar sesión
                 </button>
+                
             </>
         );
     };

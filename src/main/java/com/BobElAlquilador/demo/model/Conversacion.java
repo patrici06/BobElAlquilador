@@ -9,21 +9,21 @@ import jakarta.persistence.*;
 public class Conversacion extends DbEstado {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Long id_conversacion;
+    private Long idConversacion;
     public Conversacion(){
         super();
     }
 
     public Conversacion(Long id_conversacion) {
         super();
-        this.id_conversacion = id_conversacion;
+        this.idConversacion = id_conversacion;
     }
 
     public Long getId_conversacion() {
-        return id_conversacion;
+        return idConversacion;
     }
 
     public void setId_conversacion(Long id_conversacion) {
-        this.id_conversacion = id_conversacion;
+        this.idConversacion = id_conversacion;
     }
 }

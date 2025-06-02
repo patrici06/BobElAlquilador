@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./BandejaDeEntrada.module.css"; // Reutilizamos el CSS del empleado
+import styles from "./BandejaDeEntrada.module.css";  // Reutilizamos CSS del empleado
 
 function BandejaDeRespuestas() {
     const [respuestas, setRespuestas] = useState([]);
@@ -7,28 +7,35 @@ function BandejaDeRespuestas() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // Simular obtener el email del cliente logueado (desde token)
         const token = sessionStorage.getItem("token");
         const emailClienteLogueado = token ? JSON.parse(atob(token)).email : "cliente1@demo.com";
 
-        // Datos simulados
+        // 🔥 Simulamos datos con consulta (pregunta original) y respuesta
         const todasLasRespuestas = [
             {
                 id: 1,
                 cliente: { email: "cliente1@demo.com" },
-                cuerpo: "Debes registrarte y buscar la máquina.",
+                consulta: "¿Cómo puedo alquilar una máquina?",  // Pregunta original
+                respuesta: "Debes registrarte y buscar la máquina."
             },
             {
                 id: 2,
-                cliente: { email: "cliente2@demo.com" },
-                cuerpo: "En tu cuenta podés ver más detalles.",
+                cliente: { email: "cliente1@demo.com" },
+                consulta: "Necesito ayuda con mi alquiler.",    // Otra pregunta
+                respuesta: "En tu cuenta podés ver más detalles."
             },
+            {
+                id: 3,
+                cliente: { email: "cliente2@demo.com" },
+                consulta: "¿Cuáles son los horarios de atención?",  // Otro cliente
+                respuesta: "De lunes a viernes de 9 a 18."
+            }
         ];
 
-        // Filtrar
+        // Filtramos solo las respuestas del cliente logueado
         const filtradas = todasLasRespuestas.filter(r => r.cliente.email === emailClienteLogueado);
 
-        // Simular carga
+        // Simulamos demora para carga (opcional)
         setTimeout(() => {
             setRespuestas(filtradas);
             setError(filtradas.length === 0 ? "No tienes respuestas por el momento." : "");
@@ -48,7 +55,8 @@ function BandejaDeRespuestas() {
                     {respuestas.map((r, index) => (
                         <li key={index} className={styles.item}>
                             <p><strong>ID:</strong> {r.id}</p>
-                            <p><strong>Respuesta:</strong> {r.cuerpo}</p>
+                            <p><strong>Preguntaste:</strong> {r.consulta}</p>
+                            <p><strong>Respuesta:</strong> {r.respuesta}</p>
                         </li>
                     ))}
                 </ul>

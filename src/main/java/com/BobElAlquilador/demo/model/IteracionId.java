@@ -8,49 +8,49 @@ import java.util.Objects;
 
 @Embeddable
 public class IteracionId implements Serializable {
-    private Long id_conversacion;
-    private Long id_pregunta;
-    private Long id_respuesta;
+    private Long idConversacion;
+    private Long idPregunta;
+    private Long idRespuesta;
     public IteracionId(){}
 
     public IteracionId(Long id_conversacion, Long id_pregunta, Long id_respuesta) {
-        this.id_conversacion = id_conversacion;
-        this.id_pregunta = id_pregunta;
-        this.id_respuesta = id_respuesta;
+        this.idConversacion = id_conversacion;
+        this.idPregunta = id_pregunta;
+        this.idRespuesta = id_respuesta;
     }
     public Long getId_conversacion() {
-        return id_conversacion;
+        return idConversacion;
     }
 
     public void setId_conversacion(Long id_conversacion) {
-        this.id_conversacion = id_conversacion;
+        this.idConversacion = id_conversacion;
     }
 
     public Long getId_pregunta() {
-        return id_pregunta;
+        return idPregunta;
     }
 
     public void setId_pregunta(Long id_pregunta) {
-        this.id_pregunta = id_pregunta;
+        this.idPregunta = id_pregunta;
     }
 
     public Long getId_respuesta() {
-        return id_respuesta;
+        return idRespuesta;
     }
 
     public void setId_respuesta(Long id_respuesta) {
-        this.id_respuesta = id_respuesta;
+        this.idRespuesta = id_respuesta;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         IteracionId that = (IteracionId) o;
-        return Objects.equals(id_conversacion, that.id_conversacion) && Objects.equals(id_pregunta, that.id_pregunta) && Objects.equals(id_respuesta, that.id_respuesta);
+        return Objects.equals(idConversacion, that.idConversacion) && Objects.equals(idPregunta, that.idPregunta) && Objects.equals(idRespuesta, that.idRespuesta);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_conversacion, id_pregunta, id_respuesta);
+        return Objects.hash(idConversacion, idPregunta, idRespuesta);
     }
 }
