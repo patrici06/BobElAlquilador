@@ -82,6 +82,39 @@ function MisAlquileres() {
         setView('alquilerVista');
     };
 
+    const handleEliminarAlquiler = (alquiler) => {
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+
+        const confirmacion = window.confirm("¿Estás seguro de que querés eliminar este alquiler?");
+        if (!confirmacion) return;
+
+        const url = `http://localhost:8080/api/alquileres/eliminar/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
+
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al eliminar el alquiler.");
+                // Eliminamos del estado
+                setAlquileres((prev) =>
+                    prev.filter(
+                        (a) =>
+                            !(
+                                a.alquilerId.nombre_maquina === nombre_maquina &&
+                                a.alquilerId.fechaInicio === fechaInicio &&
+                                a.alquilerId.fechaFin === fechaFin
+                            )
+                    )
+                );
+            })
+            .catch((err) => {
+                alert("No se pudo eliminar el alquiler: " + err.message);
+            });
+    };
+
     // Si estás en la vista de alquilerVista, renderiza VerMaquina
     if (view === 'alquilerVista' && selectedMachine) {
         return (
@@ -148,6 +181,7 @@ function MisAlquileres() {
                                     <th>Nombre</th>
                                     <th>Dni</th>
                                     <th>Email</th>
+                                    <th></th>
                                 </>
                             )}
                         </tr>
@@ -173,6 +207,15 @@ function MisAlquileres() {
                                         <td>{a.persona?.nombre || "-"}</td>
                                         <td>{a.persona?.dni || "-"}</td>
                                         <td>{a.persona?.email || "-"}</td>
+                                        <button
+                                            className="button-primary"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // evita cambiar de vista
+                                                handleEliminarAlquiler(a);
+                                            }}
+                                        >
+                                            Eliminar
+                                        </button>
                                     </>
                                 )}
                             </tr>

@@ -79,4 +79,9 @@ public class Alquiler extends DbEstado {
     public void setEstado(EstadoAlquiler estado) {
         this.estado = estado;
     }
+
+    public void borrarAlquiler(EstadoAlquiler estado) {
+        this.borrar();
+        this.setEstado(estado);
+    }
 }

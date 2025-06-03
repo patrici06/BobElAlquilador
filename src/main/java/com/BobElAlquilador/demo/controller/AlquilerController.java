@@ -87,6 +87,15 @@ public class AlquilerController {
         }
     }
 
+    @DeleteMapping("/eliminar/{nombreMaquina}")
+    public void eliminarAlquiler(
+            @PathVariable String nombreMaquina,
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin
+    ) {
+        service.eliminarAlquiler(nombreMaquina, inicio, fin);
+    }
+
     @GetMapping("/todos-los-alquileres")
     public ResponseEntity<?> obtenerAlquileres(HttpServletRequest request) {
         try {

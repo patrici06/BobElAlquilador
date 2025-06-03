@@ -56,6 +56,19 @@ public class AlquilerService {
         return repo.save(alquiler);
     }
 
+    public Alquiler buscarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        return repo.findById(new AlquilerId(nombreMaquina, inicio, fin)).orElse(null);
+    }
+
+    public void eliminarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        Alquiler alquiler = repo.findById(new AlquilerId(nombreMaquina, inicio, fin))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alquiler no encontrado"));
+
+        alquiler.borrarAlquiler(EstadoAlquiler.CanceladoInvoluntario);
+        repo.save(alquiler);
+        personaService.enviarMailCancelacion(alquiler);
+    }
+
     public List<Alquiler> getAllAlquileres() { return repo.findAll(); }
 
     public void cancelarAlquileresMaquina(Maquina maq) {
@@ -78,4 +91,6 @@ public class AlquilerService {
         String dni = cliente.getDni();
         return repo.findByCliente_Dni(dni);
     }
+
+    public void saveAlquiler(Alquiler alquiler) {repo.save(alquiler);}
 }
