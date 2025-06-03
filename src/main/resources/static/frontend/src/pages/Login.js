@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, verify2fa } from "../services/authService";
 import styles from "./Login.module.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // <-- Importa los íconos
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ function Login() {
     const [success, setSuccess] = useState("");
     const [pendingEmail, setPendingEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); // <-- Estado para mostrar/ocultar clave
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -103,16 +105,27 @@ function Login() {
                         </div>
                         <div className={styles.inputGroup}>
                             <label htmlFor="password" className={styles.label}>Clave</label>
-                            <input
-                                id="password"
-                                type="password"
-                                className={styles.input}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                placeholder="Ingresa tu clave"
-                                disabled={loading}
-                            />
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    className={styles.input}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    placeholder="Ingresa tu clave"
+                                    disabled={loading}
+                                />
+                                <span
+                                    className={styles.eyeIcon}
+                                    onClick={() => setShowPassword(v => !v)}
+                                    tabIndex={0}
+                                    aria-label={showPassword ? "Ocultar clave" : "Mostrar clave"}
+                                    style={{ userSelect: "none" }}
+                                >
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </div>
                         </div>
                         {error && renderFeedback(error, "error")}
                         {success && renderFeedback(success, "success")}

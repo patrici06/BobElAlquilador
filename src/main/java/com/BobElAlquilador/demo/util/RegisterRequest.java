@@ -11,9 +11,21 @@ public class RegisterRequest {
         private String apellido;
         private String email;
         private String clave;
+        private String claveAnterior;
+
+
         private String telefono;
         private LocalDate fechaNacimiento;
         private Set<String> roles; // Ej: ["PROPIETARIO", "EMPLEADO"]
+
+
+        public String getClaveAnterior() {
+                return claveAnterior;
+        }
+
+        public void setClaveAnterior(String claveAnterior) {
+                this.claveAnterior = claveAnterior;
+        }
 
         public LocalDate getFechaNacimiento() {
                 return fechaNacimiento;
