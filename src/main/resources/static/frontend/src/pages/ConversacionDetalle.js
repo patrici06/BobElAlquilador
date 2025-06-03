@@ -7,6 +7,7 @@ import styles from "./ConversacionDetalle.module.css";
 
 function ConversacionDetalle() {
     const navigate = useNavigate();
+    const pregunta = useState("");
     const [nuevoMensaje, setNuevoMensaje] = useState("");
     const [exito, setExito] = useState("");
     const [errorMensaje, setErrorMensaje] = useState("");
@@ -14,15 +15,7 @@ function ConversacionDetalle() {
     const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token);
 
-    let email = "";
-    if (token) {
-        try {
-            const decoded = jwtDecode(token);
-            email = decoded.email || decoded.sub || "";
-        } catch (e) {
-            email = "";
-        }
-    }
+    
 
     const handleEnviarPregunta = async () => {
         if (nuevoMensaje.trim() === "") {
@@ -31,18 +24,12 @@ function ConversacionDetalle() {
         }
 
         try {
-            const pregunta = {
-                cliente: { email: email },
-                fecha: new Date().toISOString().split('T')[0],
-                hora: new Date().toTimeString().split(' ')[0],
-                cuerpo: nuevoMensaje
-            };
-            await crearPregunta(email, pregunta);
+            await crearPregunta(nuevoMensaje);
             setExito("Su consulta se envió correctamente.");
             setContador(60);
             setErrorMensaje("");  // Limpiar errores si existían
         } catch (err) {
-            setExito("Su consulta se envió correctamente.");  // O manejar el error real
+            setExito(err.message); 
         }
     };
 

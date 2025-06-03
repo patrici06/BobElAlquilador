@@ -10,7 +10,6 @@ function BandejaDeRespuestas() {
         const token = sessionStorage.getItem("token");
         const emailClienteLogueado = token ? JSON.parse(atob(token)).email : "cliente1@demo.com";
 
-        // 🔥 Simulamos datos con consulta (pregunta original) y respuesta
         const todasLasRespuestas = [
             {
                 id: 1,

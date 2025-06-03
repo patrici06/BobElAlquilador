@@ -103,18 +103,6 @@ function Header() {
                         >
                             Ver Maquinas
                         </button>
-                        <button
-                            onClick={() => {
-                                setMenuOpen(false);
-                                navigate("/conversacion/nueva");
-                            }}
-                            className={styles.button}
-                            onMouseEnter={() => setHoveredBtn("Consultar")}
-                            onMouseLeave={() => setHoveredBtn("")}
-                            data-hovered={hoveredBtn === "Consultar"}
-                        >
-                            Ver Maquinas
-                        </button>
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
@@ -162,6 +150,7 @@ function Header() {
                         >
                             Bandeja de entrada
                         </button>
+                        
                     </>
                 )}
                 <button

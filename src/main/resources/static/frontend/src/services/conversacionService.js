@@ -1,30 +1,41 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "http://localhost:8080/cliente";
 
-// Crear una nueva pregunta (iteracion)
-export function crearPregunta(email, pregunta) {
-    const token = sessionStorage.getItem("token"); // Usar sessionStorage, como tu Header
-    return axios.post(`${API_BASE}/cliente/${email}/preguntas`, pregunta, {
-        headers: { Authorization: `Bearer ${token}` }
+// // Crear una nueva pregunta (iteracion)
+// export function crearPregunta(nuevoMensaje, email) {
+//     const token = sessionStorage.getItem("token"); 
+//     return axios.post(
+//         `${API_BASE}/${email}/preguntas`, nuevoMensaje, email, 
+//         {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         }
+// ); 
+// }
+
+
+
+export function crearPregunta(mensaje) {
+    const token = sessionStorage.getItem("token");
+    let email = "";
+       if (token) {
+           try {
+               const decoded = jwtDecode(token);
+               email = decoded.email || decoded.sub || "";
+           } catch (e) {
+               email = "";
+           }
+       }
+    return axios.post(`${API_BASE}/${email}/preguntas`, mensaje, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'text/plain'
+        }
     });
 }
-
-// // Obtener todas las preguntas (iteraciones) del cliente
-// export function obtenerPreguntasCliente(email) {
-//     const token = sessionStorage.getItem("token");
-//     return axios.get(`${API_BASE}/cliente/${email}/preguntas`, {
-//         headers: { Authorization: `Bearer ${token}` }
-//     });
-// }
-
-// // (opcional) Obtener conversaciones pendientes (si activas ese endpoint)
-// export function obtenerConversacionesPendientes() {
-//     const token = sessionStorage.getItem("token");
-//     return axios.get(`${API_BASE}/cliente/pendientes`, {
-//         headers: { Authorization: `Bearer ${token}` }
-//     });
-// }
 
 export function obtenerTodasPreguntas() {
     const token = sessionStorage.getItem("token");

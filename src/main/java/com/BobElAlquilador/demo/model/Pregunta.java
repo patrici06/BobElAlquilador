@@ -13,7 +13,7 @@ public class Pregunta {
     private Long idP;
 
     @ManyToOne
-    @JoinColumn (name  = "dni_cliente")
+    @JoinColumn (name  = "email_cliente")
     private Persona cliente;
     private LocalDate fecha;
     private LocalTime hora;
