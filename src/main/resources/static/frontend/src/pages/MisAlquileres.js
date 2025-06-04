@@ -85,6 +85,18 @@ function MisAlquileres() {
     const handleEliminarAlquiler = (alquiler) => {
         const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
 
+        // Reglas de negocio: sólo cancelar si HOY es anterior a fecha de inicio
+        const hoy = new Date();
+        // Limpiamos la hora para comparar sólo fechas
+        hoy.setHours(0,0,0,0);
+        const inicioAlquiler = new Date(fechaInicio);
+        inicioAlquiler.setHours(0,0,0,0);
+
+        if (hoy >= inicioAlquiler) {
+            alert("No se puede cancelar el alquiler debido a que se encuentra en curso");
+            return;
+        }
+
         const confirmacion = window.confirm("¿Estás seguro de que querés eliminar este alquiler?");
         if (!confirmacion) return;
 
@@ -109,6 +121,7 @@ function MisAlquileres() {
                             )
                     )
                 );
+                alert("Reserva cancelada");
             })
             .catch((err) => {
                 alert("No se pudo eliminar el alquiler: " + err.message);
@@ -164,7 +177,7 @@ function MisAlquileres() {
                 {error && <p className="error">{error}</p>}
 
                 {!loading && !error && alquileresFiltrados.length === 0 && (
-                    <p className="noData">No hay alquileres activos o pendientes.</p>
+                    <p className="noData">No hay alquileres.</p>
                 )}
 
                 {!loading && !error && alquileresFiltrados.length > 0 && (
@@ -214,7 +227,7 @@ function MisAlquileres() {
                                                 handleEliminarAlquiler(a);
                                             }}
                                         >
-                                            Eliminar
+                                            Cancelar Alquiler
                                         </button>
                                     </>
                                 )}
