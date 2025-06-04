@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './BandejaDeEntrada.module.css';
+import { obtenerConsultasPendientes, enviarRespuestaConsulta } from '../services/conversacionService';
 
 function BandejaDeEntrada() {
     const [consultasPendientes, setConsultasPendientes] = useState([]);
@@ -10,68 +11,33 @@ function BandejaDeEntrada() {
     const [exito, setExito] = useState("");
     const [pestañaActiva, setPestañaActiva] = useState('pendientes');
 
-    // Datos de ejemplo para simular consultas
-    const consultasEjemplo = {
-        pendientes: [
-            {
-                conversacion: { id_conversacion: 2 },
-                pregunta: {
-                    idP: 2,
-                    cuerpo: "¿Tienen disponible alguna retroexcavadora para alquilar este fin de semana?",
-                    fecha: "2024-03-05",
-                    hora: "16:20",
-                    cliente: {
-                        nombre: "Juan",
-                        apellido: "Pérez",
-                        email: "juan.perez@test.com"
-                    }
+    // Cargar consultas reales del backend
+    const cargarConsultas = async () => {
+        try {
+            setError("");
+            const res = await obtenerConsultasPendientes();
+            const pendientes = [];
+            const respondidas = [];
+
+            // Separar en pendientes y respondidas
+            res.data.forEach(iteracion => {
+                if (!iteracion.respuesta || !iteracion.respuesta.cuerpo) {
+                    pendientes.push(iteracion);
+                } else {
+                    respondidas.push(iteracion);
                 }
-            },
-            {
-                conversacion: { id_conversacion: 3 },
-                pregunta: {
-                    idP: 3,
-                    cuerpo: "¿Cuál es el tiempo mínimo de alquiler para una excavadora?",
-                    fecha: "2024-03-05",
-                    hora: "17:45",
-                    cliente: {
-                        nombre: "María",
-                        apellido: "González",
-                        email: "maria.gonzalez@test.com"
-                    }
-                }
-            }
-        ],
-        respondidas: [
-            {
-                conversacion: { id_conversacion: 1 },
-                pregunta: {
-                    idP: 1,
-                    cuerpo: "¿Cuál es el costo del alquiler por día de la retroexcavadora?",
-                    fecha: "2024-03-05",
-                    hora: "14:30",
-                    cliente: {
-                        nombre: "Ana",
-                        apellido: "Martínez",
-                        email: "ana.martinez@test.com"
-                    }
-                },
-                respuesta: {
-                    cuerpo: "El costo del alquiler de la retroexcavadora es de $50.000 por día, incluyendo el combustible y el operador.",
-                    fecha: "2024-03-05",
-                    hora: "15:45"
-                }
-            }
-        ]
+            });
+
+            setConsultasPendientes(pendientes);
+            setConsultasRespondidas(respondidas);
+        } catch (err) {
+            setError("Error al cargar las consultas");
+        }
     };
 
     useEffect(() => {
-        // Comentamos la llamada real al backend
-        // cargarConsultas();
-        
-        // Usamos los datos de ejemplo
-        setConsultasPendientes(consultasEjemplo.pendientes);
-        setConsultasRespondidas(consultasEjemplo.respondidas);
+        cargarConsultas();
+        // eslint-disable-next-line
     }, []);
 
     const handleResponder = (consulta) => {
@@ -80,49 +46,42 @@ function BandejaDeEntrada() {
         setError("");
     };
 
-    const enviarRespuesta = () => {
+    const enviarRespuesta = async () => {
         if (!respuesta.trim()) {
             setError("La respuesta no puede estar vacía");
             return;
         }
-
-        // Simulamos el envío de la respuesta
-        const consultaRespondida = {
-            ...consultaSeleccionada,
-            respuesta: {
-                cuerpo: respuesta,
-                fecha: new Date().toISOString().split('T')[0],
-                hora: new Date().toTimeString().split(' ')[0].substring(0, 5)
-            }
-        };
-
-        // Actualizamos las listas
-        setConsultasPendientes(prev => 
-            prev.filter(c => c.conversacion.id_conversacion !== consultaSeleccionada.conversacion.id_conversacion)
-        );
-        setConsultasRespondidas(prev => [...prev, consultaRespondida]);
-        
-        setConsultaSeleccionada(null);
-        setRespuesta("");
-        setExito("Respuesta enviada con éxito");
-        setTimeout(() => setExito(""), 3000);
+        try {
+            await enviarRespuestaConsulta(
+                consultaSeleccionada.conversacion.idConversacion,
+                consultaSeleccionada.pregunta.idP,
+                respuesta
+            );
+            setExito("Respuesta enviada con éxito");
+            setConsultaSeleccionada(null);
+            setRespuesta("");
+            cargarConsultas();
+            setTimeout(() => setExito(""), 3000);
+        } catch (err) {
+            setError(err.response?.data?.mensaje);
+        }
     };
 
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Bandeja de Entrada</h1>
-            
+
             {exito && <div className={styles.success}>{exito}</div>}
             {error && <div className={styles.error}>{error}</div>}
 
             <div className={styles.tabs}>
-                <button 
+                <button
                     className={`${styles.tabButton} ${pestañaActiva === 'pendientes' ? styles.active : ''}`}
                     onClick={() => setPestañaActiva('pendientes')}
                 >
                     Pendientes ({consultasPendientes.length})
                 </button>
-                <button 
+                <button
                     className={`${styles.tabButton} ${pestañaActiva === 'respondidas' ? styles.active : ''}`}
                     onClick={() => setPestañaActiva('respondidas')}
                 >
@@ -141,7 +100,7 @@ function BandejaDeEntrada() {
                             <div key={index} className={styles.consultaCard}>
                                 <div className={styles.consultaInfo}>
                                     <div className={styles.clienteInfo}>
-                                        <strong>Cliente:</strong> {consulta.pregunta.cliente.nombre} {consulta.pregunta.cliente.apellido}
+                                        <strong>Cliente:</strong> {consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}
                                     </div>
                                     <div className={styles.fecha}>
                                         {consulta.pregunta.fecha} {consulta.pregunta.hora}
@@ -167,7 +126,7 @@ function BandejaDeEntrada() {
                             <div key={index} className={styles.consultaCard}>
                                 <div className={styles.consultaInfo}>
                                     <div className={styles.clienteInfo}>
-                                        <strong>Cliente:</strong> {consulta.pregunta.cliente.nombre} {consulta.pregunta.cliente.apellido}
+                                        <strong>Cliente:</strong> {consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}
                                     </div>
                                     <div className={styles.fecha}>
                                         {consulta.pregunta.fecha} {consulta.pregunta.hora}

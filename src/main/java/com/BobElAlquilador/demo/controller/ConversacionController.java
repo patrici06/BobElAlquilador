@@ -8,14 +8,16 @@ import com.BobElAlquilador.demo.model.Respuesta;
 import com.BobElAlquilador.demo.service.ConversacionService;
 import com.BobElAlquilador.demo.service.IteradorService;
 import com.BobElAlquilador.demo.service.PersonaService;
-import com.BobElAlquilador.demo.service.RespuestaService;
 import com.BobElAlquilador.demo.repository.PreguntaRepository;
+import com.BobElAlquilador.demo.service.RespuestaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.*;
+
 import java.util.*;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -29,7 +31,7 @@ public class ConversacionController {
 
     @Autowired
     private IteradorService iteradorService;
-    
+
     @Autowired
     private PersonaService personaService;
 
@@ -47,24 +49,26 @@ public class ConversacionController {
             if (cliente == null) {
                 throw new RuntimeException("Cliente no encontrado");
             }
-            
+
             // Validar la pregunta
             if (pregunta == null || pregunta.length() == 0) {
                 throw new RuntimeException("Error, la pregunta no puede estar vacía");
             }
-            
+            Conversacion conversacion;
+            if ( iteradorService.getAllIteradoresPorCliente(email).isEmpty()){
+                conversacion = new Conversacion();
+                conversacionService.SubirConversacion(conversacion);
+            }else{
+                List<Iteracion> iteraciones = iteradorService.getAllIteradoresPorCliente(email);
+                conversacion = iteraciones.get(0).getConversacion();
+            }
             // Crear una nueva conversación
-            Conversacion conversacion = new Conversacion();
-            conversacionService.SubirConversacion(conversacion);
-            
             // Crear y guardar la pregunta
             Pregunta preg = new Pregunta(cliente, LocalDate.now(), LocalTime.now(), pregunta);
             preg = preguntaRepository.save(preg);
-            
             // Crear la iteración
             Iteracion iteracion = new Iteracion(conversacion, preg, null);
             iteradorService.subirIterador(iteracion);
-            
             return ResponseEntity.ok(iteracion);
         } catch (Exception ex) {
             Map<String, String> response = new HashMap<>();
@@ -73,6 +77,8 @@ public class ConversacionController {
         }
     }
 
+
+    // todas las conversaciones de la bd
     @GetMapping("/{email}/preguntas")
     public ResponseEntity<?> obtenerTodas(@PathVariable String email) {
         try {
@@ -93,7 +99,7 @@ public class ConversacionController {
         } catch (Exception ex) {
             Map<String, String> response = new HashMap<>();
             response.put("mensaje", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
