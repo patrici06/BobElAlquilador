@@ -24,6 +24,7 @@ public class Maquina extends DbEstado{
     @Enumerated(EnumType.STRING)
     private EstadoMaquina estadoMaquina;
     private double precio_dia;
+    private double porcentajeReembolso;
 
     @ManyToOne
     @JoinColumn(name = "marca_id")
@@ -40,7 +41,7 @@ public class Maquina extends DbEstado{
         super();
     }
 
-    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, Set<Tipo> tipo, double precio, Marca marca) {
+    public Maquina(String nombre, String ubicacion, LocalDate fecha, String fotoUrl, String descripcion, Set<Tipo> tipo, double precio, Marca marca, double porcentajeReembolso) {
         this.nombreMaquina = nombre;
         this.ubicacion = ubicacion;
         this.fechaIngreso = fecha;
@@ -50,6 +51,15 @@ public class Maquina extends DbEstado{
         this.precio_dia = precio;
         this.estadoMaquina = EstadoMaquina.Disponible;
         this.marca = marca;
+        this.porcentajeReembolso = porcentajeReembolso;
+    }
+
+    public double getPorcentajeReembolso() {
+        return porcentajeReembolso;
+    }
+
+    public void setPorcentajeReembolso(double porcentajeReembolso) {
+        this.porcentajeReembolso = porcentajeReembolso;
     }
 
     public EstadoMaquina getEstadoMaquina (){

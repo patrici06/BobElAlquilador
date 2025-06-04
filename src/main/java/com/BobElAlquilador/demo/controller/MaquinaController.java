@@ -62,7 +62,8 @@ public class MaquinaController {
                     maquinaRequest.getDescripcion(),
                     tiposFiltrados,
                     maquinaRequest.getPrecioDia(),
-                    marca
+                    marca,
+                    maquinaRequest.getPorcentajeReembolso()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
