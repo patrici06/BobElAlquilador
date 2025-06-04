@@ -56,7 +56,24 @@ public class AlquilerService {
         return repo.save(alquiler);
     }
 
-    public List<Alquiler> getAllAlquileres() { return repo.findAll(); }
+    public Alquiler buscarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        return repo.findById(new AlquilerId(nombreMaquina, inicio, fin)).orElse(null);
+    }
+
+    public void eliminarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        Alquiler alquiler = repo.findById(new AlquilerId(nombreMaquina, inicio, fin))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alquiler no encontrado"));
+
+        alquiler.borrarAlquiler(EstadoAlquiler.CanceladoInvoluntario);
+        repo.save(alquiler);
+        personaService.enviarMailCancelacion(alquiler);
+    }
+
+    public List<Alquiler> getAllAlquileres() {
+        List<Alquiler> alquileres = repo.findAll();
+        cambioDeEstado(alquileres);
+        return alquileres;
+    }
 
     public void cancelarAlquileresMaquina(Maquina maq) {
         List<Alquiler> alquileresMaq = this.getAllAlquileres().stream()
@@ -76,6 +93,33 @@ public class AlquilerService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado");
         }
         String dni = cliente.getDni();
-        return repo.findByCliente_Dni(dni);
+        List<Alquiler> alquileres = repo.findByCliente_Dni(dni);
+
+        cambioDeEstado(alquileres);
+        return alquileres;
     }
+
+    private void cambioDeEstado(List<Alquiler> alquileres) {
+        LocalDate hoy = LocalDate.now();
+        for (Alquiler a : alquileres) {
+            LocalDate inicio = a.getAlquilerId().getFechaInicio();
+            LocalDate fin = a.getAlquilerId().getFechaFin();
+
+            EstadoAlquiler nuevoEstado;
+            if (hoy.isBefore(inicio)) {
+                nuevoEstado = EstadoAlquiler.Pendiente;
+            } else if ((hoy.isEqual(inicio) || hoy.isAfter(inicio)) && hoy.isBefore(fin.plusDays(1))) {
+                nuevoEstado = EstadoAlquiler.Activo;
+            } else {
+                nuevoEstado = EstadoAlquiler.Finalizado;
+            }
+
+            if(!a.getEstadoAlquiler().equals(nuevoEstado)) {
+                a.setEstado(nuevoEstado);
+                repo.save(a);
+            }
+        }
+    }
+
+    public void saveAlquiler(Alquiler alquiler) {repo.save(alquiler);}
 }

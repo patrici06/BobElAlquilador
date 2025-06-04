@@ -19,6 +19,7 @@ public class MaquinaRequest {
     private Integer marcaId;
     private EstadoMaquina estadoMaquina;
     private double precioDia;
+    private double porcentajeReembolso;
 
     public Set<Integer> getTiposIds() {
         return tiposIds;
@@ -34,6 +35,15 @@ public class MaquinaRequest {
 
     public void setMarcaId(Integer marcaId) {
         this.marcaId = marcaId;
+    }
+
+    // Getter y Setter para porcentajeReembolso
+    public double getPorcentajeReembolso() {
+        return porcentajeReembolso;
+    }
+
+    public void setPorcentajeReembolso(double porcentajeReembolso) {
+        this.porcentajeReembolso = porcentajeReembolso;
     }
 
     // Getter y Setter para nombreMaquina

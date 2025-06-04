@@ -42,9 +42,9 @@ public class MaquinaService {
     public Maquina subir(String nombreMaquina, String ubicacion,
                          LocalDate fechaIngreso, String fotoUrl,
                          String descripcion, Set<Tipo> tipo,
-                         Double precioDia, Marca marca
+                         Double precioDia, Marca marca, Double porcentaje
     ) {
-        Maquina nueva = new Maquina(nombreMaquina, ubicacion, fechaIngreso, fotoUrl, descripcion, tipo, precioDia, marca);
+        Maquina nueva = new Maquina(nombreMaquina, ubicacion, fechaIngreso, fotoUrl, descripcion, tipo, precioDia, marca, porcentaje);
         nueva.setEstadoMaquina(EstadoMaquina.Disponible);
         if (this.getMaquinaPorNombre(nombreMaquina) != null) {
             throw new RuntimeException("La maquina '" + nombreMaquina + "' ya se encuentra registrada");

@@ -15,6 +15,7 @@ function SubirMaquina() {
     const [marcas, setMarcas] = useState([]); // Todas las marcas traídas de la API
     const [marcaSeleccionada, setMarcaSeleccionada] = useState(""); // ID seleccionado
     const [precioDia, setPrecioDia] = useState("");
+    const [porcentajeReembolso, setPorcentajeReembolso] = useState(""); // Nuevo campo
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -25,7 +26,6 @@ function SubirMaquina() {
 
     // Cargar marcas y tipos desde la API al montar el componente
     useEffect(() => {
-        // Cambia la URL si tu backend es distinto
         fetch("http://localhost:8080/api/tipos")
             .then(res => res.json())
             .then(data => setTipos(data))
@@ -61,6 +61,14 @@ function SubirMaquina() {
         setMarcaSeleccionada(e.target.value);
     };
 
+    const handlePorcentajeReembolsoChange = (e) => {
+        // Solo permite números del 0 al 100, con decimales
+        const val = e.target.value;
+        if (val === "" || (/^\d{0,3}([.,]\d{0,2})?$/.test(val) && val <= 100)) {
+            setPorcentajeReembolso(val);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -82,6 +90,9 @@ function SubirMaquina() {
             tiposSeleccionados.forEach(id => formData.append("tiposIds", id));
 
             formData.append("precioDia", precioDia);
+
+            // Nuevo campo: porcentaje de reembolso (como double)
+            formData.append("porcentajeReembolso", porcentajeReembolso);
 
             await subirMaquina(formData);
             setSuccess("Máquina registrada exitosamente. Redirigiendo...");
@@ -165,27 +176,26 @@ function SubirMaquina() {
                         />
                     </div>
 
-                    {/* Selector de marca (radio) */}
+                    {/* Selector de marca: ahora dropdown */}
                     <div className={styles.inputGroup}>
-                        <label className={styles.label}>Marca</label>
-                        <div>
+                        <label htmlFor="marcaDropdown" className={styles.label}>Marca</label>
+                        <select
+                            id="marcaDropdown"
+                            className={styles.input}
+                            value={marcaSeleccionada}
+                            onChange={handleMarcaChange}
+                            required
+                        >
+                            <option value="" disabled>Selecciona una marca</option>
                             {marcas.length === 0
-                                ? <span>Cargando marcas...</span>
+                                ? <option value="">Cargando marcas...</option>
                                 : marcas.map(marca => (
-                                    <label key={marca.id} style={{ marginRight: 15 }}>
-                                        <input
-                                            type="radio"
-                                            name="marca"
-                                            value={marca.id}
-                                            checked={marcaSeleccionada === String(marca.id)}
-                                            onChange={handleMarcaChange}
-                                            required
-                                        />
+                                    <option key={marca.id} value={marca.id}>
                                         {marca.nombre}
-                                    </label>
+                                    </option>
                                 ))
                             }
-                        </div>
+                        </select>
                     </div>
 
                     {/* Selector de tipos de máquina (checkboxes) */}
@@ -223,6 +233,24 @@ function SubirMaquina() {
                             step="0.01"
                         />
                     </div>
+
+                    {/* Nuevo campo: porcentaje de reembolso */}
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="porcentajeReembolso" className={styles.label}>Porcentaje de reintegro (%)</label>
+                        <input
+                            id="porcentajeReembolso"
+                            type="number"
+                            className={styles.input}
+                            value={porcentajeReembolso}
+                            onChange={handlePorcentajeReembolsoChange}
+                            required
+                            placeholder="Porcentaje de reintegro"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                        />
+                    </div>
+
                     {error && <div className={styles.errorMsg}>{error}</div>}
                     {success && <div className={styles.successMsg}>{success}</div>}
                     <button

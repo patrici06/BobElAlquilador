@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -28,6 +29,10 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, AlquilerId> 
 
 
     List<Alquiler> findByCliente_Dni(String dni);
+
+    Optional<Alquiler> findById(AlquilerId alquilerId);
+
+    void deleteById(AlquilerId alquilerId);
 
     // Encuentra alquileres que solapen un rango dado para la misma máquina
     // Metodo necesario para la HU Alquilar Maquina

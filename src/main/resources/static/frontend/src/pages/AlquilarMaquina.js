@@ -273,7 +273,7 @@ function AlquilarMaquina() {
             {view === 'payment' && (
                 <div className="payment-section">
                     <h1>✅ Pago Exitoso</h1>
-                    <p>Se ha reservado tu máquina correctamente.</p>
+                    <p>Alquiler Realizado con Exito</p>
                     <button className="button-primary" onClick={() => setView('list')}>
                         Volver al Inicio
                     </button>

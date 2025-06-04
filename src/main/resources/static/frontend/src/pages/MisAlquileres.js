@@ -82,6 +82,52 @@ function MisAlquileres() {
         setView('alquilerVista');
     };
 
+    const handleEliminarAlquiler = (alquiler) => {
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+
+        // Reglas de negocio: sólo cancelar si HOY es anterior a fecha de inicio
+        const hoy = new Date();
+        // Limpiamos la hora para comparar sólo fechas
+        const [anio, mes, dia] = fechaInicio.split("-").map(Number);
+        const inicioAlquiler = new Date(anio, mes - 1, dia);
+        inicioAlquiler.setHours(0,0,0,0);
+
+        if (hoy >= inicioAlquiler) {
+            alert("No se puede cancelar el alquiler debido a que se encuentra en curso");
+            return;
+        }
+
+        const confirmacion = window.confirm("¿Estás seguro de que querés eliminar este alquiler?");
+        if (!confirmacion) return;
+
+        const url = `http://localhost:8080/api/alquileres/eliminar/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
+
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al eliminar el alquiler.");
+                // Eliminamos del estado
+                setAlquileres((prev) =>
+                    prev.filter(
+                        (a) =>
+                            !(
+                                a.alquilerId.nombre_maquina === nombre_maquina &&
+                                a.alquilerId.fechaInicio === fechaInicio &&
+                                a.alquilerId.fechaFin === fechaFin
+                            )
+                    )
+                );
+                alert("Reserva cancelada");
+            })
+            .catch((err) => {
+                alert("No se pudo eliminar el alquiler: " + err.message);
+            });
+    };
+
     // Si estás en la vista de alquilerVista, renderiza VerMaquina
     if (view === 'alquilerVista' && selectedMachine) {
         return (
@@ -109,7 +155,8 @@ function MisAlquileres() {
                                 <option value="PENDIENTE">Pendiente</option>
                                 <option value="ACTIVO">Activo</option>
                                 <option value="FINALIZADO">Finalizado</option>
-                                <option value="CANCELADO">Cancelado</option>
+                                <option value="Cancelado">Cancelado</option>
+                                <option value="CanceladoInvoluntario">Cancelado Involuntario</option>
                                 {/* Agrega más estados si tu backend tiene otros */}
                             </select>
                         </label>
@@ -131,7 +178,7 @@ function MisAlquileres() {
                 {error && <p className="error">{error}</p>}
 
                 {!loading && !error && alquileresFiltrados.length === 0 && (
-                    <p className="noData">No hay alquileres activos o pendientes.</p>
+                    <p className="noData">No hay alquileres.</p>
                 )}
 
                 {!loading && !error && alquileresFiltrados.length > 0 && (
@@ -148,6 +195,7 @@ function MisAlquileres() {
                                     <th>Nombre</th>
                                     <th>Dni</th>
                                     <th>Email</th>
+                                    <th></th>
                                 </>
                             )}
                         </tr>
@@ -159,8 +207,8 @@ function MisAlquileres() {
                                 onClick={() => handleAlquilerClick(a)}
                             >
                                 <td>{a.alquilerId?.nombre_maquina || "Desconocida"}</td>
-                                <td>{new Date(a.alquilerId?.fechaInicio).toLocaleDateString()}</td>
-                                <td>{new Date(a.alquilerId?.fechaFin).toLocaleDateString()}</td>
+                                <td>{new Date(a.alquilerId?.fechaInicio + "T00:00:00").toLocaleDateString()}</td>
+                                <td>{new Date(a.alquilerId?.fechaFin + "T00:00:00").toLocaleDateString()}</td>
                                 <td>{a.estadoAlquiler}</td>
                                 <td>
                                     {a.precioTotal.toLocaleString("es-AR", {
@@ -173,6 +221,15 @@ function MisAlquileres() {
                                         <td>{a.persona?.nombre || "-"}</td>
                                         <td>{a.persona?.dni || "-"}</td>
                                         <td>{a.persona?.email || "-"}</td>
+                                        <button
+                                            className="button-primary"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // evita cambiar de vista
+                                                handleEliminarAlquiler(a);
+                                            }}
+                                        >
+                                            Cancelar Alquiler
+                                        </button>
                                     </>
                                 )}
                             </tr>
