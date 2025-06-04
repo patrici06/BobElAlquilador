@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import styles from './BandejaDeEntrada.module.css';
 import { obtenerConsultasPendientes, enviarRespuestaConsulta } from '../services/conversacionService';
 
+// Utilidad para mostrar solo hora y minutos
+function formatearHora(horaStr) {
+    if (!horaStr) return '';
+    return horaStr.split(":").slice(0,2).join(":");
+}
+
 function BandejaDeEntrada() {
     const [consultasPendientes, setConsultasPendientes] = useState([]);
     const [consultasRespondidas, setConsultasRespondidas] = useState([]);
@@ -53,7 +59,6 @@ function BandejaDeEntrada() {
         }
         try {
             await enviarRespuestaConsulta(
-                consultaSeleccionada.conversacion.idConversacion,
                 consultaSeleccionada.pregunta.idP,
                 respuesta
             );
@@ -63,7 +68,7 @@ function BandejaDeEntrada() {
             cargarConsultas();
             setTimeout(() => setExito(""), 3000);
         } catch (err) {
-            setError(err.response?.data?.mensaje);
+            setError(err.response?.data?.mensaje || "Error al enviar la respuesta");
         }
     };
 
@@ -79,13 +84,13 @@ function BandejaDeEntrada() {
                     className={`${styles.tabButton} ${pestañaActiva === 'pendientes' ? styles.active : ''}`}
                     onClick={() => setPestañaActiva('pendientes')}
                 >
-                    Pendientes ({consultasPendientes.length})
+                    Pendientes <span className={styles.tabCount}>({consultasPendientes.length})</span>
                 </button>
                 <button
                     className={`${styles.tabButton} ${pestañaActiva === 'respondidas' ? styles.active : ''}`}
                     onClick={() => setPestañaActiva('respondidas')}
                 >
-                    Respondidas ({consultasRespondidas.length})
+                    Respondidas <span className={styles.tabCount}>({consultasRespondidas.length})</span>
                 </button>
             </div>
 
@@ -93,23 +98,28 @@ function BandejaDeEntrada() {
                 {pestañaActiva === 'pendientes' ? (
                     consultasPendientes.length === 0 ? (
                         <div className={styles.empty}>
-                            No hay consultas pendientes por responder
+                            No hay consultas pendientes por responder.
                         </div>
                     ) : (
                         consultasPendientes.map((consulta, index) => (
                             <div key={index} className={styles.consultaCard}>
                                 <div className={styles.consultaInfo}>
                                     <div className={styles.clienteInfo}>
-                                        <strong>Cliente:</strong> {consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}
+                                        <span className={styles.infoLabel}>Cliente:</span>
+                                        <span>{consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}</span>
                                     </div>
                                     <div className={styles.fecha}>
-                                        {consulta.pregunta.fecha} {consulta.pregunta.hora}
+                                        {consulta.pregunta.fecha} {formatearHora(consulta.pregunta.hora)}
                                     </div>
                                 </div>
-                                <p className={styles.pregunta}>{consulta.pregunta.cuerpo}</p>
+                                <div className={styles.preguntaBox}>
+                                    <span className={styles.infoLabel}>Pregunta:</span>
+                                    <span>{consulta.pregunta.cuerpo}</span>
+                                </div>
                                 <button
                                     onClick={() => handleResponder(consulta)}
                                     className={styles.responderBtn}
+                                    aria-label="Responder a la consulta"
                                 >
                                     Responder
                                 </button>
@@ -119,40 +129,50 @@ function BandejaDeEntrada() {
                 ) : (
                     consultasRespondidas.length === 0 ? (
                         <div className={styles.empty}>
-                            No hay consultas respondidas
+                            No hay consultas respondidas.
                         </div>
                     ) : (
-                        consultasRespondidas.map((consulta, index) => (
-                            <div key={index} className={styles.consultaCard}>
-                                <div className={styles.consultaInfo}>
-                                    <div className={styles.clienteInfo}>
-                                        <strong>Cliente:</strong> {consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}
+                        consultasRespondidas.map((consulta, index) => {
+                            // Permitir compatibilidad con respuesta.empleado o respuesta.persona
+                            const empleado = consulta.respuesta.empleado || consulta.respuesta.persona || {};
+                            return (
+                                <div key={index} className={styles.consultaCard}>
+                                    <div className={styles.consultaInfo}>
+                                        <div className={styles.clienteInfo}>
+                                            <span className={styles.infoLabel}>Cliente:</span>
+                                            <span>{consulta.pregunta.cliente?.nombre} {consulta.pregunta.cliente?.apellido}</span>
+                                        </div>
+                                        <div className={styles.fecha}>
+                                            {consulta.pregunta.fecha} {formatearHora(consulta.pregunta.hora)}
+                                        </div>
                                     </div>
-                                    <div className={styles.fecha}>
-                                        {consulta.pregunta.fecha} {consulta.pregunta.hora}
+                                    <div className={styles.preguntaRespuesta}>
+                                        <div className={styles.preguntaContainer}>
+                                            <h3>Pregunta</h3>
+                                            <p className={styles.pregunta}>{consulta.pregunta.cuerpo}</p>
+                                        </div>
+                                        <div className={styles.respuestaContainer}>
+                                            <h3>Respuesta</h3>
+                                            <p className={styles.respuesta}>{consulta.respuesta.cuerpo}</p>
+                                            <small className={styles.fecha}>
+                                                Respondida el {consulta.respuesta.fecha} a las {formatearHora(consulta.respuesta.hora)}
+                                            </small>
+                                            <div className={styles.empleadoInfo}>
+                                                <strong>Empleado que respondió:</strong>{" "}
+                                                {empleado?.nombre || <em>No disponible</em>}{" "}
+                                                {empleado?.apellido || ""}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className={styles.preguntaRespuesta}>
-                                    <div className={styles.preguntaContainer}>
-                                        <h3>Pregunta:</h3>
-                                        <p className={styles.pregunta}>{consulta.pregunta.cuerpo}</p>
-                                    </div>
-                                    <div className={styles.respuestaContainer}>
-                                        <h3>Respuesta:</h3>
-                                        <p className={styles.respuesta}>{consulta.respuesta.cuerpo}</p>
-                                        <small className={styles.fecha}>
-                                            Respondida el {consulta.respuesta.fecha} a las {consulta.respuesta.hora}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )
                 )}
             </div>
 
             {consultaSeleccionada && (
-                <div className={styles.respuestaModal}>
+                <div className={styles.respuestaModal} role="dialog" aria-modal="true">
                     <div className={styles.modalContent}>
                         <h2>Responder Consulta</h2>
                         <div className={styles.preguntaOriginal}>
@@ -164,6 +184,7 @@ function BandejaDeEntrada() {
                             onChange={(e) => setRespuesta(e.target.value)}
                             placeholder="Escribe tu respuesta aquí..."
                             className={styles.respuestaTextarea}
+                            aria-label="Escribe tu respuesta aquí"
                         />
                         <div className={styles.modalButtons}>
                             <button

@@ -12,9 +12,9 @@ public interface IteracionRepository extends JpaRepository<Iteracion, IteracionI
     // Busca todas las iteraciones de un cliente por email
     List<Iteracion> findAllByPregunta_Cliente_Email(String email);
 
+    Optional<Iteracion> findByPregunta_IdP(Long preguntaIdP);
     // Busca todas las iteraciones sin respuesta
     List<Iteracion> findAllByRespuestaIsNull();
-
-    // Busca una iteracion por id de conversacion
+    // Busca una iteracion por id de conversacion// Busca una iteracion por id de conversacion
     Optional<Iteracion> findByConversacion_IdConversacion(Long idConversacion);
 }

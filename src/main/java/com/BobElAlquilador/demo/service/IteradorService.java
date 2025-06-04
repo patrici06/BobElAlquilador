@@ -1,4 +1,5 @@
 package com.BobElAlquilador.demo.service; 
+import com.BobElAlquilador.demo.model.IteracionId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.BobElAlquilador.demo.model.Iteracion;
-import com.BobElAlquilador.demo.model.IteracionId;
 import com.BobElAlquilador.demo.repository.IteracionRepository;
 import com.BobElAlquilador.demo.repository.PreguntaRepository;
 
@@ -38,7 +38,9 @@ public class IteradorService {
     public Optional<Iteracion> findByConversacionId(Long idConversacion) {
         return iteracionRepository.findByConversacion_IdConversacion(idConversacion);
     }
-
+    public Optional<Iteracion> findByIdPregunta (Long idPregunta) {
+        return iteracionRepository.findByPregunta_IdP(idPregunta);
+    }
     public Optional<Iteracion> findById(IteracionId id) {
         return iteracionRepository.findById(id);
     }

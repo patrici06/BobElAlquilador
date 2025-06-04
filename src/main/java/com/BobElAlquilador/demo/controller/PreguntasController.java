@@ -10,6 +10,7 @@ import com.BobElAlquilador.demo.service.IteradorService;
 import com.BobElAlquilador.demo.service.PersonaService;
 import com.BobElAlquilador.demo.repository.PreguntaRepository;
 import com.BobElAlquilador.demo.service.RespuestaService;
+import com.BobElAlquilador.demo.util.RespuestaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import io.jsonwebtoken.Jwts;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/cliente")
-public class ConversacionController {
+public class PreguntasController {
 
     @Autowired
     private ConversacionService conversacionService;
@@ -84,56 +85,6 @@ public class ConversacionController {
         try {
             List<Iteracion> preguntas = iteradorService.getAllIteradoresPorCliente(email);
             return ResponseEntity.ok(preguntas);
-        } catch (Exception ex) {
-            Map<String, String> response = new HashMap<>();
-            response.put("mensaje", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-
-    @GetMapping("/preguntas-sin-responder")
-    public ResponseEntity<?> obtenerPreguntasSinResponder() {
-        try {
-            List<Iteracion> preguntas = iteradorService.getAllIteradoresSinRespuesta();
-            return ResponseEntity.ok(preguntas);
-        } catch (Exception ex) {
-            Map<String, String> response = new HashMap<>();
-            response.put("mensaje", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @PostMapping("/conversaciones/{conversacionId}/preguntas/{preguntaId}/respuesta")
-    public ResponseEntity<?> responderPregunta(
-            @PathVariable Long conversacionId,
-            @PathVariable Long preguntaId,
-            @RequestBody String respuesta,
-            @RequestHeader("Authorization") String token) {
-        try {
-            // Extraer el email del empleado del token
-            String email = "";
-            if (token != null && token.startsWith("Bearer ")) {
-                String jwtToken = token.substring(7);
-                try {
-                    Claims claims = Jwts.parser()
-                            .setSigningKey("tu_clave_secreta") // Usar la misma clave que en el JwtUtil
-                            .parseClaimsJws(jwtToken)
-                            .getBody();
-                    email = claims.getSubject();
-                } catch (Exception e) {
-                    throw new RuntimeException("Token inválido");
-                }
-            }
-
-            // Buscar el empleado
-            Persona empleado = personaService.findByEmail(email);
-            if (empleado == null) {
-                throw new RuntimeException("Empleado no encontrado");
-            }
-
-            // Crear la respuesta
-            Respuesta respuestaCreada = respuestaService.responderIteracion(conversacionId, preguntaId, respuesta, empleado);
-            return ResponseEntity.ok(respuestaCreada);
         } catch (Exception ex) {
             Map<String, String> response = new HashMap<>();
             response.put("mensaje", ex.getMessage());

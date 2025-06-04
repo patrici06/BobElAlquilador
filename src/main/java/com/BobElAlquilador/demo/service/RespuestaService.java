@@ -22,37 +22,9 @@ public class RespuestaService {
     @Autowired
     private IteracionRepository iteracionRepository;
 
-    public Respuesta responderIteracion(Long conversacionId, Long preguntaId, String cuerpoRespuesta, Persona empleado) {
-        // Buscar la iteración usando la clave compuesta
-        IteracionId iteracionId = new IteracionId(conversacionId, preguntaId);
-        Iteracion iteracion = iteracionRepository.findById(iteracionId)
-                .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada"));
 
-        // Verificar que la iteración no tenga ya una respuesta
-        if (iteracion.getRespuesta() != null) {
-            throw new IllegalStateException("Esta pregunta ya fue respondida");
-        }
-
-        // Validar el cuerpo de la respuesta
-        if (cuerpoRespuesta == null || cuerpoRespuesta.isBlank()) {
-            throw new IllegalArgumentException("La respuesta no puede estar vacía");
-        }
-
-        // Crear y guardar la nueva respuesta
-        Respuesta respuesta = new Respuesta(
-            empleado,
-            LocalDate.now(),
-            LocalTime.now(),
-            cuerpoRespuesta
-        );
-        
-        Respuesta respuestaGuardada = respuestaRepository.save(respuesta);
-
-        // Actualizar la iteración con la respuesta
-        iteracion.setRespuesta(respuestaGuardada);
-        iteracionRepository.save(iteracion);
-
-        return respuestaGuardada;
+    public Respuesta save(Respuesta respuesta){
+       return respuestaRepository.save(respuesta);
     }
 }
 
