@@ -73,7 +73,7 @@ public class PersonaService {
         Persona persona = pRepo.findById(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         if (!passwordEncoder.matches(request.getClaveAnterior(), persona.getClave())) {
-            throw new RuntimeException("La clave erronea o invalida.");
+            throw new RuntimeException("La clave original es erronea.");
         }
         if (     request.getClave() != null &&
                 !request.getClave().isEmpty() &&
@@ -91,7 +91,7 @@ public class PersonaService {
             throw new RuntimeException("El Empleado ya existe");
         }
         if (pRepo.existsPersonaByEmail(request.getEmail())) {
-            throw new RuntimeException("El Mail ya esta en uso porfavor contactar al propietario");
+            throw new RuntimeException("El mail ya esta en uso, por favor contactar al propietario");
         }
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
                 , request.getEmail(),ClaveGenerador.generar(12));
