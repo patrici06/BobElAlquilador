@@ -177,6 +177,20 @@ function ConversacionesCliente() {
                 fecha: "2024-03-05",
                 hora: "16:20"
             },
+            respuesta: {
+                cuerpo: "Sí, tenemos disponibilidad para este fin de semana. Puede realizar la reserva a través de nuestra plataforma seleccionando los días que necesita.",
+                fecha: "2024-03-05",
+                hora: "16:45"
+            }
+        },
+        {
+            conversacion: { id_conversacion: 3 },
+            pregunta: {
+                idP: 3,
+                cuerpo: "¿Cuál es el tiempo mínimo de alquiler para una excavadora?",
+                fecha: "2024-03-05",
+                hora: "17:20"
+            },
             respuesta: null
         }
     ];

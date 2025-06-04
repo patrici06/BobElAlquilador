@@ -43,7 +43,7 @@ function BandejaDeEntrada() {
             }
         ],
         respondidas: [
-            {
+            /*{
                 conversacion: { id_conversacion: 1 },
                 pregunta: {
                     idP: 1,
@@ -61,7 +61,7 @@ function BandejaDeEntrada() {
                     fecha: "2024-03-05",
                     hora: "15:45"
                 }
-            }
+            }*/
         ]
     };
 
