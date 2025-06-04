@@ -155,7 +155,8 @@ function MisAlquileres() {
                                 <option value="PENDIENTE">Pendiente</option>
                                 <option value="ACTIVO">Activo</option>
                                 <option value="FINALIZADO">Finalizado</option>
-                                <option value="CANCELADO">Cancelado</option>
+                                <option value="Cancelado">Cancelado</option>
+                                <option value="CanceladoInvoluntario">Cancelado Involuntario</option>
                                 {/* Agrega más estados si tu backend tiene otros */}
                             </select>
                         </label>

@@ -1,6 +1,7 @@
 package com.BobElAlquilador.demo.controller;
 
 import com.BobElAlquilador.demo.model.Alquiler;
+import com.BobElAlquilador.demo.model.EstadoAlquiler;
 import com.BobElAlquilador.demo.model.Persona;
 import com.BobElAlquilador.demo.service.AlquilerService;
 import com.BobElAlquilador.demo.service.PersonaService;
