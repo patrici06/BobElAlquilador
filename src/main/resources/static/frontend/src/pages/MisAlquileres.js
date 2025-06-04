@@ -88,8 +88,8 @@ function MisAlquileres() {
         // Reglas de negocio: sólo cancelar si HOY es anterior a fecha de inicio
         const hoy = new Date();
         // Limpiamos la hora para comparar sólo fechas
-        hoy.setHours(0,0,0,0);
-        const inicioAlquiler = new Date(fechaInicio);
+        const [anio, mes, dia] = fechaInicio.split("-").map(Number);
+        const inicioAlquiler = new Date(anio, mes - 1, dia);
         inicioAlquiler.setHours(0,0,0,0);
 
         if (hoy >= inicioAlquiler) {
@@ -206,8 +206,8 @@ function MisAlquileres() {
                                 onClick={() => handleAlquilerClick(a)}
                             >
                                 <td>{a.alquilerId?.nombre_maquina || "Desconocida"}</td>
-                                <td>{new Date(a.alquilerId?.fechaInicio).toLocaleDateString()}</td>
-                                <td>{new Date(a.alquilerId?.fechaFin).toLocaleDateString()}</td>
+                                <td>{new Date(a.alquilerId?.fechaInicio + "T00:00:00").toLocaleDateString()}</td>
+                                <td>{new Date(a.alquilerId?.fechaFin + "T00:00:00").toLocaleDateString()}</td>
                                 <td>{a.estadoAlquiler}</td>
                                 <td>
                                     {a.precioTotal.toLocaleString("es-AR", {

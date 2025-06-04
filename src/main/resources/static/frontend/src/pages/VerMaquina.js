@@ -57,8 +57,11 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
                 // data = [{inicio: "2025-06-01", fin: "2025-06-05"}, ...]
                 const ocupados = [];
                 data.forEach(({ inicio, fin }) => {
-                    let curr = new Date(inicio);
-                    const last = new Date(fin);
+                    const [y1, m1, d1] = inicio.split('-').map(Number);
+                    const [y2, m2, d2] = fin.split('-').map(Number);
+
+                    let curr = new Date(y1, m1 - 1, d1);
+                    const last = new Date(y2, m2 - 1, d2);
                     while (curr <= last) {
                         ocupados.push(new Date(curr));
                         curr.setDate(curr.getDate() + 1);
