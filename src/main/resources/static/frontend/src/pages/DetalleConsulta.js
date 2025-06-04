@@ -7,9 +7,9 @@ function DetalleConsulta() {
     const [consulta, setConsulta] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [mostrarFormRespuesta, setMostrarFormRespuesta] = useState(false);
     const [nuevaRespuesta, setNuevaRespuesta] = useState('');
     const [enviando, setEnviando] = useState(false);
+    const [mensajeExito, setMensajeExito] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -66,10 +66,6 @@ function DetalleConsulta() {
         navigate('/consultas');
     };
 
-    const handleResponder = () => {
-        setMostrarFormRespuesta(true);
-    };
-
     const handleEnviarRespuesta = () => {
         if (!nuevaRespuesta.trim()) {
             setError('La respuesta no puede estar vacía');
@@ -77,32 +73,19 @@ function DetalleConsulta() {
         }
 
         setEnviando(true);
-        // Aquí simularemos el envío de la respuesta
+        setError('');
+        
+        // Simulamos el envío de la respuesta
         setTimeout(() => {
-            // Actualizamos la consulta local con la nueva pregunta
-            const nuevaPregunta = {
-                idP: consulta.pregunta.idP + 1,
-                cuerpo: nuevaRespuesta,
-                fecha: new Date().toISOString().split('T')[0],
-                hora: new Date().toTimeString().split(' ')[0].substring(0, 5)
-            };
-
-            setConsulta(prevConsulta => ({
-                ...prevConsulta,
-                pregunta: nuevaPregunta,
-                respuesta: null // Reseteamos la respuesta ya que es una nueva pregunta
-            }));
-
-            setMostrarFormRespuesta(false);
+            setMensajeExito('¡Su mensaje se envió correctamente!');
             setNuevaRespuesta('');
             setEnviando(false);
+            
+            // Limpiamos el mensaje de éxito después de 3 segundos
+            setTimeout(() => {
+                setMensajeExito('');
+            }, 3000);
         }, 1000);
-    };
-
-    const handleCancelar = () => {
-        setMostrarFormRespuesta(false);
-        setNuevaRespuesta('');
-        setError('');
     };
 
     if (loading) return <div className={styles.loading}>Cargando...</div>;
@@ -131,46 +114,33 @@ function DetalleConsulta() {
                         <small className={styles.fecha}>
                             {consulta.respuesta.fecha} {consulta.respuesta.hora}
                         </small>
-                        
-                        {!mostrarFormRespuesta && (
-                            <button 
-                                onClick={handleResponder}
-                                className={styles.responderBtn}
-                            >
-                                Responder
-                            </button>
-                        )}
                     </div>
                 )}
 
-                {mostrarFormRespuesta && (
-                    <div className={styles.formRespuesta}>
-                        <h2>Tu Respuesta</h2>
-                        <textarea
-                            value={nuevaRespuesta}
-                            onChange={(e) => setNuevaRespuesta(e.target.value)}
-                            placeholder="Escribe tu respuesta aquí..."
-                            className={styles.textarea}
-                            disabled={enviando}
-                        />
-                        <div className={styles.botonesRespuesta}>
-                            <button
-                                onClick={handleCancelar}
-                                className={styles.cancelarBtn}
-                                disabled={enviando}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={handleEnviarRespuesta}
-                                className={styles.enviarBtn}
-                                disabled={enviando || !nuevaRespuesta.trim()}
-                            >
-                                {enviando ? 'Enviando...' : 'Enviar Respuesta'}
-                            </button>
+                <div className={styles.formRespuesta}>
+                    <h2>Tu Respuesta</h2>
+                    <textarea
+                        value={nuevaRespuesta}
+                        onChange={(e) => setNuevaRespuesta(e.target.value)}
+                        placeholder="Escribe tu respuesta aquí..."
+                        className={styles.textarea}
+                        disabled={enviando}
+                    />
+                    {mensajeExito && (
+                        <div className={styles.success}>
+                            {mensajeExito}
                         </div>
+                    )}
+                    <div className={styles.botonesRespuesta}>
+                        <button
+                            onClick={handleEnviarRespuesta}
+                            className={styles.enviarBtn}
+                            disabled={enviando || !nuevaRespuesta.trim()}
+                        >
+                            {enviando ? 'Enviando...' : 'Enviar Respuesta'}
+                        </button>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
