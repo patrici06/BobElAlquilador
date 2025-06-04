@@ -21,12 +21,25 @@ export function crearPregunta(mensaje) {
         }
     });
 }
+const token = sessionStorage.getItem("token");
 
-export function obtenerTodasPreguntas() {
-    const token = sessionStorage.getItem("token");
+export function obtenerConsultasPendientes() {
     return axios.get(`${API_BASE}/preguntas-sin-responder`, {
         headers: { Authorization: `Bearer ${token}` }
     });
+}
+
+export function enviarRespuestaConsulta(idConversacion, idPregunta, respuesta) {
+    return axios.post(
+        `${API_BASE}/conversaciones/${idConversacion}/preguntas/${idPregunta}/respuesta`,
+        respuesta,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'text/plain'
+            }
+        }
+    );
 }
 
 export function obtenerPreguntasCliente() {

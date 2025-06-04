@@ -26,17 +26,17 @@ public class IteradorService {
         return this.iteracionRepository.findAll(); 
     }
     public List<Iteracion> getAllIteradoresPorCliente(String email) {
-        return iteracionRepository.findByPreguntaClienteEmail(email);
+        return iteracionRepository.findAllByPregunta_Cliente_Email(email);
     }
     public List<Iteracion> getAllIteradoresSinRespuesta() {
-        return iteracionRepository.findByRespuestaIsNull();
+        return iteracionRepository.findAllByRespuestaIsNull();
     }
     public void subirIterador(Iteracion iteracion) {
         iteracionRepository.save(iteracion);
     }
 
     public Optional<Iteracion> findByConversacionId(Long idConversacion) {
-        return iteracionRepository.findByConversacionId(idConversacion);
+        return iteracionRepository.findByConversacion_IdConversacion(idConversacion);
     }
 
     public Optional<Iteracion> findById(IteracionId id) {
