@@ -1,21 +1,32 @@
-.container {
+.splitContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: #f8f9fa;
     min-height: calc(100vh - 4rem);
+    background-color: #f8f9fa;
+    box-sizing: border-box;
 }
-
-.title {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #b30000;
-    border-bottom: 2px solid #b30000;
-    padding-bottom: 0.5rem;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+.leftBlock,
+.rightBlock {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.leftBlock {
+    flex: 1 1 340px;
+    max-width: 440px; /* Aumenta el ancho para mejor adaptación */
+    width: 100%;
+    margin-right: 2.5rem;
+    align-items: stretch;
+}
+.rightBlock {
+    flex: 2 1 0;
+    min-width: 0;
+    width: 100%;
 }
 
 .nuevaPregunta {
@@ -24,6 +35,12 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 440px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .nuevaPregunta h2 {
@@ -43,6 +60,7 @@
     resize: vertical;
     transition: border-color 0.2s ease;
     font-family: inherit;
+    box-sizing: border-box;
 }
 
 .textarea:focus {
@@ -64,6 +82,7 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s ease;
+    width: 100%;
 }
 
 .button:hover:not(:disabled) {
@@ -73,6 +92,20 @@
 .button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+}
+
+/* --- ESTILOS ORIGINALES DEL HISTORIAL Y LAS RESPUESTAS --- */
+
+.title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #b30000;
+    border-bottom: 2px solid #b30000;
+    padding-bottom: 0.5rem;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .error {
@@ -96,6 +129,12 @@
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    min-width: 320px;
+    max-width: 700px;
+    margin-left: 0;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 .historial h2 {
@@ -116,6 +155,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 100%;
 }
 
 .preguntaCard {
@@ -125,6 +165,10 @@
     padding: 2rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid #eee;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .preguntaCard:hover {
@@ -140,6 +184,10 @@
     padding: 1.5rem;
     border-radius: 8px;
     border-left: 4px solid #b30000;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .respuestaContainer {
@@ -148,6 +196,10 @@
     border-radius: 8px;
     margin-top: 1.5rem;
     border-left: 4px solid #b30000;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .preguntaContainer h3, .respuestaContainer h3 {
@@ -161,6 +213,7 @@
     line-height: 1.5;
     margin-bottom: 0.5rem;
     word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .fecha {
@@ -230,28 +283,65 @@
     word-break: break-word;
 }
 
-@media (max-width: 768px) {
-    .container {
+/* ----------- RESPONSIVE ------------- */
+@media (max-width: 1024px) {
+    .splitContainer {
+        flex-direction: column;
+        align-items: center;
         padding: 1rem;
+        gap: 1.5rem;
     }
-
-    .title {
-        font-size: 2rem;
+    .leftBlock,
+    .rightBlock {
+        max-width: 100%;
+        flex: 1 1 100%;
+        margin: 0;
+        align-items: stretch;
     }
-
     .nuevaPregunta,
     .historial,
     .preguntaCard {
         padding: 1rem;
+        max-width: 100%;
     }
-
     .preguntaContainer,
     .respuestaContainer {
         padding: 1em;
         font-size: 1em;
     }
-
     .preguntasList {
         gap: 1rem;
+    }
+    .leftBlock {
+        margin-right: 0;
+        align-items: stretch;
+    }
+}
+@media (max-width: 768px) {
+    .splitContainer {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem;
+        gap: 1rem;
+    }
+    .nuevaPregunta,
+    .preguntaCard,
+    .preguntaContainer,
+    .respuestaContainer {
+        font-size: 1em;
+        padding: 0.8em;
+    }
+    .preguntaHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3em;
+    }
+    .empleadoInfo {
+        font-size: 0.98em;
+        padding: 0.5em 0.7em;
+    }
+    .leftBlock {
+        margin-right: 0;
+        align-items: stretch;
     }
 }
