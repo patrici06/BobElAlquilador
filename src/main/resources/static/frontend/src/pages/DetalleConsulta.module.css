@@ -1,0 +1,76 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.volverBtn {
+    background: none;
+    border: none;
+    color: #b30000;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.volverBtn:hover {
+    color: #990000;
+}
+
+.consultaCard {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.pregunta, .respuesta {
+    padding: 2rem;
+}
+
+.pregunta {
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+.respuesta {
+    background-color: white;
+}
+
+.pregunta h2, .respuesta h2 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.pregunta p, .respuesta p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.fecha {
+    color: #777;
+    font-size: 0.9rem;
+    display: block;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 2rem;
+    color: #c62828;
+    background-color: #ffebee;
+    border-radius: 8px;
+    margin-top: 2rem;
+} 

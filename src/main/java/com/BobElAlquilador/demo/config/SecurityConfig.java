@@ -33,14 +33,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults()) // habilita CORS usando el WebConfig que ya definiste
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/register/**").permitAll()
+                        .requestMatchers("/cliente/**").hasAnyRole("CLIENTE", "EMPLEADO", "PROPIETARIO")
                         .requestMatchers("/propietario/**").hasRole("PROPIETARIO")
                         .requestMatchers("/empleado/**").hasRole("EMPLEADO")
-                        .requestMatchers("/cliente/**").hasRole("CLIENTE")
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

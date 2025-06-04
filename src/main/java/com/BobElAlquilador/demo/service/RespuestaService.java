@@ -1,81 +1,58 @@
-// package com.BobElAlquilador.demo.service;
+package com.BobElAlquilador.demo.service;
 
-// import java.time.LocalDate;
-// import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-// import com.BobElAlquilador.demo.model.Pregunta;
-// import com.BobElAlquilador.demo.model.Respuesta;
-// import com.BobElAlquilador.demo.repository.PreguntaRepository;
-// import com.BobElAlquilador.demo.repository.RespuestaRepository;
+import com.BobElAlquilador.demo.model.Iteracion;
+import com.BobElAlquilador.demo.model.IteracionId;
+import com.BobElAlquilador.demo.model.Persona;
+import com.BobElAlquilador.demo.model.Respuesta;
+import com.BobElAlquilador.demo.repository.RespuestaRepository;
+import com.BobElAlquilador.demo.repository.IteracionRepository;
 
-// @Service
-// public class RespuestaService {
+@Service
+public class RespuestaService {
 
-//     @Autowired
-//     private RespuestaRepository respuestaRepository;
+    @Autowired
+    private RespuestaRepository respuestaRepository;
 
-//     @Autowired
-//     private PreguntaRepository preguntaRepository;
+    @Autowired
+    private IteracionRepository iteracionRepository;
 
-//     public Respuesta responderPregunta(Long preguntaId, Respuesta respuesta) {
-//         Pregunta pregunta = preguntaRepository.findById(preguntaId)
-//                 .orElseThrow(() -> new IllegalArgumentException("Pregunta no encontrada"));
+    public Respuesta responderIteracion(Long conversacionId, Long preguntaId, String cuerpoRespuesta, Persona empleado) {
+        // Buscar la iteración usando la clave compuesta
+        IteracionId iteracionId = new IteracionId(conversacionId, preguntaId);
+        Iteracion iteracion = iteracionRepository.findById(iteracionId)
+                .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada"));
 
-//         if (pregunta.getRespuesta() != null) {
-//             throw new IllegalStateException("La consulta ya fue respondida");
-//         }
+        // Verificar que la iteración no tenga ya una respuesta
+        if (iteracion.getRespuesta() != null) {
+            throw new IllegalStateException("Esta pregunta ya fue respondida");
+        }
 
-//         if (respuesta.getCuerpo() == null || respuesta.getCuerpo().isBlank()) {
-//             throw new IllegalArgumentException("Las respuestas no pueden estar vacías");
-//         }
+        // Validar el cuerpo de la respuesta
+        if (cuerpoRespuesta == null || cuerpoRespuesta.isBlank()) {
+            throw new IllegalArgumentException("La respuesta no puede estar vacía");
+        }
 
-//         respuesta.setFecha(LocalDate.now());
-//         respuesta.setHora(LocalTime.now());
-//         Respuesta respuestaGuardada = respuestaRepository.save(respuesta);
+        // Crear y guardar la nueva respuesta
+        Respuesta respuesta = new Respuesta(
+            empleado,
+            LocalDate.now(),
+            LocalTime.now(),
+            cuerpoRespuesta
+        );
+        
+        Respuesta respuestaGuardada = respuestaRepository.save(respuesta);
 
-//         pregunta.setRespuesta(respuestaGuardada);
-//         preguntaRepository.save(pregunta);
+        // Actualizar la iteración con la respuesta
+        iteracion.setRespuesta(respuestaGuardada);
+        iteracionRepository.save(iteracion);
 
-//         return respuestaGuardada;
-//     }
-
-//     public Pregunta responderEmpleado(Long idPreguntaOriginal, Pregunta nuevaPregunta) {
-//         Pregunta preguntaOriginal = preguntaRepository.findById(idPreguntaOriginal)
-//                 .orElseThrow(() -> new IllegalArgumentException("Consulta no encontrada"));
-
-//         if (preguntaOriginal.getCliente() == null || !preguntaOriginal.getCliente().equals(nuevaPregunta.getCliente())) {
-//             throw new IllegalStateException("No puede responder una consulta ajena");
-//         }
-
-//         if (preguntaOriginal.getRespuesta() == null) {
-//             throw new IllegalStateException("La consulta aún no fue respondida por un empleado");
-//         }
-
-//         if (preguntaOriginal.getRespuestaDelCliente() != null) {
-//             throw new IllegalStateException("Ya respondiste a esta respuesta");
-//         }
-
-//         if (nuevaPregunta.getCuerpo() == null || nuevaPregunta.getCuerpo().isBlank()) {
-//             throw new IllegalArgumentException("La respuesta no puede estar vacía");
-//         }
-
-//         nuevaPregunta.setFecha(LocalDate.now());
-//         nuevaPregunta.setHora(LocalTime.now());
-//         nuevaPregunta.setPreguntaOriginal(preguntaOriginal);
-//         Pregunta guardada = preguntaRepository.save(nuevaPregunta);
-
-//         preguntaOriginal.setRespuestaDelCliente(guardada);
-//         preguntaRepository.save(preguntaOriginal);
-
-//         return guardada;
-// }
-
-
-
-
-
-// }
+        return respuestaGuardada;
+    }
+}
 

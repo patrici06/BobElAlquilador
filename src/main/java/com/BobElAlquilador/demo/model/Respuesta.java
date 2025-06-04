@@ -11,6 +11,7 @@ import java.time.LocalTime;
 public class Respuesta {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "id_respuesta")
     private Long id_respuesta;
 
     @ManyToOne

@@ -2,11 +2,14 @@ package com.BobElAlquilador.demo.service;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.BobElAlquilador.demo.model.Iteracion;
+import com.BobElAlquilador.demo.model.IteracionId;
 import com.BobElAlquilador.demo.repository.IteracionRepository;
+import com.BobElAlquilador.demo.repository.PreguntaRepository;
 
 
 
@@ -14,18 +17,29 @@ import com.BobElAlquilador.demo.repository.IteracionRepository;
 public class IteradorService {
 
     @Autowired
-    IteracionRepository iteracionRepository;
+    private IteracionRepository iteracionRepository;
+    
+    @Autowired
+    private PreguntaRepository preguntaRepository;
 
     public List<Iteracion> getAllIteradores (){
         return this.iteracionRepository.findAll(); 
     }
-    public List<Iteracion> getAllIteradoresPorCliente (String email){
-        return this.iteracionRepository.findByPregunta_Cliente_Email(email);
+    public List<Iteracion> getAllIteradoresPorCliente(String email) {
+        return iteracionRepository.findByPreguntaClienteEmail(email);
     }
-    public List<Iteracion> getAllIteradoresSinRespuesta(){
-        return this.iteracionRepository.findByRespuestaIsNull(); 
+    public List<Iteracion> getAllIteradoresSinRespuesta() {
+        return iteracionRepository.findByRespuestaIsNull();
     }
-    public void subirIterador(Iteracion iterador){
-        this.iteracionRepository.save(iterador);
+    public void subirIterador(Iteracion iteracion) {
+        iteracionRepository.save(iteracion);
+    }
+
+    public Optional<Iteracion> findByConversacionId(Long idConversacion) {
+        return iteracionRepository.findByConversacionId(idConversacion);
+    }
+
+    public Optional<Iteracion> findById(IteracionId id) {
+        return iteracionRepository.findById(id);
     }
 }

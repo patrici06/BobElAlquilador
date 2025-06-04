@@ -1,0 +1,212 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 4rem);
+}
+
+.title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #b30000;
+    border-bottom: 2px solid #b30000;
+    padding-bottom: 0.5rem;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nuevaPregunta {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.nuevaPregunta h2 {
+    color: #b30000;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #b30000;
+}
+
+.textarea:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.button {
+    background-color: #b30000;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+    background-color: #990000;
+}
+
+.button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.error {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.historial {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.historial h2 {
+    color: #b30000;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.empty {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.preguntasList {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.preguntaCard {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+}
+
+.preguntaCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.preguntaContainer {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #b30000;
+}
+
+.respuestaContainer {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    border-left: 4px solid #b30000;
+}
+
+.preguntaContainer h3, .respuestaContainer h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.preguntaContainer p, .respuestaContainer p {
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.fecha {
+    color: #777;
+    font-size: 0.9rem;
+    display: block;
+}
+
+.preguntaHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.estadoContainer {
+    display: flex;
+    align-items: center;
+}
+
+.verRespuestaBtn {
+    background-color: #b30000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.verRespuestaBtn:hover {
+    background-color: #990000;
+}
+
+.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.respondida {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+} 

@@ -1,212 +1,231 @@
-// /*import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { obtenerTodasPreguntas } from "../services/conversacionService";
-// import styles from "./BandejaDeEntrada.module.css";
+import React, { useState, useEffect } from 'react';
+import styles from './BandejaDeEntrada.module.css';
 
-// function BandejaDeEntrada() {
-//     const [consultas, setConsultas] = useState([]);
-//     const [error, setError] = useState("");
-//     const [loading, setLoading] = useState(true);
-//     const [responderId, setResponderId] = useState(null);  // ID de consulta a responder
-//     const [respuesta, setRespuesta] = useState("");         // Contenido de respuesta
-//     const navigate = useNavigate();
-//     const [respuestaEnviada, setRespuestaEnviada] = useState(false);
-
-
-//     /*useEffect(() => {
-//         /* DESCOMENTAR ESTO CUANDO FUNCIONE LA BASE DE DATOS!!!! 
-//         const fetchConsultas = async () => {
-//             try {
-//                 const res = await obtenerTodasPreguntas();
-//                 setConsultas(Array.isArray(res.data) ? res.data : []);
-//                 setError("");
-//             } catch (err) {
-//                 setError("Error al cargar consultas pendientes.");
-//                 setConsultas([]);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         }
-//         const fetchConsultas = async () => {
-//         try {
-//             const res = await obtenerTodasPreguntas();
-//             setConsultas(Array.isArray(res.data) ? res.data : []);
-//             setError("");
-//         } catch (err) {
-//             console.log("Error real:", err);
-//             //setError("Error al cargar consultas pendientes.");
-//             // Simulación de datos:
-//             setError("");
-//             setConsultas([
-//                 {
-//                     id_conversacion: 1,
-//                     cliente: { email: "cliente1@demo.com" },
-//                     pregunta: { cuerpo: "¿Cómo puedo alquilar una máquina?" }
-//                 },
-//                 {
-//                     id_conversacion: 2,
-//                     cliente: { email: "cliente2@demo.com" },
-//                     pregunta: { cuerpo: "Necesito ayuda con mi alquiler." }
-//                 }
-//             ]);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-
-//         fetchConsultas();
-//     }, []);
-
-//     const handleVerDetalle = (idConversacion) => {
-//         navigate(`/conversacion/${idConversacion}`);
-//     };
-
-//     const handleResponder = (idConversacion) => {
-//         setResponderId(idConversacion);
-//     };
-
-//     const handleEnviarRespuesta = (idConversacion) => {
-//         console.log("Enviando respuesta para", idConversacion, ":", respuesta);
-//         // aca hacer que en la bd se guarde la rta
-        
-//         // Simular que la consulta fue respondida, eliminándola de la lista
-//         setConsultas(prevConsultas => prevConsultas.filter(c => c.id_conversacion !== idConversacion));
-
-//         // Mostrar mensaje verde
-//         setRespuestaEnviada(true);
-
-//         // Limpiar campo y cerrar panel
-//         setRespuesta("");
-//         setResponderId(null);
-
-//         // Ocultar mensaje después de unos segundos
-//         setTimeout(() => setRespuestaEnviada(false), 4000);
-//     };
-
-    
-//     return (
-//         <div className={styles.container}>
-//             <h1 className={styles.title}>Bandeja de entrada</h1>
-//             {respuestaEnviada && (
-//             <p style={{ color: "green", fontWeight: "bold" }}>Respuesta enviada correctamente.</p>
-//             )}
-
-
-
-//             {loading && <p className={styles.loading}>Cargando consultas...</p>}
-//             {error && <p className={styles.error}>{error}</p>}
-
-//             {!loading && !error && consultas.length === 0 && (
-//                 <p className={styles.empty}>No hay consultas pendientes.</p>
-//             )}
-
-//             {!loading && !error && consultas.length > 0 && (
-//                 <ul className={styles.list}>
-//                     {consultas.map((consulta, index) => (
-//                         <li key={index} className={styles.item}>
-//                             <p><strong>ID:</strong> {consulta.id_conversacion}</p>
-//                             <p><strong>Cliente:</strong> {consulta.cliente?.email}</p>
-//                             <p><strong>Consulta:</strong> {consulta.pregunta?.cuerpo}</p>
-//                             <button
-//                                 onClick={() => handleVerDetalle(consulta.id_conversacion)}
-//                                 className={styles.button}
-//                             >
-//                                 Ver detalle
-//                             </button>
-//                             <button
-//                                 onClick={() => handleResponder(consulta.id_conversacion)}
-//                                 className={styles.button}
-//                             >
-//                                 Responder Consulta
-//                             </button>
-
-//                             {responderId === consulta.id_conversacion && (
-//                                 <div className={styles.responder}>
-//                                     <textarea
-//                                         value={respuesta}
-//                                         onChange={(e) => setRespuesta(e.target.value)}
-//                                         placeholder="Escribe tu respuesta aquí..."
-//                                     />
-//                                     <button
-//                                         onClick={() => handleEnviarRespuesta(consulta.id_conversacion)}
-//                                         className={styles.button}
-//                                     >
-//                                         Enviar Respuesta
-//                                     </button>
-//                                 </div>
-//                             )}
-//                         </li>
-//                     ))}
-//                 </ul>
-//             )}
-//         </div>
-//     );
-// }
-
-// export default BandejaDeEntrada;
-
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { crearPregunta } from "../services/conversacionService"; // Asegúrate de que esté bien importado
-import styles from "./ConversacionDetalle.module.css"; // O usa tu propio estilo
-
-function CrearConsulta() {
-    const [mensaje, setMensaje] = useState("");
-    const [exito, setExito] = useState("");
+function BandejaDeEntrada() {
+    const [consultasPendientes, setConsultasPendientes] = useState([]);
+    const [consultasRespondidas, setConsultasRespondidas] = useState([]);
     const [error, setError] = useState("");
-    const navigate = useNavigate();
+    const [consultaSeleccionada, setConsultaSeleccionada] = useState(null);
+    const [respuesta, setRespuesta] = useState("");
+    const [exito, setExito] = useState("");
+    const [pestañaActiva, setPestañaActiva] = useState('pendientes');
 
-    const handleEnviarConsulta = async () => {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-            setError("Debes estar autenticado para enviar una consulta.");
+    // Datos de ejemplo para simular consultas
+    const consultasEjemplo = {
+        pendientes: [
+            {
+                conversacion: { id_conversacion: 2 },
+                pregunta: {
+                    idP: 2,
+                    cuerpo: "¿Tienen disponible alguna retroexcavadora para alquilar este fin de semana?",
+                    fecha: "2024-03-05",
+                    hora: "16:20",
+                    cliente: {
+                        nombre: "Juan",
+                        apellido: "Pérez",
+                        email: "juan.perez@test.com"
+                    }
+                }
+            },
+            {
+                conversacion: { id_conversacion: 3 },
+                pregunta: {
+                    idP: 3,
+                    cuerpo: "¿Cuál es el tiempo mínimo de alquiler para una excavadora?",
+                    fecha: "2024-03-05",
+                    hora: "17:45",
+                    cliente: {
+                        nombre: "María",
+                        apellido: "González",
+                        email: "maria.gonzalez@test.com"
+                    }
+                }
+            }
+        ],
+        respondidas: [
+            {
+                conversacion: { id_conversacion: 1 },
+                pregunta: {
+                    idP: 1,
+                    cuerpo: "¿Cuál es el costo del alquiler por día de la retroexcavadora?",
+                    fecha: "2024-03-05",
+                    hora: "14:30",
+                    cliente: {
+                        nombre: "Ana",
+                        apellido: "Martínez",
+                        email: "ana.martinez@test.com"
+                    }
+                },
+                respuesta: {
+                    cuerpo: "El costo del alquiler de la retroexcavadora es de $50.000 por día, incluyendo el combustible y el operador.",
+                    fecha: "2024-03-05",
+                    hora: "15:45"
+                }
+            }
+        ]
+    };
+
+    useEffect(() => {
+        // Comentamos la llamada real al backend
+        // cargarConsultas();
+        
+        // Usamos los datos de ejemplo
+        setConsultasPendientes(consultasEjemplo.pendientes);
+        setConsultasRespondidas(consultasEjemplo.respondidas);
+    }, []);
+
+    const handleResponder = (consulta) => {
+        setConsultaSeleccionada(consulta);
+        setRespuesta("");
+        setError("");
+    };
+
+    const enviarRespuesta = () => {
+        if (!respuesta.trim()) {
+            setError("La respuesta no puede estar vacía");
             return;
         }
 
-        // Decodificar email desde el token
-        let email = "";
-        try {
-            const decoded = JSON.parse(atob(token.split('.')[1]));
-            email = decoded.email || decoded.sub || "";
-        } catch (err) {
-            setError("Error al decodificar el token.");
-            return;
-        }
+        // Simulamos el envío de la respuesta
+        const consultaRespondida = {
+            ...consultaSeleccionada,
+            respuesta: {
+                cuerpo: respuesta,
+                fecha: new Date().toISOString().split('T')[0],
+                hora: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            }
+        };
 
-        if (!mensaje.trim()) {
-            setError("El mensaje no puede estar vacío.");
-            return;
-        }
-
-        try {
-            await crearPregunta(mensaje, email);
-            setExito("Consulta enviada correctamente.");
-            setMensaje("");
-            setError("");
-            setTimeout(() => navigate("/"), 4000); // Redirige al home después de 4 segundos
-        } catch (err) {
-            setError("Error al enviar la consulta.");
-            console.error(err);
-        }
+        // Actualizamos las listas
+        setConsultasPendientes(prev => 
+            prev.filter(c => c.conversacion.id_conversacion !== consultaSeleccionada.conversacion.id_conversacion)
+        );
+        setConsultasRespondidas(prev => [...prev, consultaRespondida]);
+        
+        setConsultaSeleccionada(null);
+        setRespuesta("");
+        setExito("Respuesta enviada con éxito");
+        setTimeout(() => setExito(""), 3000);
     };
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Nueva Consulta</h1>
-            {exito && <p style={{ color: "green" }}>{exito}</p>}
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <textarea
-                value={mensaje}
-                onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Escribe tu consulta aquí..."
-                className={styles.textarea}
-            />
-            <button onClick={handleEnviarConsulta} className={styles.button}>
-                Enviar Consulta
-            </button>
+            <h1 className={styles.title}>Bandeja de Entrada</h1>
+            
+            {exito && <div className={styles.success}>{exito}</div>}
+            {error && <div className={styles.error}>{error}</div>}
+
+            <div className={styles.tabs}>
+                <button 
+                    className={`${styles.tabButton} ${pestañaActiva === 'pendientes' ? styles.active : ''}`}
+                    onClick={() => setPestañaActiva('pendientes')}
+                >
+                    Pendientes ({consultasPendientes.length})
+                </button>
+                <button 
+                    className={`${styles.tabButton} ${pestañaActiva === 'respondidas' ? styles.active : ''}`}
+                    onClick={() => setPestañaActiva('respondidas')}
+                >
+                    Respondidas ({consultasRespondidas.length})
+                </button>
+            </div>
+
+            <div className={styles.consultasList}>
+                {pestañaActiva === 'pendientes' ? (
+                    consultasPendientes.length === 0 ? (
+                        <div className={styles.empty}>
+                            No hay consultas pendientes por responder
+                        </div>
+                    ) : (
+                        consultasPendientes.map((consulta, index) => (
+                            <div key={index} className={styles.consultaCard}>
+                                <div className={styles.consultaInfo}>
+                                    <div className={styles.clienteInfo}>
+                                        <strong>Cliente:</strong> {consulta.pregunta.cliente.nombre} {consulta.pregunta.cliente.apellido}
+                                    </div>
+                                    <div className={styles.fecha}>
+                                        {consulta.pregunta.fecha} {consulta.pregunta.hora}
+                                    </div>
+                                </div>
+                                <p className={styles.pregunta}>{consulta.pregunta.cuerpo}</p>
+                                <button
+                                    onClick={() => handleResponder(consulta)}
+                                    className={styles.responderBtn}
+                                >
+                                    Responder
+                                </button>
+                            </div>
+                        ))
+                    )
+                ) : (
+                    consultasRespondidas.length === 0 ? (
+                        <div className={styles.empty}>
+                            No hay consultas respondidas
+                        </div>
+                    ) : (
+                        consultasRespondidas.map((consulta, index) => (
+                            <div key={index} className={styles.consultaCard}>
+                                <div className={styles.consultaInfo}>
+                                    <div className={styles.clienteInfo}>
+                                        <strong>Cliente:</strong> {consulta.pregunta.cliente.nombre} {consulta.pregunta.cliente.apellido}
+                                    </div>
+                                    <div className={styles.fecha}>
+                                        {consulta.pregunta.fecha} {consulta.pregunta.hora}
+                                    </div>
+                                </div>
+                                <div className={styles.preguntaRespuesta}>
+                                    <div className={styles.preguntaContainer}>
+                                        <h3>Pregunta:</h3>
+                                        <p className={styles.pregunta}>{consulta.pregunta.cuerpo}</p>
+                                    </div>
+                                    <div className={styles.respuestaContainer}>
+                                        <h3>Respuesta:</h3>
+                                        <p className={styles.respuesta}>{consulta.respuesta.cuerpo}</p>
+                                        <small className={styles.fecha}>
+                                            Respondida el {consulta.respuesta.fecha} a las {consulta.respuesta.hora}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )
+                )}
+            </div>
+
+            {consultaSeleccionada && (
+                <div className={styles.respuestaModal}>
+                    <div className={styles.modalContent}>
+                        <h2>Responder Consulta</h2>
+                        <div className={styles.preguntaOriginal}>
+                            <strong>Pregunta:</strong>
+                            <p>{consultaSeleccionada.pregunta.cuerpo}</p>
+                        </div>
+                        <textarea
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            placeholder="Escribe tu respuesta aquí..."
+                            className={styles.respuestaTextarea}
+                        />
+                        <div className={styles.modalButtons}>
+                            <button
+                                onClick={() => setConsultaSeleccionada(null)}
+                                className={styles.cancelarBtn}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={enviarRespuesta}
+                                className={styles.enviarBtn}
+                                disabled={!respuesta.trim()}
+                            >
+                                Enviar Respuesta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-export default CrearConsulta;
+export default BandejaDeEntrada;

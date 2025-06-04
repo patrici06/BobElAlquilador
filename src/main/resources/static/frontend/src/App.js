@@ -8,14 +8,11 @@ import Home from "./pages/Home";
 import SubirMaquina from "./pages/SubirMaquina";
 import RegisterEmpleado from "./pages/RegisterEmpleado";
 import Perfil from "./pages/Perfil";
-import PerfilUsuario from "./pages/Perfil";
 import AlquilarMaquina from './pages/AlquilarMaquina';
 import MisAlquileres from './pages/MisAlquileres';
 import BandejaDeEntrada from "./pages/BandejaDeEntrada";
-import ConversacionDetalle from './pages/ConversacionDetalle'; 
-
-
-// ...otros imports
+import ConversacionesCliente from './pages/ConversacionesCliente';
+import DetalleConsulta from './pages/DetalleConsulta';
 
 function App() {
     const location = useLocation();
@@ -31,18 +28,12 @@ function App() {
                 <Route path="/register/empleado" element={<RegisterEmpleado />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
-                <Route path="/perfil/:email" element={<PerfilUsuario />} />
+                <Route path="/perfil" element={<Perfil />} />
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
                 <Route path="/mis-alquileres" element={<MisAlquileres />} />
-                <Route path="/conversacion/nueva" element={<ConversacionDetalle nueva={true} />} />
-    
-                
-             
+                <Route path="/consultas" element={<ConversacionesCliente />} />
+                <Route path="/consultas/:conversacionId/:preguntaId" element={<DetalleConsulta />} />
                 <Route path="/bandeja" element={<BandejaDeEntrada />} />
-
-
-
-                {/* Otras rutas */}
             </Routes>
             {!hideHeaderFooter && <Footer />}
         </div>

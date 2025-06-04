@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { getRolTexto } from "../utils/authUtils";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import { jwtDecode } from "jwt-decode";
@@ -91,18 +91,6 @@ function Header() {
                         >
                             Subir Maquina
                         </button>
-                        <button
-                            onClick={() => {
-                                setMenuOpen(false);
-                                navigate("/alquilar");
-                            }}
-                            className={styles.button}
-                            onMouseEnter={() => setHoveredBtn("Ver Maquinas")}
-                            onMouseLeave={() => setHoveredBtn("")}
-                            data-hovered={hoveredBtn === "Ver Maquinas"}
-                        >
-                            Ver Maquinas
-                        </button>
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (
@@ -120,22 +108,13 @@ function Header() {
                             Alquilar Maquina
                         </button>
                         <button
-                            onClick={() => { setMenuOpen(false); navigate("/conversacion/nueva"); }}
+                            onClick={() => { setMenuOpen(false); navigate("/consultas"); }}
                             className={styles.button}
                             onMouseEnter={() => setHoveredBtn("consultar")}
                             onMouseLeave={() => setHoveredBtn("")}
                             data-hovered={hoveredBtn === "consultar"}
                         >
                             Consultar
-                        </button>
-                        <button
-                            onClick={() => { setMenuOpen(false); navigate("/bandeja-respuestas"); }}
-                            className={styles.button}
-                            onMouseEnter={() => setHoveredBtn("bandeja-respuestas")}
-                            onMouseLeave={() => setHoveredBtn("")}
-                            data-hovered={hoveredBtn === "bandeja-respuestas"}
-                        >
-                            Bandeja de Respuestas
                         </button>
                     </>
                 )}
@@ -150,7 +129,6 @@ function Header() {
                         >
                             Bandeja de entrada
                         </button>
-                        
                     </>
                 )}
                 <button

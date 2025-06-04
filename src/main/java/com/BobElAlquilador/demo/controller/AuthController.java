@@ -20,8 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,24 +48,33 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(), loginRequest.getClave())
             );
+            
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
+            
+            // Verificar si es propietario para 2FA
             boolean esPropietario = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .anyMatch(auth -> auth.equals("ROLE_PROPIETARIO"));
 
             if (esPropietario) {
                 String code = twoFaService.generarYEnviarCodigo(loginRequest.getEmail());
-                return ResponseEntity.status(206).body("Se envió un código a su email");
+                return ResponseEntity.status(206).body(Map.of("mensaje", "Se envió un código a su email"));
             }
-            String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
-            Map<String, String> response = new HashMap<>();
-            response.put("token", jwt);
-            return ResponseEntity.ok(response);
 
+            // Generar token con roles
+            String jwt = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("roles", userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()));
+            response.put("email", userDetails.getUsername());
+            
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
-            // Siempre responde con JSON: {"mensaje": "..."}
             Map<String, String> response = new HashMap<>();
-            response.put("mensaje", ex.getMessage()); // O tu mensaje personalizado
+            response.put("mensaje", "Error de autenticación: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }

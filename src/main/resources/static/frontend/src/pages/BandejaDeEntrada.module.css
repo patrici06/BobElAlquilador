@@ -1,43 +1,326 @@
 .container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 2rem;
 }
 
 .title {
-    font-size: 2rem; /* Aumentar tamaño del título */
-    font-weight: bold;
-}
-
-.list {
-    list-style: none;
-    padding: 0;
-}
-
-.item {
+    text-align: center;
+    color: #b30000;
     margin-bottom: 2rem;
-    padding: 1.8rem;
-    background-color: #f0f0f0;
-    font-size: 1rem; /* Aumentar tamaño de letra en cada item */
+    font-size: 2.5rem;
+    border-bottom: 2px solid #b30000;
+    padding-bottom: 0.5rem;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.button {
-    background-color: #ac1010;
+.consultasList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.consultaCard {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.consultaInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.clienteInfo {
+    font-size: 1.1rem;
+}
+
+.fecha {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.pregunta {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.responderBtn {
+    background-color: #b30000;
     color: white;
     border: none;
-    padding: 0.6rem 1.2rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    margin-right: 1rem; /* Separación entre botones */
-    font-size: 1rem; /* Letra más grande en botones */
-}
-
-.button:last-child {
-    margin-right: 0; /* Evitar margen en el último botón */
-}
-
-.responder textarea {
-    width: 100%;
-    min-height: 80px;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
     font-size: 1rem;
-    padding: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.responderBtn:hover {
+    background-color: #990000;
+}
+
+.respuestaModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.modalContent h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.preguntaOriginal {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    word-break: break-word;
+}
+
+.preguntaOriginal strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.preguntaOriginal p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.respuestaTextarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.respuestaTextarea:focus {
+    outline: none;
+    border-color: #b30000;
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.enviarBtn {
+    background-color: #b30000;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.enviarBtn:hover:not(:disabled) {
+    background-color: #990000;
+}
+
+.enviarBtn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.cancelarBtn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.cancelarBtn:hover {
+    background-color: #5a6268;
+}
+
+.error {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.empty {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .item {
+        padding: 1rem;
+    }
+
+    .pregunta {
+        font-size: 1rem;
+    }
+
+    .button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .botonesRespuesta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .botonesRespuesta button {
+        width: 100%;
+    }
+
+    .modalContent {
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .modalButtons {
+        flex-direction: column;
+    }
+
+    .enviarBtn, .cancelarBtn {
+        width: 100%;
+        padding: 0.8rem;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.tabButton {
+    background: none;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    color: #666;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+    background-color: #f8f9fa;
+    color: #b30000;
+}
+
+.tabButton.active {
+    background-color: #b30000;
+    color: white;
+}
+
+.preguntaRespuesta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-top: 0.3rem;
+}
+
+.preguntaContainer {
+    background-color: #fff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #b30000;
+}
+
+.respuestaContainer {
+    background-color: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    border-left: 4px solid #b30000;
+}
+
+.preguntaContainer h3, .respuestaContainer h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.respuesta {
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    word-break: break-word;
 }
