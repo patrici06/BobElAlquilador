@@ -42,9 +42,17 @@ function BandejaDeEntrada() {
     };
 
     useEffect(() => {
+        // Carga inicial
         cargarConsultas();
-        // eslint-disable-next-line
-    }, []);
+
+        // Configurar actualización periódica cada 30 segundos
+        const intervalo = setInterval(() => {
+            cargarConsultas();
+        }, 30000); // 30000 ms = 30 segundos
+
+        // Limpiar el intervalo cuando el componente se desmonte
+        return () => clearInterval(intervalo);
+    }, []); // Array de dependencias vacío para que solo se ejecute al montar el componente
 
     const handleResponder = (consulta) => {
         setConsultaSeleccionada(consulta);
