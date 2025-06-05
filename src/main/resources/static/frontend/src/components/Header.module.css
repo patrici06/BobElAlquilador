@@ -38,9 +38,31 @@
 }
 
 .nav {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #282c34;
+    flex-direction: column;
+    align-items: stretch;
+    width: calc(170px + 2rem);
+    max-width: 90vw;
+    padding: 1.2rem 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    gap: 0.8rem;
+    transform: translateY(-30px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s, transform 0.18s;
+    z-index: 15;
+    margin-right: 0.8rem;
+    border-radius: 10px 0 10px 10px;
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
+}
+
+.navOpen {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .button {
@@ -90,7 +112,7 @@
 }
 
 .hamburger {
-    display: none;
+    display: flex;
     background: none;
     border: none;
     flex-direction: column;
@@ -109,40 +131,16 @@
     transition: 0.2s;
 }
 
-/* Mobile styles */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 13;
+    background: rgba(0,0,0,0.18);
+    display: block;
+}
+
+/* Opcional: Para que el backdrop no tape el menú hamburguesa */
 @media (max-width: 700px) {
-    .nav {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: #282c34;
-        flex-direction: column;
-        align-items: stretch;
-        /* Ajuste: El ancho del nav se calcula según el ancho de los botones + margen */
-        width: calc(170px + 2rem);
-        max-width: 90vw;
-        padding: 1.2rem 1rem;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-        gap: 0.8rem;
-        transform: translateY(-30px);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.18s, transform 0.18s;
-        z-index: 15;
-        margin-right: 0.8rem; /* pequeño margen al lateral */
-        border-radius: 10px 0 10px 10px;
-    }
-    .navOpen {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-    .hamburger {
-        display: flex;
-    }
-    .left {
-        min-width: 0;
-    }
     .roles {
         max-width: 80px;
         font-size: 0.87rem;
@@ -161,11 +159,4 @@
         margin-left: 0;
         margin-top: 0.2rem;
     }
-}
-
-.backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 13;
-    background: rgba(0,0,0,0.18);
 }

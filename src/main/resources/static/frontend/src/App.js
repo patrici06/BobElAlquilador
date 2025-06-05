@@ -28,7 +28,7 @@ function App() {
                 <Route path="/register/empleado" element={<RegisterEmpleado />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/propietario/subirMaquina" element={<SubirMaquina />} />
-                <Route path="/perfil" element={<Perfil />} />
+                <Route path="/perfil/:email" element={<Perfil />} /> {/* <--- CORREGIDO */}
                 <Route path="/alquilar" element={<AlquilarMaquina />} />
                 <Route path="/mis-alquileres" element={<MisAlquileres />} />
                 <Route path="/consultas" element={<ConversacionesCliente />} />

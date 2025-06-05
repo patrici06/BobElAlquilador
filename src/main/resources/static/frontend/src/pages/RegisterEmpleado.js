@@ -14,6 +14,7 @@ export default function RegisterEmpleado() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
+    const [birthDate, setBirthDate] = useState(""); // Nuevo estado para la fecha de nacimiento
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -42,6 +43,7 @@ export default function RegisterEmpleado() {
                 nombre: firstName,
                 apellido: lastName,
                 email,
+                fechaNacimiento: birthDate, // Agregada fecha de nacimiento al payload
             });
             setSuccess("Empleado registrado exitosamente. Redirigiendo...");
             setTimeout(() => navigate("/"), 1800);
@@ -121,6 +123,19 @@ export default function RegisterEmpleado() {
                             required
                             placeholder="Ingresa el email"
                             autoComplete="new-email"
+                        />
+                    </div>
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="birthDate" className={styles.label}>Fecha de Nacimiento</label>
+                        <input
+                            id="birthDate"
+                            name="birthDate"
+                            type="date"
+                            className={styles.input}
+                            value={birthDate}
+                            onChange={e => setBirthDate(e.target.value)}
+                            required
+                            placeholder="Fecha de nacimiento"
                         />
                     </div>
                     {error && renderFeedback(error, "error")}

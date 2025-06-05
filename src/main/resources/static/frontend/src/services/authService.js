@@ -56,11 +56,11 @@ export function register({ dni, nombre, apellido, email, telefono, clave, fechaN
         fechaNacimiento
     });
 }
-export function registerEmpleado({dni, nombre, apellido, email}) {
+export function registerEmpleado({dni, nombre, apellido, email, fechaNacimiento}) {
     const token = sessionStorage.getItem("token");
     return axios.post(
         `${API_BASE}/register/empleado`,
-        { dni, nombre, apellido, email },
+        { dni, nombre, apellido, email, fechaNacimiento }, // <--- agregado
         {
             headers: {
                 Authorization: `Bearer ${token}`

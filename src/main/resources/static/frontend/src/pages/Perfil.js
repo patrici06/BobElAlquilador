@@ -7,7 +7,7 @@ import styles from "./PerfilUsuario.module.css";
 
 export default function PerfilUsuario() {
     const { email } = useParams();
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const roles = getRolesFromJwt(token);
 
     // Estados controlados por input
@@ -16,6 +16,7 @@ export default function PerfilUsuario() {
     const [userEmail, setUserEmail] = useState("");
     const [dni, setDni] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState(""); // NUEVO
     const [claveAnterior, setClaveAnterior] = useState("");
     const [clave, setClave] = useState("");
     const [confirmClave, setConfirmClave] = useState("");
@@ -40,6 +41,7 @@ export default function PerfilUsuario() {
                 setUserEmail(res.data.email || "");
                 setDni(res.data.dni || "");
                 setTelefono(res.data.telefono || "");
+                setFechaNacimiento(res.data.fechaNacimiento || ""); // NUEVO
                 setClave("");
                 setConfirmClave("");
                 setClaveAnterior("");
@@ -58,6 +60,7 @@ export default function PerfilUsuario() {
             setUserEmail(user.email || "");
             setDni(user.dni || "");
             setTelefono(user.telefono || "");
+            setFechaNacimiento(user.fechaNacimiento || ""); // NUEVO
             setClave("");
             setConfirmClave("");
             setClaveAnterior("");
@@ -68,6 +71,25 @@ export default function PerfilUsuario() {
     const handlePhoneChange = (e) => {
         const value = e.target.value.replace(/\D/g, "");
         setTelefono(value);
+    };
+
+    // Fecha en formato YYYY-MM-DD para el input type="date"
+    const toInputDate = (fecha) => {
+        if (!fecha) return "";
+        // Si ya está en formato YYYY-MM-DD, retorna tal cual
+        if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
+        // Caso contrario, intenta parsear
+        const [a, m, d] = fecha.split("-");
+        if (a && m && d) return `${a.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+        return "";
+    };
+
+    // Mostrar fecha en formato DD/MM/YYYY
+    const formatFechaNacimiento = (fecha) => {
+        if (!fecha) return "";
+        const [a, m, d] = fecha.split("-");
+        if (a && m && d) return `${d}/${m}/${a}`;
+        return fecha;
     };
 
     const handleSubmit = async (e) => {
@@ -90,6 +112,7 @@ export default function PerfilUsuario() {
             email: user.email,
             nombre,
             apellido,
+            fechaNacimiento, // NUEVO
             ...(roles.includes("ROLE_CLIENTE") && { telefono }),
             ...(clave && { clave }),
             ...(clave && { claveAnterior }),
@@ -115,12 +138,6 @@ export default function PerfilUsuario() {
             {msg}
         </div>
     );
-
-    const formatFechaNacimiento = (fecha) => {
-        if (!fecha) return "";
-        const [a, m, d] = fecha.split("-");
-        return `${d}/${m}/${a}`;
-    };
 
     if (loading) return <div className={styles.loading}>Cargando datos...</div>;
     if (!user) return <div className={styles.loading}>No se encontró el usuario.</div>;
@@ -226,6 +243,20 @@ export default function PerfilUsuario() {
                                 </div>
                             )}
 
+                            {/* Fecha de nacimiento */}
+                            <div className={styles.inputGroup}>
+                                <label htmlFor="fechaNacimiento" className={styles.label}>Fecha de nacimiento</label>
+                                <input
+                                    id="fechaNacimiento"
+                                    name="fechaNacimiento"
+                                    type="date"
+                                    className={styles.input}
+                                    value={toInputDate(fechaNacimiento)}
+                                    onChange={e => setFechaNacimiento(e.target.value)}
+                                    required
+                                />
+                            </div>
+
                             {/* Clave anterior */}
                             <div className={styles.inputGroup}>
                                 <label htmlFor="claveAnterior" className={styles.label}>Clave anterior</label>
@@ -321,6 +352,7 @@ export default function PerfilUsuario() {
                                     setUserEmail(user.email || "");
                                     setDni(user.dni || "");
                                     setTelefono(user.telefono || "");
+                                    setFechaNacimiento(user.fechaNacimiento || "");
                                     setClave("");
                                     setConfirmClave("");
                                     setClaveAnterior("");
