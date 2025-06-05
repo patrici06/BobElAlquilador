@@ -79,7 +79,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    padding: 1rem;
+    padding: 2rem;
 }
 
 .modalContent {
@@ -87,12 +87,12 @@
     padding: 2rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-width: 900px;
+    height: auto;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
 }
 
 .modalContent h2 {
@@ -107,6 +107,8 @@
     border-radius: 8px;
     margin-bottom: 1.5rem;
     word-break: break-word;
+    width: auto;
+    box-sizing: border-box;
 }
 
 .preguntaOriginal strong {
@@ -124,15 +126,15 @@
 }
 
 .respuestaTextarea {
-    width: 100%;
-    min-height: 150px;
+    width: 95%;
+    height: 250px;
     padding: 1rem;
     border: 2px solid #ddd;
     border-radius: 8px;
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
     line-height: 1.6;
-    resize: vertical;
+    resize: none;
     font-family: inherit;
 }
 

@@ -14,6 +14,10 @@ function ConversacionesCliente() {
     const [error, setError] = useState("");
     const [enviando, setEnviando] = useState(false);
     const [exito, setExito] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [respuestaActual, setRespuestaActual] = useState("");
+    const [preguntaSeleccionada, setPreguntaSeleccionada] = useState(null);
+    const [exitoRespuesta, setExitoRespuesta] = useState(false);
     const token = sessionStorage.getItem("token");
 
     const cargarPreguntas = () => {
@@ -56,6 +60,33 @@ function ConversacionesCliente() {
             .finally(() => {
                 setEnviando(false);
             });
+    };
+
+    const handleResponderEmpleado = (iteracion) => {
+        setPreguntaSeleccionada(iteracion);
+        setModalVisible(true);
+    };
+
+    const handleEnviarRespuesta = () => {
+        if (!respuestaActual.trim()) return;
+        
+        setEnviando(true);
+        // Aquí iría la lógica para enviar la respuesta al empleado
+        console.log("Enviando respuesta:", respuestaActual);
+        
+        // Simulamos el envío exitoso
+        setTimeout(() => {
+            setExitoRespuesta(true);
+            setEnviando(false);
+            
+            // Después de 2 segundos, cerramos el modal y limpiamos todo
+            setTimeout(() => {
+                setModalVisible(false);
+                setRespuestaActual("");
+                setPreguntaSeleccionada(null);
+                setExitoRespuesta(false);
+            }, 2000);
+        }, 1000);
     };
 
     return (
@@ -106,6 +137,7 @@ function ConversacionesCliente() {
                                             {iteracion.pregunta.fecha} {formatearHora(iteracion.pregunta.hora)}
                                         </small>
                                     </div>
+                                    
                                     {iteracion.respuesta && iteracion.respuesta.cuerpo && (
                                         <div className={styles.respuestaContainer}>
                                             <h3>Respuesta:</h3>
@@ -118,6 +150,12 @@ function ConversacionesCliente() {
                                                 {iteracion.respuesta.persona?.nombre || <em>No disponible</em>}{" "}
                                                 {iteracion.respuesta.persona?.apellido || ""}
                                             </div>
+                                            <button
+                                                onClick={() => handleResponderEmpleado(iteracion)}
+                                                className={styles.responderBtn}
+                                            >
+                                                Responder
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -126,6 +164,51 @@ function ConversacionesCliente() {
                     )}
                 </div>
             </div>
+
+            {/* Modal de Respuesta */}
+            {modalVisible && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h2>Responder al Empleado</h2>
+                        <div className={styles.preguntaOriginal}>
+                            <strong>Pregunta original:</strong>
+                            <p>{preguntaSeleccionada?.pregunta.cuerpo}</p>
+                        </div>
+                        <div className={styles.respuestaEmpleado}>
+                            <strong>Respuesta del empleado:</strong>
+                            <p>{preguntaSeleccionada?.respuesta.cuerpo}</p>
+                        </div>
+                        <textarea
+                            value={respuestaActual}
+                            onChange={(e) => setRespuestaActual(e.target.value)}
+                            placeholder="Escribe tu respuesta aquí..."
+                            className={styles.respuestaTextarea}
+                            disabled={enviando || exitoRespuesta}
+                        />
+                        {exitoRespuesta && (
+                            <div className={styles.success}>
+                                ¡Respuesta enviada exitosamente!
+                            </div>
+                        )}
+                        <div className={styles.modalButtons}>
+                            <button 
+                                onClick={() => setModalVisible(false)} 
+                                className={styles.cancelarBtn}
+                                disabled={enviando || exitoRespuesta}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleEnviarRespuesta}
+                                disabled={enviando || exitoRespuesta || !respuestaActual.trim()}
+                                className={styles.enviarBtn}
+                            >
+                                {enviando ? "Enviando..." : "Enviar Respuesta"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -63,6 +63,8 @@
     box-sizing: border-box;
 }
 
+  
+
 .textarea:focus {
     outline: none;
     border-color: #b30000;
@@ -344,4 +346,109 @@
         margin-right: 0;
         align-items: stretch;
     }
+}
+
+.responderBtn {
+    background-color: #b30000;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+    width: 100%;
+}
+
+.responderBtn:hover {
+    background-color: #990000;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 2rem;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 1000px;
+    height: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.preguntaOriginal,
+.respuestaEmpleado {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #b30000;
+}
+
+.respuestaTextarea {
+    width: 95%;
+    height: 250px;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    resize: none;
+    font-family: inherit;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.cancelarBtn,
+.enviarBtn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.cancelarBtn {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.cancelarBtn:hover {
+    background-color: #e9ecef;
+}
+
+.enviarBtn {
+    background-color: #b30000;
+    color: white;
+    border: none;
+}
+
+.enviarBtn:hover:not(:disabled) {
+    background-color: #990000;
+}
+
+.enviarBtn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
