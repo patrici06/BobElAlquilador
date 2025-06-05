@@ -26,16 +26,18 @@ function SubirMaquina() {
 
     // Cargar marcas y tipos desde la API al montar el componente
     useEffect(() => {
-        fetch("http://localhost:8080/api/tipos")
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        fetch("http://localhost:8080/api/tipos", { headers })
             .then(res => res.json())
             .then(data => setTipos(data))
             .catch(() => setTipos([]));
 
-        fetch("http://localhost:8080/api/marcas")
+        fetch("http://localhost:8080/api/marcas", { headers })
             .then(res => res.json())
             .then(data => setMarcas(data))
             .catch(() => setMarcas([]));
-    }, []);
+    }, [token]);
 
     if (!roles.includes("ROLE_PROPIETARIO")) {
         return (
