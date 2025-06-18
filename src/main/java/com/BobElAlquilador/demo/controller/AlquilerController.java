@@ -122,4 +122,14 @@ public class AlquilerController {
         }
     }
 
+    @GetMapping("/buscar-por-dni")
+    public ResponseEntity<List<Alquiler>> buscarPorDni(@RequestParam String dni) {
+        try {
+            List<Alquiler> resultado = service.buscarAlquileresPorDni(dni);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 }

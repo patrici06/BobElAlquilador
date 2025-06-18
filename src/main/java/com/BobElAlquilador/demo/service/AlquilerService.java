@@ -122,4 +122,12 @@ public class AlquilerService {
     }
 
     public void saveAlquiler(Alquiler alquiler) {repo.save(alquiler);}
+
+    public List<Alquiler> buscarAlquileresPorDni(String dni) throws Exception {
+    Persona persona = personaService.findByDniCliente(dni);
+    if (persona == null) {
+        throw new Exception("El DNI ingresado no se encuentra registrado en el sistema");
+    }
+    return repo.findByCliente_Dni(dni);
+}
 }

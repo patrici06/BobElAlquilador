@@ -13,6 +13,7 @@ import MisAlquileres from './pages/MisAlquileres';
 import BandejaDeEntrada from "./pages/BandejaDeEntrada";
 import ConversacionesCliente from './pages/ConversacionesCliente';
 import DetalleConsulta from './pages/DetalleConsulta';
+import BuscarPorDni from './pages/BuscarAlquilerDni';
 
 function App() {
     const location = useLocation();
@@ -34,6 +35,8 @@ function App() {
                 <Route path="/consultas" element={<ConversacionesCliente />} />
                 <Route path="/consultas/:conversacionId/:preguntaId" element={<DetalleConsulta />} />
                 <Route path="/bandeja" element={<BandejaDeEntrada />} />
+                <Route path="/buscar-por-dni" element={<BuscarPorDni />} />
+
             </Routes>
             {!hideHeaderFooter && <Footer />}
         </div>
