@@ -1,0 +1,72 @@
+.home-container {
+  background-color: #fff;
+  color: #b30000;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.home-main {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.titulo-principal {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #b30000;
+}
+
+.subtitulo {
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+}
+
+.video-container {
+  margin: 2rem 0;
+}
+
+video {
+  width: 100%;
+  border-radius: 1rem;
+  border: 3px solid #b30000;
+}
+
+.carousel-container {
+  margin-top: 2rem;
+}
+
+.slide img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 1rem;
+  border: 3px solid #b30000;
+}
+
+.bienvenida-texto {
+  margin-top: 3rem;
+  text-align: left;
+}
+
+.bienvenida-texto h2 {
+  font-size: 2rem;
+  color: #b30000;
+  margin-bottom: 1rem;
+}
+
+.bienvenida-texto p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* slick carousel overrides */
+.slick-dots li button:before {
+  color: #b30000 !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #ff0000 !important;
+}
