@@ -26,15 +26,24 @@ function SubirMaquina() {
 
     // Cargar marcas y tipos desde la API al montar el componente
     useEffect(() => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const token = sessionStorage.getItem("token");
+        const headers = {
+            Authorization: `Bearer ${token}`
+        };
 
         fetch("http://localhost:8080/api/tipos", { headers })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("No autorizado");
+                return res.json();
+            })
             .then(data => setTipos(data))
             .catch(() => setTipos([]));
 
         fetch("http://localhost:8080/api/marcas", { headers })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("No autorizado");
+                return res.json();
+            })
             .then(data => setMarcas(data))
             .catch(() => setMarcas([]));
     }, [token]);

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/")
 public class FrontController {
