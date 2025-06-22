@@ -21,21 +21,53 @@ public class MaquinaService {
         return maquinaRepository.findAll();
     }
 
+    public List<Maquina> getAllMaquinasActivasDB() {
+        return maquinaRepository.findAll().stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
+    }
+
     public List<Maquina> getMaquinasPorTipo(String tipo) {
         return maquinaRepository.findByTipos_Nombre(tipo);
+    }
+
+    public List<Maquina> getMaquinasPorTipoActivasDB(String tipo) {
+        return maquinaRepository.findByTipos_Nombre(tipo).stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
     }
 
     public Maquina getMaquinaPorNombre(String nombre) {
         return maquinaRepository.findById(nombre).orElse(null);
     }
 
+    public Maquina getMaquinaPorNombreActivasDB(String nombre) {
+        Maquina maq = maquinaRepository.findById(nombre).orElse(null);
+        if (maq == null || maq.getEstado() == Estado.Eliminado) {
+            return(null);
+        }
+        return(maq);
+    }
+
     public List<Maquina> getMaquinasPorUbicacion(String ubicacion) {
         return maquinaRepository.findByUbicacion(ubicacion);
+    }
+
+    public List<Maquina> getMaquinasPorUbicacionActivasDB(String ubicacion) {
+        return maquinaRepository.findByUbicacion(ubicacion).stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
     }
 
     public List<Maquina> getMaquinasDisponibles() {
         return maquinaRepository.findAll().stream()
                 .filter(maq -> maq.getEstadoMaquina() == EstadoMaquina.Disponible)
+                .toList();
+    }
+
+    public List<Maquina> getMaquinasDisponiblesActivasDB() {
+        return maquinaRepository.findAll().stream()
+                .filter(maq -> (maq.getEstado() == Estado.Activo) && (maq.getEstadoMaquina() == EstadoMaquina.Disponible))
                 .toList();
     }
 
