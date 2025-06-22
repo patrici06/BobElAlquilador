@@ -21,21 +21,53 @@ public class MaquinaService {
         return maquinaRepository.findAll();
     }
 
+    public List<Maquina> getAllMaquinasActivasDB() {
+        return maquinaRepository.findAll().stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
+    }
+
     public List<Maquina> getMaquinasPorTipo(String tipo) {
         return maquinaRepository.findByTipos_Nombre(tipo);
+    }
+
+    public List<Maquina> getMaquinasPorTipoActivasDB(String tipo) {
+        return maquinaRepository.findByTipos_Nombre(tipo).stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
     }
 
     public Maquina getMaquinaPorNombre(String nombre) {
         return maquinaRepository.findById(nombre).orElse(null);
     }
 
+    public Maquina getMaquinaPorNombreActivaDB(String nombre) {
+        Maquina maq = maquinaRepository.findById(nombre).orElse(null);
+        if (maq.getEstado() == Estado.Activo) {
+            return(maq);
+        }
+        return(null);
+    }
+
     public List<Maquina> getMaquinasPorUbicacion(String ubicacion) {
         return maquinaRepository.findByUbicacion(ubicacion);
+    }
+
+    public List<Maquina> getMaquinasPorUbicacionActivasDB(String ubicacion) {
+        return maquinaRepository.findByUbicacion(ubicacion).stream()
+                .filter(maq -> maq.getEstado() == Estado.Activo)
+                .toList();
     }
 
     public List<Maquina> getMaquinasDisponibles() {
         return maquinaRepository.findAll().stream()
                 .filter(maq -> maq.getEstadoMaquina() == EstadoMaquina.Disponible)
+                .toList();
+    }
+
+    public List<Maquina> getMaquinasDisponiblesActivasDB() {
+        return maquinaRepository.findAll().stream()
+                .filter(maq -> (maq.getEstado() == Estado.Activo) && (maq.getEstadoMaquina() == EstadoMaquina.Disponible))
                 .toList();
     }
 
@@ -58,7 +90,7 @@ public class MaquinaService {
 
 
     //LO SAQUE DE ACA PORQUE GENERABA UN CICLO EN SPRING; LO MOVI PARA MAQUINAALQUILERCORDINATOR
-//    // Borrado Lógico
+   // Borrado Lógico
    // public void deleteMaquina(String nomMaquina) {
      //   Maquina maquina = maquinaRepository.findById(nomMaquina).orElse(null);
       //  if (maquina == null) {
