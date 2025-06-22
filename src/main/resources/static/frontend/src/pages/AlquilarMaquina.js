@@ -55,9 +55,15 @@ function AlquilarMaquina() {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
             .then(data => setMachines(data))
-            .catch(console.error);
+            .catch(err => {
+                setError('Error cargando máquinas: ' + err.message);
+                setMachines([]);
+            });
     }, [token]);
 
     // 1.1) Cargar tipos y marcas para los filtros
@@ -105,16 +111,26 @@ function AlquilarMaquina() {
     const handleEliminarMaquina = async (nombre) => {
         if (window.confirm(`¿Estás seguro de eliminar la máquina "${nombre}"?`)) {
             try {
+                const token = sessionStorage.getItem("token");
                 const response = await fetch(`http://localhost:8080/maquina/eliminar/${encodeURIComponent(nombre)}`, {
                     method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
-                if (response.ok) {
+                if (!response.ok) {
+                    let errorMsg = 'Error desconocido';
+                    try {
+                        const error = await response.json();
+                        errorMsg = error.mensaje || errorMsg;
+                    } catch (_) {
+                        // Body vacío u otro formato, se mantiene mensaje por defecto
+                    }
+                    alert('Error al eliminar: ' + errorMsg);
+                } else {
                     alert('Máquina eliminada con éxito');
                     setMachines((prev) => prev.filter((m) => m.nombre !== nombre));
-                } else {
-                    const error = await response.json();
-                    alert('Error al eliminar: ' + (error.mensaje || 'Error desconocido'));
                 }
             } catch (error) {
                 alert('Error al eliminar: ' + error.message);
@@ -211,9 +227,10 @@ function AlquilarMaquina() {
                             ))}
                         </select>
                     </div>
+                    {error && <div style={{color: 'red', marginBottom: 12}}>{error}</div>}
                     <div className="cards-container">
                         {filteredMachines.length === 0 ? (
-                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontro una maquina bajo esas caracteristicas.</div>
+                            <div style={{ margin: '2em auto', color: '#555' }}>No se encontró una máquina bajo esas características.</div>
                         ) : (
                             filteredMachines.map(machine => (
                                 <div className="card" key={machine.nombre}>

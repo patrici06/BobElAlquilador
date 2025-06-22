@@ -72,8 +72,10 @@ public class PersonaService {
     public Persona changeUserData(RegisterRequest request) {
         Persona persona = pRepo.findById(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (!passwordEncoder.matches(request.getClaveAnterior(), persona.getClave())) {
-            throw new RuntimeException("La clave original es erronea.");
+        if (    request.getClaveAnterior() == null ||
+                request.getClaveAnterior().isEmpty() ||
+                !passwordEncoder.matches(request.getClaveAnterior(), persona.getClave())) {
+            throw new RuntimeException("La clave original es erronea");
         }
         if (     request.getClave() != null &&
                 !request.getClave().isEmpty() &&

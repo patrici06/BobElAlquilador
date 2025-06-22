@@ -109,11 +109,7 @@ function SubirMaquina() {
             setSuccess("Máquina registrada exitosamente. Redirigiendo...");
             setTimeout(() => navigate("/"), 1800);
         } catch (err) {
-            if (err?.response?.status === 403) {
-                setError("No tienes permisos para registrar máquinas.");
-            } else {
                 setError(err?.response?.data?.mensaje || "Error al registrar máquina");
-            }
             setSubmitting(false);
         }
     };

@@ -67,6 +67,7 @@ public class MaquinaController {
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
         } catch (Exception e) {
+            System.out.println("Mensaje de Error" + e.getMessage());
             Map<String, Object> response = new HashMap<>();
             response.put("mensaje", "Error al subir maquina: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);

@@ -16,7 +16,7 @@ export default function PerfilUsuario() {
     const [userEmail, setUserEmail] = useState("");
     const [dni, setDni] = useState("");
     const [telefono, setTelefono] = useState("");
-    const [fechaNacimiento, setFechaNacimiento] = useState(""); // NUEVO
+    const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [claveAnterior, setClaveAnterior] = useState("");
     const [clave, setClave] = useState("");
     const [confirmClave, setConfirmClave] = useState("");
@@ -41,7 +41,7 @@ export default function PerfilUsuario() {
                 setUserEmail(res.data.email || "");
                 setDni(res.data.dni || "");
                 setTelefono(res.data.telefono || "");
-                setFechaNacimiento(res.data.fechaNacimiento || ""); // NUEVO
+                setFechaNacimiento(res.data.fechaNacimiento || "");
                 setClave("");
                 setConfirmClave("");
                 setClaveAnterior("");
@@ -60,7 +60,7 @@ export default function PerfilUsuario() {
             setUserEmail(user.email || "");
             setDni(user.dni || "");
             setTelefono(user.telefono || "");
-            setFechaNacimiento(user.fechaNacimiento || ""); // NUEVO
+            setFechaNacimiento(user.fechaNacimiento || "");
             setClave("");
             setConfirmClave("");
             setClaveAnterior("");
@@ -76,9 +76,7 @@ export default function PerfilUsuario() {
     // Fecha en formato YYYY-MM-DD para el input type="date"
     const toInputDate = (fecha) => {
         if (!fecha) return "";
-        // Si ya está en formato YYYY-MM-DD, retorna tal cual
         if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
-        // Caso contrario, intenta parsear
         const [a, m, d] = fecha.split("-");
         if (a && m && d) return `${a.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
         return "";
@@ -102,9 +100,8 @@ export default function PerfilUsuario() {
             setSubmitting(false);
             return;
         }
-        // Verifica que se ingrese la clave anterior si se quiere cambiar la clave
         if (clave && !claveAnterior) {
-            setError("Debes ingresar la clave anterior para cambiar la contraseña.");
+            setError("Debes ingresar la clave para realizar cambios.");
             setSubmitting(false);
             return;
         }
@@ -112,10 +109,10 @@ export default function PerfilUsuario() {
             email: user.email,
             nombre,
             apellido,
-            fechaNacimiento, // NUEVO
+            fechaNacimiento,
             ...(roles.includes("ROLE_CLIENTE") && { telefono }),
-            ...(clave && { clave }),
-            ...(clave && { claveAnterior }),
+            ...(clave ? { clave } : {}),
+            ...(claveAnterior ? { claveAnterior } : {}),
         };
 
         try {
@@ -243,7 +240,7 @@ export default function PerfilUsuario() {
                                 </div>
                             )}
 
-                            {/* Fecha de nacimiento */}
+                            {/* Fecha de nacimiento (solo lectura) */}
                             <div className={styles.inputGroup}>
                                 <label htmlFor="fechaNacimiento" className={styles.label}>Fecha de nacimiento</label>
                                 <input
@@ -252,8 +249,8 @@ export default function PerfilUsuario() {
                                     type="date"
                                     className={styles.input}
                                     value={toInputDate(fechaNacimiento)}
-                                    onChange={e => setFechaNacimiento(e.target.value)}
-                                    required
+                                    readOnly
+                                    disabled
                                 />
                             </div>
 

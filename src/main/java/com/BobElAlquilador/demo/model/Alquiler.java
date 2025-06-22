@@ -17,7 +17,7 @@ public class Alquiler extends DbEstado {
     @ManyToOne
     @JoinColumn(name = "persona_dni")
     private Persona cliente;
-
+  // requiere de un empleado que lo realiza
     private Double precioTotal;
 
     @Enumerated(EnumType.STRING)
