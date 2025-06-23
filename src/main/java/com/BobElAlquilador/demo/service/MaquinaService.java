@@ -3,6 +3,7 @@ package com.BobElAlquilador.demo.service;
 import com.BobElAlquilador.demo.model.*;
 import com.BobElAlquilador.demo.repository.MaquinaRepository;
 import com.BobElAlquilador.demo.util.MaquinaRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +83,14 @@ public class MaquinaService {
             throw new RuntimeException("La maquina '" + nombreMaquina + "' ya se encuentra registrada");
         }
         return maquinaRepository.save(nueva);
+    }
+
+    public void actualizarEstadoMaquina(String nombre, EstadoMaquina estado) {
+        Maquina maq = this.getMaquinaPorNombreActivasDB(nombre);
+        if (maq == null)
+            throw new EntityNotFoundException("Entidad no encontrada para actualizar su estado");
+        maq.setEstadoMaquina(estado);
+        maquinaRepository.save(maq);
     }
 
     public void saveMaquina(Maquina maquina) {

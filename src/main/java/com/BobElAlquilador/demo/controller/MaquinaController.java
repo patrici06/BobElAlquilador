@@ -1,5 +1,6 @@
 package com.BobElAlquilador.demo.controller;
 
+import com.BobElAlquilador.demo.model.EstadoMaquina;
 import com.BobElAlquilador.demo.model.Maquina;
 import com.BobElAlquilador.demo.model.Marca;
 import com.BobElAlquilador.demo.model.Tipo;
@@ -102,6 +103,19 @@ public class MaquinaController {
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("mensaje", "Error al eliminar maquina" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @PutMapping("/api/maquina/actualizarEstado/{nombre}")
+    public ResponseEntity<?> cambiarEstadoMaquina(@RequestParam String nuevoEstado, @PathVariable String nombre) {
+        try {
+            EstadoMaquina estado = EstadoMaquina.valueOf(nuevoEstado);
+            maquinaService.actualizarEstadoMaquina(nombre, estado);
+            return ResponseEntity.status(HttpStatus.OK).body("Estado de maquina '" + nombre + "' actualizado con éxito.");
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Error al cambiar el estado de la maquina: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
