@@ -123,4 +123,20 @@ public class AlquilerController {
         }
     }
 
+    @PutMapping("/registrar-devolucion/{nombreMaquina}")
+    public ResponseEntity<?> registrarDevolucion(
+            @PathVariable String nombreMaquina,
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin
+    ) {
+        try {
+            service.registrarDevolucion(nombreMaquina, inicio, fin);
+            return ResponseEntity.status(HttpStatus.OK).body("Alquiler de '" + nombreMaquina + "' devuelto con exito");
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Error al registrar la devolucion: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
 }

@@ -2,7 +2,9 @@ package com.BobElAlquilador.demo.service;
 
 import com.BobElAlquilador.demo.model.*;
 import com.BobElAlquilador.demo.repository.AlquilerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.EvaluationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,6 +60,16 @@ public class AlquilerService {
 
     public Alquiler buscarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
         return repo.findById(new AlquilerId(nombreMaquina, inicio, fin)).orElse(null);
+    }
+
+    public void registrarDevolucion(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        Alquiler alq = buscarAlquiler(nombreMaquina, inicio, fin);
+        if (alq == null)
+            throw new EntityNotFoundException("La reserva a registrar no fue encontrada");
+        if (alq.getEstadoAlquiler() != EstadoAlquiler.Activo)
+            throw new IllegalStateException("La reserva no se encuentra activa para devolver");
+        alq.setEstado(EstadoAlquiler.Finalizado);
+        repo.save(alq);
     }
 
     public void eliminarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
