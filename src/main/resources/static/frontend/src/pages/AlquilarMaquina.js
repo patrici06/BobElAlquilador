@@ -29,6 +29,7 @@ function AlquilarMaquina() {
     const [fin, setFin] = useState(null);
     const [error, setError] = useState('');
     const [diasOcupados, setDiasOcupados] = useState([]);
+    const [alquilerEnProceso, setAlquilerEnProceso] = useState(false);
     const clienteDni = sessionStorage.getItem('dni');
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
@@ -99,6 +100,65 @@ function AlquilarMaquina() {
             return () => clearTimeout(timeout);
         }
     }, [view]);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const pago = urlParams.get("pago");
+
+        // Evitar ejecución doble
+        if (
+            pago === "exitoso" &&
+            localStorage.getItem("pagoPendiente") === "true" &&
+            !alquilerEnProceso
+        ) {
+            setAlquilerEnProceso(true); // Marcar como en proceso
+            setView("processing");
+
+            const nombreMaquina = localStorage.getItem("nombreMaquina");
+            const inicio = localStorage.getItem("inicio");
+            const fin = localStorage.getItem("fin");
+
+            const token = sessionStorage.getItem("token");
+
+            const ejecutarAlquiler = async () => {
+                try {
+                    // ⚠️ Limpiamos primero, así si se recarga no se repite
+                    localStorage.removeItem("pagoPendiente");
+
+                    const params = new URLSearchParams({
+                        email,
+                        maquina: nombreMaquina,
+                        fechaInicio: inicio,
+                        fechaFin: fin,
+                    });
+
+                    const res = await fetch(`http://localhost:8080/api/alquileres/reservar?${params.toString()}`, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (!res.ok) throw new Error("Error al registrar el alquiler");
+
+                    // Limpio el resto del storage
+                    localStorage.removeItem("idMaquina");
+                    localStorage.removeItem("dniCliente");
+                    localStorage.removeItem("inicio");
+                    localStorage.removeItem("fin");
+
+                    setView("payment");
+                    window.history.replaceState(null, '', '/');
+                } catch (e) {
+                    console.error("❌ Error al crear alquiler post-pago:", e);
+                    setError("Error al registrar el alquiler.");
+                    setView("list");
+                }
+            };
+
+            ejecutarAlquiler();
+        }
+    }, [alquilerEnProceso, email]);
 
     const handleReserveClick = (machine) => {
         setSelectedMachine(machine);

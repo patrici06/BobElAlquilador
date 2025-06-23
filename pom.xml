@@ -59,6 +59,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Mercado Pago -->
+		<dependency>
+			<groupId>com.mercadopago</groupId>
+			<artifactId>sdk-java</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

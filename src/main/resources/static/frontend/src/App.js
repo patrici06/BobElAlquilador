@@ -13,6 +13,7 @@ import MisAlquileres from './pages/MisAlquileres';
 import BandejaDeEntrada from "./pages/BandejaDeEntrada";
 import ConversacionesCliente from './pages/ConversacionesCliente';
 import DetalleConsulta from './pages/DetalleConsulta';
+import PagoExitoso from "./pages/PagoExitoso";
 
 function App() {
     const location = useLocation();
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/consultas" element={<ConversacionesCliente />} />
                 <Route path="/consultas/:conversacionId/:preguntaId" element={<DetalleConsulta />} />
                 <Route path="/bandeja" element={<BandejaDeEntrada />} />
+                <Route path="/pago-exitoso" element={<PagoExitoso />} />
             </Routes>
             {!hideHeaderFooter && <Footer />}
         </div>

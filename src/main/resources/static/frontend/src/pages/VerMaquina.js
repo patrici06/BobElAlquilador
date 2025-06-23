@@ -4,6 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css'
 import {jwtDecode} from "jwt-decode";
 import {getRolesFromJwt} from "../utils/getUserRolesFromJwt";
+import {crearPreferenciaMP} from "../utils/crearPreferenciaMP";
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -82,42 +83,47 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
         return null;
     }
 
-    const handleSubmit = async () => {
+    const handlePagoYRedireccion = async () => {
         setError('');
         if (!inicio || !fin) {
             setError('Por favor selecciona ambas fechas.');
             return;
         }
         if (!email) {
-            setError('Por favor ingresa tu email.');
+            setError('No se pudo obtener el email del usuario.');
             return;
         }
-        try {
-            const url = new URL('http://localhost:8080/api/alquileres/reservar');
-            url.searchParams.append('email', email);
-            url.searchParams.append('maquina', machine.nombre);
-            url.searchParams.append('fechaInicio', inicio.toISOString().slice(0, 10));
-            url.searchParams.append('fechaFin', fin.toISOString().slice(0, 10));
 
-            const res = await fetch(url, {
-                method: 'POST',
-                credentials: 'include',
+        try {
+            const inicioStr = inicio.toISOString().slice(0, 10);
+            const finStr = fin.toISOString().slice(0, 10);
+            const dniCliente = sessionStorage.getItem("dni");
+            const msPorDia = 1000 * 60 * 60 * 24;
+            const dias = Math.ceil((fin - inicio) / msPorDia) + 1;
+            const precioTotal = machine.precioDia * dias;
+
+            const initPoint = await crearPreferenciaMP({
+                id: machine.id,
+                nombre: machine.nombre,
+                descripcion: machine.descripcion,
+                imagenUrl: machine.fotoUrl,
+                precio: precioTotal || 10000, // Usa precio por día
+                inicio: inicioStr,
+                fin: finStr,
+                dniCliente
             });
 
-            if (!res.ok) {
-                const errorJson = await res.json();
-                throw new Error(errorJson.error || "Error en la reserva");
-            }
+            localStorage.setItem("pagoPendiente", "true");
+            localStorage.setItem("inicio", inicioStr);
+            localStorage.setItem("fin", finStr);
+            localStorage.setItem("nombreMaquina", machine.nombre);
 
-            await res.json();
+            // Redirigir al checkout de MP
+            window.location.href = initPoint;
 
-            // En lugar de setView('processing'), avisamos al padre:
-            if (typeof onReserveSuccess === 'function') {
-                onReserveSuccess();
-            }
-        }
-        catch(err) {
-            setError(err.message);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo iniciar el pago: " + err.message);
         }
     };
 
@@ -171,7 +177,7 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
                                 />
                                 <br />
 
-                                <button className="button-primary" onClick={handleSubmit}>
+                                <button className="button-primary" onClick={handlePagoYRedireccion}>
                                     Realizar Reserva
                                 </button>
                             </>

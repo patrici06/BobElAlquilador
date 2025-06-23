@@ -4,6 +4,8 @@ import Footer from "../components/Footer";
 
 function Home() {
 
+    
+
     return (
         <div style={{ paddingBottom: "3rem" }}>
             <main style={{ padding: "2rem" }}>

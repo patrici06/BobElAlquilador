@@ -41,6 +41,7 @@ public class AlquilerController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         try {
             Alquiler nuevo = service.reservar(email, maquina, fechaInicio, fechaFin);
+            System.out.println("Nuevo alquiler: " + nuevo);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
