@@ -83,7 +83,7 @@ public class AlquilerService {
 
     public List<Alquiler> getAllAlquileres() {
         List<Alquiler> alquileres = repo.findAll();
-        cambioDeEstado(alquileres);
+        //cambioDeEstado(alquileres); <- Comentado porque ahora manejamos los estados a traves de Registrar Retiro/Devolucion
         return alquileres;
     }
 
@@ -107,10 +107,11 @@ public class AlquilerService {
         String dni = cliente.getDni();
         List<Alquiler> alquileres = repo.findByCliente_Dni(dni);
 
-        cambioDeEstado(alquileres);
+        //cambioDeEstado(alquileres); <- Comentado porque ahora manejamos los estados a traves de Registrar Retiro/Devolucion
         return alquileres;
     }
 
+    // Metodo obsoleto, no lo borro por las dudas
     private void cambioDeEstado(List<Alquiler> alquileres) {
         LocalDate hoy = LocalDate.now();
         for (Alquiler a : alquileres) {

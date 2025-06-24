@@ -13,6 +13,8 @@ function MisAlquileres() {
     const [view, setView] = useState('list');
     const [selectedMachine, setSelectedMachine] = useState(null);
 
+    const [showReviewPopup, setShowReviewPopup] = useState(false);
+
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
 
@@ -82,7 +84,43 @@ function MisAlquileres() {
         setView('alquilerVista');
     };
 
-    const handleEliminarAlquiler = (alquiler) => {
+    const handleRegistrarDevolucion = (alquiler, e) => {
+        e.stopPropagation();
+
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+        const url = `http://localhost:8080/api/alquileres/registrar-devolucion/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
+        fetch(url, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || "Error al registrar devolución");
+                }
+                setAlquileres(prevAlquileres =>
+                    prevAlquileres.map(a => {
+                        if (a.alquilerId.nombre_maquina === nombre_maquina &&
+                            a.alquilerId.fechaInicio === fechaInicio &&
+                            a.alquilerId.fechaFin === fechaFin) {
+                            return {...a, estadoAlquiler: "Finalizado"};
+                        }
+                        return a;
+                    })
+                );
+
+                setShowReviewPopup(true);
+            })
+            .catch((err) => {
+                alert('Error al registrar la devolución: ' + err.message);
+            });
+    }
+
+    const handleEliminarAlquiler = (alquiler, e) => {
+        e.stopPropagation();
+
         const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
 
         // Reglas de negocio: sólo cancelar si HOY es anterior a fecha de inicio
@@ -128,6 +166,23 @@ function MisAlquileres() {
             });
     };
 
+    const ReviewPopup = () => {
+        return (
+            <div className="review-popup-overlay">
+                <div className="review-popup-content">
+                    <h3>Reseña de Servicio</h3>
+                    <p>Aca se implementa la reseña de servicio de Pato</p>
+                    <button
+                        onClick={() => setShowReviewPopup(false)}
+                        className="button-primary"
+                    >
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     // Si estás en la vista de alquilerVista, renderiza VerMaquina
     if (view === 'alquilerVista' && selectedMachine) {
         return (
@@ -143,6 +198,7 @@ function MisAlquileres() {
     if (view === 'list') {
         return (
             <div className="container">
+                {showReviewPopup && <ReviewPopup />}
                 {esAdmin && <h2 className="title">Alquileres</h2>}
                 {rawRoles.includes("ROLE_CLIENTE") && <h2 className="title">Mis Alquileres</h2>}
 
@@ -195,7 +251,7 @@ function MisAlquileres() {
                                     <th>Nombre</th>
                                     <th>Dni</th>
                                     <th>Email</th>
-                                    <th></th>
+                                    <th>Acciones</th>
                                 </>
                             )}
                         </tr>
@@ -221,15 +277,30 @@ function MisAlquileres() {
                                         <td>{a.persona?.nombre || "-"}</td>
                                         <td>{a.persona?.dni || "-"}</td>
                                         <td>{a.persona?.email || "-"}</td>
-                                        <button
-                                            className="button-primary"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // evita cambiar de vista
-                                                handleEliminarAlquiler(a);
-                                            }}
-                                        >
-                                            Cancelar Alquiler
-                                        </button>
+                                        <td>
+                                            <button
+                                                className="button-primary"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEliminarAlquiler(a, e);
+                                                }}
+                                                style={{marginRight: "8px"}}
+                                            >
+                                                Cancelar Alquiler
+                                            </button>
+
+                                            {a.estadoAlquiler.toLocaleUpperCase() === "ACTIVO" && (
+                                                <button
+                                                    className="button-primary"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRegistrarDevolucion(a, e);
+                                                    }}
+                                                >
+                                                    Registrar Devolución
+                                                </button>
+                                            )}
+                                        </td>
                                     </>
                                 )}
                             </tr>
