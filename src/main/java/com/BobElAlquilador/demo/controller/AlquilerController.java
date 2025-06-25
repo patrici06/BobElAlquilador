@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -135,6 +136,23 @@ public class AlquilerController {
 
     List<AlquilerService.MaquinaAlquilerCount> resultado = service.obtenerMaquinasMasAlquiladas(fechaInicio, fechaFin);
     return ResponseEntity.ok(resultado); // Si no hay resultados, devuelve []
+    }
+
+    @DeleteMapping("/cancelar-cliente/{nombreMaquina}")
+    public ResponseEntity<?> cancelarAlquilerCliente(
+            @PathVariable String nombreMaquina,
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin
+    ) {
+        try {
+            double porcentaje = service.cancelarAlquilerCliente(nombreMaquina, inicio, fin);
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Reserva cancelada",
+                "porcentajeReintegro", porcentaje
+            ));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("mensaje", e.getReason()));
+        }
     }
 
 }

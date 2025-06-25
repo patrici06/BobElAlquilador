@@ -96,7 +96,11 @@ public class AlquilerService {
         List<Alquiler> alquileres = repo.findByCliente_Dni(dni);
 
         cambioDeEstado(alquileres);
-        return alquileres;
+        // Filtrar los eliminados/cancelados involuntarios
+        return alquileres.stream()
+            .filter(a -> a.getEstado() == Estado.Activo && a.getEstadoAlquiler() != EstadoAlquiler.CanceladoInvoluntario)
+            .toList();
+        //return alquileres;
     }
 
     private void cambioDeEstado(List<Alquiler> alquileres) {
@@ -153,5 +157,21 @@ public class AlquilerService {
         .collect(Collectors.toList());
     }
 
+    /**
+     * Cancela un alquiler solo si la fecha actual es anterior a la fecha de inicio (para clientes)
+     */
+    public double cancelarAlquilerCliente(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        Alquiler alquiler = repo.findById(new AlquilerId(nombreMaquina, inicio, fin))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alquiler no encontrado"));
+        LocalDate hoy = LocalDate.now();
+        if (!hoy.isBefore(inicio)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede cancelar la reserva debido a que se encuentra en curso");
+        }
+        alquiler.borrarAlquiler(EstadoAlquiler.CanceladoInvoluntario);
+        repo.save(alquiler);
+        personaService.enviarMailCancelacion(alquiler);
+        // Devuelvo el porcentaje de reintegro de la máquina
+        return alquiler.getMaquina().getPorcentajeReembolso();
+    }
 
 }
