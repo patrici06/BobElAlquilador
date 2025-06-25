@@ -178,7 +178,7 @@ function MisAlquileres() {
                 {error && <p className="error">{error}</p>}
 
                 {!loading && !error && alquileresFiltrados.length === 0 && (
-                    <p className="noData">No hay alquileres.</p>
+                    <p className="noData">No hay alquileres registrados</p>
                 )}
 
                 {!loading && !error && alquileresFiltrados.length > 0 && (
