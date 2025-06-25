@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import MachineStateManagement from '../components/MachineStateManagement';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css';
@@ -334,6 +335,12 @@ function AlquilarMaquina() {
                                                 </button>
                                             )}
                                         </>
+                                    )}
+                                    {rawRoles.includes("ROLE_EMPLEADO") && (
+                                        <MachineStateManagement
+                                            machine={machine}
+                                            token={token}
+                                        />
                                     )}
                                 </div>
                             ))
