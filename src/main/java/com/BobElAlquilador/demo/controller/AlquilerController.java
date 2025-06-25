@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -122,14 +123,20 @@ public class AlquilerController {
         }
     }
 
-    @GetMapping("/buscar-por-dni")
-    public ResponseEntity<List<Alquiler>> buscarPorDni(@RequestParam String dni) {
-        try {
-            List<Alquiler> resultado = service.buscarAlquileresPorDni(dni);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @PreAuthorize("hasRole('PROPIETARIO')")
+    @GetMapping("/mas-alquiladas")
+    public ResponseEntity<?> obtenerMaquinasMasAlquiladas(
+        @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+    if (fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El rango de fechas es inválido"));
+    }
+
+    List<AlquilerService.MaquinaAlquilerCount> resultado = service.obtenerMaquinasMasAlquiladas(fechaInicio, fechaFin);
+    return ResponseEntity.ok(resultado); // Si no hay resultados, devuelve []
     }
 
 }
+
+

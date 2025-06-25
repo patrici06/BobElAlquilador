@@ -91,6 +91,18 @@ function Header() {
                         >
                             Subir Maquina
                         </button>
+                        <button
+                            onClick={() => {
+                                setMenuOpen(false);
+                                navigate("/mas-alquiladas");
+                            }}
+                            className={styles.button}
+                            onMouseEnter={() => setHoveredBtn("mas-alquiladas")}
+                            onMouseLeave={() => setHoveredBtn("")}
+                            data-hovered={hoveredBtn === "mas-alquiladas"}
+                        >
+                            Máquinas más alquiladas
+                        </button>
                     </>
                 )}
                 {rawRoles.includes("ROLE_CLIENTE") && (

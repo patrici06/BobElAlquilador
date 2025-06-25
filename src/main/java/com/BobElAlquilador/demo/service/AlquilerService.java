@@ -123,11 +123,35 @@ public class AlquilerService {
 
     public void saveAlquiler(Alquiler alquiler) {repo.save(alquiler);}
 
-    public List<Alquiler> buscarAlquileresPorDni(String dni) throws Exception {
-    Persona persona = personaService.findByDniCliente(dni);
-    if (persona == null) {
-        throw new Exception("El DNI ingresado no se encuentra registrado en el sistema");
+
+    public static class MaquinaAlquilerCount {
+        private String nombreMaquina;
+        private long cantidad;
+
+        public MaquinaAlquilerCount(String nombreMaquina, long cantidad) {
+            this.nombreMaquina = nombreMaquina;
+            this.cantidad = cantidad;
+        }
+
+        public String getNombreMaquina() {
+            return nombreMaquina;
+        }
+
+        public long getCantidad() {
+            return cantidad;
+        }
     }
-    return repo.findByCliente_Dni(dni);
-}
+
+    public List<MaquinaAlquilerCount> obtenerMaquinasMasAlquiladas(LocalDate fechaInicio, LocalDate fechaFin) {
+    return repo.findAll().stream()
+        .filter(a -> !a.getAlquilerId().getFechaInicio().isAfter(fechaFin) &&
+                     !a.getAlquilerId().getFechaFin().isBefore(fechaInicio))
+        .collect(Collectors.groupingBy(a -> a.getMaquina().getNombre(), Collectors.counting()))
+        .entrySet().stream()
+        .map(e -> new MaquinaAlquilerCount(e.getKey(), e.getValue()))
+        .sorted((a, b) -> Long.compare(b.getCantidad(), a.getCantidad()))
+        .collect(Collectors.toList());
+    }
+
+
 }
