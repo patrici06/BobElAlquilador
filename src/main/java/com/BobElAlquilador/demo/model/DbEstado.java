@@ -7,7 +7,7 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class DbEstado {
     @Enumerated(EnumType.STRING)
-    private  Estado MiEstado;
+    private Estado MiEstado;
 
     public DbEstado() {
         MiEstado = Estado.Activo;
