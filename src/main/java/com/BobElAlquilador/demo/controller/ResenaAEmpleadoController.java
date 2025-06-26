@@ -24,6 +24,7 @@ public class ResenaAEmpleadoController {
     @PostMapping("/mis-alquileres/resenia")
     public ResponseEntity<?> reseniarEmpleado(@RequestBody ResenaRequest request) {
         try {
+            //mati putooooo
             System.out.println(request.toString());
             // Busca las entidades Persona correspondientes
             Persona cliente = personaRepository.findByDni(request.dniCliente)
