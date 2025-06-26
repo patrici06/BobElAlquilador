@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./MisAlquileres.css";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from "./VerMaquina";
+import { jwtDecode } from "jwt-decode";
 
 function MisAlquileres() {
     const [alquileres, setAlquileres] = useState([]);
@@ -9,11 +10,11 @@ function MisAlquileres() {
     const [loading, setLoading] = useState(true);
     const [estadoFiltro, setEstadoFiltro] = useState("todos");
     const [busquedaCliente, setBusquedaCliente] = useState("");
-
     const [view, setView] = useState('list');
     const [selectedMachine, setSelectedMachine] = useState(null);
 
     const [showReviewPopup, setShowReviewPopup] = useState(false);
+    const [alquilerParaResenia, setAlquilerParaResenia] = useState(null);
 
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
@@ -46,7 +47,6 @@ function MisAlquileres() {
                     setAlquileres(data);
                     setError("");
                 } catch (e) {
-                    // No es JSON válido, puede ser texto plano o HTML con error
                     throw new Error(text || "Error desconocido al obtener alquileres.");
                 }
             })
@@ -58,29 +58,21 @@ function MisAlquileres() {
             });
     }, [token]);
 
-    // Filtrado de alquileres basado en estado y búsqueda (dni o email)
     const alquileresFiltrados = alquileres.filter((a) => {
-        // filtro estado
         if (estadoFiltro !== "todos" && a.estadoAlquiler.toLowerCase() !== estadoFiltro.toLowerCase()) return false;
-
-        // filtro búsqueda cliente (dni o email)
         if (busquedaCliente.trim() !== "") {
             const busq = busquedaCliente.toLowerCase();
             const dni = a.persona?.dni?.toLowerCase() || "";
             const email = a.persona?.email?.toLowerCase() || "";
             if (!dni.includes(busq) && !email.includes(busq)) return false;
         }
-
         return true;
     });
 
-    // Solo mostrar filtros si es propietario o empleado
     const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
 
-    // Maneja el click en un alquiler: setea la máquina y cambia vista
     const handleAlquilerClick = (alquiler) => {
-        console.log(alquiler);
-        setSelectedMachine(alquiler.maquina); // Ajusta según cómo pases la máquina
+        setSelectedMachine(alquiler.maquina);
         setView('alquilerVista');
     };
 
@@ -105,12 +97,12 @@ function MisAlquileres() {
                         if (a.alquilerId.nombre_maquina === nombre_maquina &&
                             a.alquilerId.fechaInicio === fechaInicio &&
                             a.alquilerId.fechaFin === fechaFin) {
-                            return {...a, estadoAlquiler: "Finalizado"};
+                            return { ...a, estadoAlquiler: "Finalizado" };
                         }
                         return a;
                     })
                 );
-
+                setAlquilerParaResenia(alquiler);
                 setShowReviewPopup(true);
             })
             .catch((err) => {
@@ -120,26 +112,18 @@ function MisAlquileres() {
 
     const handleEliminarAlquiler = (alquiler, e) => {
         e.stopPropagation();
-
         const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
-
-        // Reglas de negocio: sólo cancelar si HOY es anterior a fecha de inicio
         const hoy = new Date();
-        // Limpiamos la hora para comparar sólo fechas
         const [anio, mes, dia] = fechaInicio.split("-").map(Number);
         const inicioAlquiler = new Date(anio, mes - 1, dia);
-        inicioAlquiler.setHours(0,0,0,0);
-
+        inicioAlquiler.setHours(0, 0, 0, 0);
         if (hoy >= inicioAlquiler) {
             alert("No se puede cancelar el alquiler debido a que se encuentra en curso");
             return;
         }
-
         const confirmacion = window.confirm("¿Estás seguro de que querés eliminar este alquiler?");
         if (!confirmacion) return;
-
         const url = `http://localhost:8080/api/alquileres/eliminar/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
-
         fetch(url, {
             method: "DELETE",
             headers: {
@@ -148,7 +132,6 @@ function MisAlquileres() {
         })
             .then((res) => {
                 if (!res.ok) throw new Error("Error al eliminar el alquiler.");
-                // Eliminamos del estado
                 setAlquileres((prev) =>
                     prev.filter(
                         (a) =>
@@ -166,24 +149,146 @@ function MisAlquileres() {
             });
     };
 
+    // Obtener email del empleado desde el token JWT
+    let email = "";
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            email = decoded.email || decoded.sub || "";
+        } catch (e) {
+            console.error("Error decodificando token:", e);
+        }
+    }
+
+    // --- Formulario integrado en el popup ---
     const ReviewPopup = () => {
+        const persona = alquilerParaResenia?.persona || {};
+        const emailEmpleado = email || "";
+        const [dniCliente, setDniCliente] = useState(persona.dni || "");
+        const [comentario, setComentario] = useState("");
+        const [valoracion, setValoracion] = useState(5);
+        const [mensaje, setMensaje] = useState("");
+        const [enviando, setEnviando] = useState(false);
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            setEnviando(true);
+
+            const endpoint = 'http://localhost:8080/mis-alquileres/resenia';
+
+            const resenaPayload = {
+                dniCliente: dniCliente,
+                emailEmpleado: emailEmpleado,
+                comentario: comentario,
+                valoracion: valoracion
+            };
+
+            fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(resenaPayload)
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("No se pudo enviar la reseña");
+                    return response.json();
+                })
+                .then(data => {
+                    setMensaje("¡Reseña enviada con éxito!");
+                    setTimeout(() => {
+                        setShowReviewPopup(false);
+                        setAlquilerParaResenia(null);
+                    }, 1500);
+                })
+                .catch(error => {
+                    setMensaje("Error enviando la reseña: " + error.message);
+                })
+                .finally(() => setEnviando(false));
+        };
+
+        // Componente de estrellas
+        const StarRating = ({ value, onChange }) => {
+            const [hover, setHover] = useState(0);
+            return (
+                <div className="star-rating">
+                    {[1, 2, 3, 4, 5].map(star => (
+                        <span
+                            key={star}
+                            className={`star ${(star <= (hover || value)) ? "filled" : ""}`}
+                            onClick={() => onChange(star)}
+                            onMouseOver={() => setHover(star)}
+                            onFocus={() => setHover(star)}
+                            onMouseLeave={() => setHover(0)}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`Valorar con ${star} estrella${star > 1 ? "s" : ""}`}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
+            );
+        };
+
         return (
             <div className="review-popup-overlay">
                 <div className="review-popup-content">
-                    <h3>Reseña de Servicio</h3>
-                    <p>Aca se implementa la reseña de servicio de Pato</p>
-                    <button
-                        onClick={() => setShowReviewPopup(false)}
-                        className="button-primary"
-                    >
-                        Cerrar
-                    </button>
+                    <h3 className="review-popup-title">Reseña de Servicio</h3>
+                    <form onSubmit={handleSubmit} className="review-form">
+                        <div className="review-form-group">
+                            <label>DNI del cliente:</label>
+                            <input
+                                type="number"
+                                value={dniCliente}
+                                onChange={(e) => setDniCliente(e.target.value)}
+                                required
+                                disabled={!!persona.dni}
+                            />
+                        </div>
+                        <div className="review-form-group">
+                            <label>Email del empleado:</label>
+                            <input
+                                type="email"
+                                value={emailEmpleado}
+                                disabled
+                            />
+                        </div>
+                        <div className="review-form-group">
+                            <label>Comentario:</label>
+                            <textarea
+                                value={comentario}
+                                onChange={(e) => setComentario(e.target.value)}
+                                required
+                                rows={3}
+                            />
+                        </div>
+                        <div className="review-form-group">
+                            <label>Valoración:</label>
+                            <StarRating value={valoracion} onChange={setValoracion} />
+                        </div>
+                        <div className="review-form-actions">
+                            <button type="submit" className="button-primary" disabled={enviando}>
+                                {enviando ? "Enviando..." : "Enviar reseña"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowReviewPopup(false);
+                                    setAlquilerParaResenia(null);
+                                }}
+                                className="button-secondary"
+                                style={{ marginLeft: "10px" }}
+                                disabled={enviando}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                    {mensaje && <p className="review-message">{mensaje}</p>}
                 </div>
             </div>
         );
     };
 
-    // Si estás en la vista de alquilerVista, renderiza VerMaquina
     if (view === 'alquilerVista' && selectedMachine) {
         return (
             <MachineAvailability
@@ -203,7 +308,7 @@ function MisAlquileres() {
                 {rawRoles.includes("ROLE_CLIENTE") && <h2 className="title">Mis Alquileres</h2>}
 
                 {esAdmin && (
-                    <div className="filters" style={{marginBottom: "1rem"}}>
+                    <div className="filters" style={{ marginBottom: "1rem" }}>
                         <label>
                             Estado:
                             <select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)}>
@@ -213,11 +318,10 @@ function MisAlquileres() {
                                 <option value="FINALIZADO">Finalizado</option>
                                 <option value="Cancelado">Cancelado</option>
                                 <option value="CanceladoInvoluntario">Cancelado Involuntario</option>
-                                {/* Agrega más estados si tu backend tiene otros */}
                             </select>
                         </label>
 
-                        <label style={{marginLeft: "1rem"}}>
+                        <label style={{ marginLeft: "1rem" }}>
                             Buscar cliente (DNI o Email):
                             <input
                                 type="text"
@@ -284,7 +388,7 @@ function MisAlquileres() {
                                                     e.stopPropagation();
                                                     handleEliminarAlquiler(a, e);
                                                 }}
-                                                style={{marginRight: "8px"}}
+                                                style={{ marginRight: "8px" }}
                                             >
                                                 Cancelar Alquiler
                                             </button>

@@ -53,9 +53,9 @@ public class MercadoPagoController {
                     .build();
 
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .success("https://d31b-170-239-29-145.ngrok-free.app/pago-exitoso")
-                    .failure("https://d31b-170-239-29-145.ngrok-free.app/pago-fallido")
-                    .pending("https://d31b-170-239-29-145.ngrok-free.app/pago-pendiente")
+                    .success("https://8cdd-181-171-63-95.ngrok-free.app/pago-exitoso")
+                    .failure("https://8cdd-181-171-63-95.ngrok-free.app/pago-fallido")
+                    .pending(" https://8cdd-181-171-63-95.ngrok-free.app/pago-pendiente")
                     .build();
 
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()

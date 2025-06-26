@@ -22,4 +22,7 @@ public class ResenaService {
     public List<Resena> findByValoracion(int valoracion){
         return resenaRepository.findByValoracion(valoracion);
     }
+    public Resena saveResenia (Resena resena){
+        return this.resenaRepository.save(resena);
+    }
 }

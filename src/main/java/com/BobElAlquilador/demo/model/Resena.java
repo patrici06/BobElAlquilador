@@ -2,6 +2,8 @@ package com.BobElAlquilador.demo.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "resena")
 public class Resena extends DbEstado{
@@ -11,18 +13,19 @@ public class Resena extends DbEstado{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "dni_cliente")
+    @JoinColumn(name = "dni_cliente", referencedColumnName = "dni")
     private Persona cliente;
 
     @ManyToOne
-    @JoinColumn(name = "dni_empleado")
+    @JoinColumn(name = "email_empleado", referencedColumnName = "email")
     private Persona empleado;
     @Lob
     private String comentario;
     private int valoracion;
-
+    private LocalDate fechaRealizada;
     public Resena() {
         super();
+        this.fechaRealizada = LocalDate.now();
     }
 
     public Resena(Persona cliente, Persona empleado, String comentario, int valoracion) {
