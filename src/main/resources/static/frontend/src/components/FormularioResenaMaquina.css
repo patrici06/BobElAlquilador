@@ -1,0 +1,145 @@
+.form-resena-maquina-popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(60, 60, 60, 0.25);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+}
+
+.form-resena-maquina-popup-content {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(230,57,70,0.13), 0 2px 8px rgba(0,0,0,0.04);
+    padding: 2.3rem 2.1rem 2rem 2.1rem;
+    min-width: 340px;
+    max-width: 95vw;
+    min-height: 0;
+    position: relative;
+    animation: popup-fade-in 0.35s;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+@keyframes popup-fade-in {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.form-resena-maquina-popup-form h3 {
+    margin: 0 0 1.4rem 0;
+    font-size: 1.2rem;
+    color: #e63946;
+    font-weight: 800;
+    text-align: center;
+}
+
+.machine-name {
+    color: #22223b;
+    font-weight: 700;
+}
+
+.form-resena-maquina-popup-form label {
+    font-weight: 700;
+    color: #22223b;
+    margin-bottom: 0.2rem;
+    display: block;
+    font-size: 1.08rem;
+}
+
+.form-resena-maquina-popup-form textarea,
+.form-resena-maquina-popup-form select {
+    width: 100%;
+    margin-bottom: 1.05rem;
+    padding: 0.5rem 0.7rem;
+    border: 1.5px solid #e53935;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: vertical;
+    background: #fff;
+    color: #b71c1c;
+    box-sizing: border-box;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.19s;
+}
+
+.form-resena-maquina-popup-form textarea:focus,
+.form-resena-maquina-popup-form select:focus {
+    border-color: #b71c1c;
+}
+
+.form-resena-maquina-popup-form textarea {
+    min-height: 60px;
+    max-height: 160px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.7rem;
+    margin-top: 1.1rem;
+    flex-wrap: wrap;
+}
+
+.button-primary {
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.13);
+}
+
+.button-primary:hover:enabled {
+    background-color: #d62839;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.17);
+}
+
+.button-primary:disabled {
+    background: #b0b7c4;
+    cursor: not-allowed;
+    color: #fff;
+    opacity: 0.8;
+}
+
+.button-secondary {
+    background-color: #fff;
+    color: #e63946;
+    border: 2px solid #e63946;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.button-secondary:hover:enabled {
+    background-color: #e63946;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+}
+
+.popup-message {
+    margin-top: 1.2rem;
+    text-align: center;
+    color: #22223b;
+    font-weight: 600;
+}
+
+@media (max-width: 540px) {
+    .form-resena-maquina-popup-content {
+        padding: 1.1rem 0.5rem;
+        min-width: 0;
+    }
+}

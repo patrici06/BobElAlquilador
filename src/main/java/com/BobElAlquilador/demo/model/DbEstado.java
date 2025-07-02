@@ -7,16 +7,17 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class DbEstado {
     @Enumerated(EnumType.STRING)
-    private Estado MiEstado;
+    private Estado miEstado;
 
     public DbEstado() {
-        MiEstado = Estado.Activo;
+        miEstado = Estado.Activo;
     }
-    public Estado getEstado(){return this.MiEstado;}
+    public Estado getMiEstado(){return this.miEstado;}
+    public void setMiEstado(Estado estado){ this.miEstado = estado;}
     public void borrar(){
-        this.MiEstado = Estado.Eliminado;
+        this.miEstado = Estado.Eliminado;
     }
     public void disponible(){
-        this.MiEstado = Estado.Activo;
+        this.miEstado = Estado.Activo;
     }
 }

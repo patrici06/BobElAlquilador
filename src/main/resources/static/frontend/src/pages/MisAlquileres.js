@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./MisAlquileres.css";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from "./VerMaquina";
+import VerMaquinasAlquilerFinalizado from "./VerMaquinasAlquilerFinalizado";
 import { jwtDecode } from "jwt-decode";
 
 function MisAlquileres() {
@@ -12,6 +13,7 @@ function MisAlquileres() {
     const [busquedaCliente, setBusquedaCliente] = useState("");
     const [view, setView] = useState('list');
     const [selectedMachine, setSelectedMachine] = useState(null);
+    const [selectedAlquiler, setSelectedAlquiler] = useState(null);
 
     const [showReviewPopup, setShowReviewPopup] = useState(false);
     const [alquilerParaResenia, setAlquilerParaResenia] = useState(null);
@@ -56,7 +58,7 @@ function MisAlquileres() {
             .finally(() => {
                 setLoading(false);
             });
-    }, [token]);
+    }, [token, rawRoles]); // rawRoles agregado como dependencia
 
     const alquileresFiltrados = alquileres.filter((a) => {
         if (estadoFiltro !== "todos" && a.estadoAlquiler.toLowerCase() !== estadoFiltro.toLowerCase()) return false;
@@ -71,9 +73,15 @@ function MisAlquileres() {
 
     const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
 
+    // Cambiado: ahora se selecciona también el alquiler, y redirige según estado
     const handleAlquilerClick = (alquiler) => {
         setSelectedMachine(alquiler.maquina);
-        setView('alquilerVista');
+        setSelectedAlquiler(alquiler);
+        if (alquiler.estadoAlquiler?.trim().toUpperCase() === "FINALIZADO") {
+            setView('alquilerFinalizadoVista');
+        } else {
+            setView('alquilerVista');
+        }
     };
 
     const handleRegistrarDevolucion = (alquiler, e) => {
@@ -108,6 +116,11 @@ function MisAlquileres() {
             .catch((err) => {
                 alert('Error al registrar la devolución: ' + err.message);
             });
+    }
+
+    const handleRegistrarRetiro = (alquiler, e) => {
+        e.stopPropagation();
+        alert("Funcionalidad de registrar retiro no implementada aún.");
     }
 
     const handleEliminarAlquiler = (alquiler, e) => {
@@ -300,6 +313,17 @@ function MisAlquileres() {
         );
     }
 
+    if (view === 'alquilerFinalizadoVista' && selectedMachine && selectedAlquiler) {
+        return (
+            <VerMaquinasAlquilerFinalizado
+                machine={selectedMachine}
+                alquiler={selectedAlquiler}
+                onClose={() => setView('list')}
+                readonly={true}
+            />
+        );
+    }
+
     if (view === 'list') {
         return (
             <div className="container">
@@ -362,7 +386,7 @@ function MisAlquileres() {
                         </thead>
                         <tbody>
                         {alquileresFiltrados.map((a) => (
-                            <tr key={a.id}
+                            <tr key={`${a.alquilerId?.nombre_maquina}_${a.alquilerId?.fechaInicio}_${a.alquilerId?.fechaFin}`}
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => handleAlquilerClick(a)}
                             >
@@ -392,7 +416,15 @@ function MisAlquileres() {
                                             >
                                                 Cancelar Alquiler
                                             </button>
-
+                                            {a.estadoAlquiler.toLocaleUpperCase() === "PENDIENTE" && (
+                                                <button
+                                                    className="button-secondary"
+                                                    onClick={(e) => handleRegistrarRetiro(a, e)}
+                                                    style={{ marginRight: "8px" }}
+                                                >
+                                                    Registrar Retiro
+                                                </button>
+                                            )}
                                             {a.estadoAlquiler.toLocaleUpperCase() === "ACTIVO" && (
                                                 <button
                                                     className="button-primary"
@@ -415,6 +447,8 @@ function MisAlquileres() {
             </div>
         );
     }
+
+    return null;
 }
 
 export default MisAlquileres;

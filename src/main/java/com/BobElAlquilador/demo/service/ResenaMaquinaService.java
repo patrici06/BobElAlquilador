@@ -13,6 +13,21 @@ import java.util.List;
 public class ResenaMaquinaService {
     @Autowired
     public ResenaMaquinaRepository resenaMaquinaRepository;
+    public List<ResenaMaquina> findAllByEstado(Estado estado){
+        return resenaMaquinaRepository.findAllByMiEstado(estado);
+    }
+    public List<ResenaMaquina> findAll(){
+        return resenaMaquinaRepository.findAll();
+    }
+    public List<ResenaMaquina> findAllByNombreMaquina(String  nombreMaquina){
+        return resenaMaquinaRepository.findAllByMiEstadoAndMaquina_NombreMaquina(Estado.Activo,nombreMaquina);
+    }
+    public boolean yaComentoMaquina(String email, String nombreMaquina){
+        return resenaMaquinaRepository.findFirstByMiEstadoAndCliente_EmailAndMaquina_NombreMaquina(Estado.Activo,email,nombreMaquina) != null;
+    }
+    public void save(ResenaMaquina resenaMaquina){
+        this.resenaMaquinaRepository.save(resenaMaquina);
+    }
 
     public void eliminarResenaMaquina(ResenaMaquina res) {
         if (res == null)
@@ -33,7 +48,7 @@ public class ResenaMaquinaService {
 
     public List<ResenaMaquina> getAllMaquinasActivasDB() {
         return resenaMaquinaRepository.findAll().stream()
-                .filter(res -> res.getEstado() == Estado.Activo)
+                .filter(res -> res.getMiEstado() == Estado.Activo)
                 .toList();
     }
 }

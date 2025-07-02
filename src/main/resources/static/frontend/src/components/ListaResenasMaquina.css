@@ -1,0 +1,138 @@
+/* Contenedor principal de la lista de reseñas */
+.lista-resenas-container {
+    background: #fff;
+    color: #b30000;
+    border: 2px solid #b30000;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(179, 0, 0, 0.09);
+    padding: 1.3rem 1.1rem 1.1rem 1.1rem;
+    margin: 2rem auto 1rem auto;
+    max-width: 480px;
+    width: 100%;
+}
+
+/* Título */
+.lista-resenas-container h3 {
+    font-size: 1.35rem;
+    color: #b30000;
+    text-align: center;
+    border-bottom: 2px solid #b30000;
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    font-weight: bold;
+}
+
+/* Botón cerrar (puedes quitar si no lo necesitas) */
+.lista-resenas-container button {
+    background: #fff;
+    color: #b30000;
+    border: 2px solid #b30000;
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 1rem;
+    float: right;
+    margin-left: 1rem;
+    margin-bottom: 8px;
+    transition: background 0.22s, color 0.22s, border 0.22s;
+}
+
+.lista-resenas-container button:hover {
+    background: #ffe5e5;
+    color: #b30000;
+    border-color: #e63946;
+}
+
+/* Lista de reseñas (scroll si supera el tamaño) */
+.lista-resenas-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0 0 0;
+    max-height: 260px;
+    overflow-y: auto;
+    transition: max-height 0.25s;
+}
+
+/* Expande la lista si se agrega la clase .expandida */
+.lista-resenas-container ul.expandida {
+    max-height: 700px;
+}
+
+/* Cada reseña */
+.lista-resenas-container li {
+    background: #fff0f0;
+    color: #b30000;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    padding: 1rem 1.1rem 0.7rem 1.1rem;
+    box-shadow: 0 1px 5px rgba(179,0,0,0.10);
+    font-size: 1.07rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    word-break: break-word;
+}
+
+.lista-resenas-container li strong {
+    color: #e63946;
+    font-size: 1.10rem;
+    margin-right: 0.3rem;
+    letter-spacing: 0.5px;
+}
+
+.lista-resenas-container li small {
+    color: #b30000bb;
+    margin-left: auto;
+    font-size: 0.98rem;
+    font-style: italic;
+}
+
+/* Estado de carga y vacío */
+.lista-resenas-container p {
+    color: #b30000;
+    background: #ffe5e5;
+    text-align: center;
+    border-radius: 8px;
+    padding: 0.9rem;
+    font-weight: 500;
+    font-size: 1.07rem;
+    margin-top: 1.1rem;
+}
+
+/* Botón para expandir/contraer */
+.expand-button {
+    display: block;
+    margin: 0.5rem auto 0 auto;
+    background: #fff;
+    color: #b30000;
+    border: 2px solid #b30000;
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 5px 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.22s, color 0.22s, border 0.22s;
+}
+
+.expand-button:hover {
+    background: #ffe5e5;
+    color: #b30000;
+    border-color: #e63946;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .lista-resenas-container {
+        padding: 0.6rem 0.2rem 0.4rem 0.2rem;
+        min-width: 90vw;
+    }
+    .lista-resenas-container h3 {
+        font-size: 1.05rem;
+        padding-bottom: 0.12rem;
+    }
+    .lista-resenas-container li {
+        padding: 0.68rem 0.5rem 0.5rem 0.5rem;
+        font-size: 0.98rem;
+    }
+}

@@ -65,7 +65,7 @@ public class Maquina extends DbEstado{
     public EstadoMaquina getEstadoMaquina (){
         return this.estadoMaquina;
     }
-    public Estado getEstado() {return super.getEstado();}
+    public Estado getEstado() {return super.getMiEstado();}
 
     public void setEstadoMaquina(EstadoMaquina estadoMaquina){
         this.estadoMaquina =  estadoMaquina;

@@ -6,6 +6,7 @@ import com.BobElAlquilador.demo.model.Persona;
 import com.BobElAlquilador.demo.service.AlquilerService;
 import com.BobElAlquilador.demo.service.PersonaService;
 import com.BobElAlquilador.demo.util.JwtUtil;
+import com.BobElAlquilador.demo.util.RetiroRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -138,5 +139,32 @@ public class AlquilerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+    @PostMapping("/registrar-retiro")
+    public ResponseEntity<?> registrarRetiro(
+            @RequestBody RetiroRequest request,
+            HttpServletRequest httpServletRequest
+    ) {
+        try {
+            String authHeader = httpServletRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token no proporcionado o mal formado");
+            }
 
+            String token = authHeader.substring(7);
+            String emailEmpleado = jwtUtil.getEmailFromToken(token);
+
+            service.registrarRetiro(
+                    emailEmpleado,
+                    request.getNombreMaquina(),
+                    request.getFechaInicio(),
+                    request.getFechaFin()
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body("Retiro registrado correctamente");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error al registrar retiro: " + e.getMessage());
+        }
+    }
 }

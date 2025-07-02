@@ -2,6 +2,7 @@ package com.BobElAlquilador.demo.service;
 
 import com.BobElAlquilador.demo.model.*;
 import com.BobElAlquilador.demo.repository.AlquilerRepository;
+import com.BobElAlquilador.demo.repository.RetiroRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationException;
@@ -12,11 +13,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class AlquilerService {
-
+    @Autowired
+    private RetiroRepository retiroRepository;
     @Autowired
     private AlquilerRepository repo;
     @Autowired
@@ -136,4 +139,43 @@ public class AlquilerService {
     }
 
     public void saveAlquiler(Alquiler alquiler) {repo.save(alquiler);}
+    public void registrarRetiro(String emailEmpleado, String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        // 1. Buscar alquiler
+        AlquilerId id = new AlquilerId(nombreMaquina, inicio, fin);
+        Optional<Alquiler> optionalAlquiler = repo.findById(id);
+
+        if (optionalAlquiler.isEmpty()) {
+            throw new RuntimeException("No se encontró el alquiler con esos datos");
+        }
+
+        Alquiler alquiler = optionalAlquiler.get();
+
+        // 2. Validar estado del alquiler
+        if (alquiler.getEstadoAlquiler() != EstadoAlquiler.Pendiente) {
+            throw new RuntimeException("El alquiler debe estar en estado Pendiente para registrar el retiro");
+        }
+
+        // 3. Verificar si ya se registró un retiro
+        if (retiroRepository.existsByAlquiler_AlquilerId(id)) {
+            throw new RuntimeException("Ya se registró un retiro para este alquiler");
+        }
+
+        // 4. Buscar empleado
+        Persona empleado = personaService.findByEmail(emailEmpleado);
+        if (empleado == null) {
+            throw new RuntimeException("Empleado no encontrado");
+        }
+
+        // 5. Crear y guardar el retiro
+        Retiro retiro = new Retiro();
+        retiro.setAlquiler(alquiler);
+        retiro.setEmpleado(empleado);
+        retiro.setFechaRetiro(LocalDate.now());
+
+        retiroRepository.save(retiro);
+
+        // 6. Cambiar estado del alquiler a Activo
+        alquiler.setEstado(EstadoAlquiler.Activo);
+        repo.save(alquiler);
+    }
 }

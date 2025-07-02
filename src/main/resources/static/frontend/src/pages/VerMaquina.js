@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './AlquilarMaquina.css'
-import {jwtDecode} from "jwt-decode";
-import {getRolesFromJwt} from "../utils/getUserRolesFromJwt";
-import {crearPreferenciaMP} from "../utils/crearPreferenciaMP";
+import { jwtDecode } from "jwt-decode";
+import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
+import { crearPreferenciaMP } from "../utils/crearPreferenciaMP";
+import ListaResenasMaquina from '../components/ListaResenasMaquina'; // Importa tu componente de reseñas
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -14,28 +15,15 @@ function getMachineImageSrc(fotoUrl) {
     return `http://localhost:8080${fotoUrl.startsWith('/') ? '' : '/'}${fotoUrl}`;
 }
 
-/**
- * MachineAvailability recibe por props:
- *   - machine: el objeto máquina completo (con nombre, fotoUrl, tipo, precioDia, descripción, etc).
- *   - onClose: callback para ocultar esta vista (por ejemplo volver al listado padre).
- *   - onReserveSuccess: callback que indica “la reserva se efectuó correctamente” y dispara la vista de processing/pago en el padre.
- *   - readonly: boolean (opcional) que, si es true, solo muestra disponibilidad sin botones de reservar.
- *
- * Dentro se encarga de:
- *   1) Hacer fetch a /api/alquileres/ocupadas?maquina=<nombre>
- *   2) Calcular el array de "diasOcupados" (Date[]).
- *   3) Renderizar el calendario con DatePicker, marcando esos días ocupados.
- *   4) Mostrar debajo el “detalle de la máquina” (imagen, nombre, tipo, precio, descripción…).
- */
 export default function MachineAvailability({ machine, onClose, onReserveSuccess, readonly = false }) {
     const [diasOcupados, setDiasOcupados] = useState([]);
-
     const [inicio, setInicio] = useState(null);
     const [fin, setFin] = useState(null);
     const [error, setError] = useState('');
     const [view, setView] = useState('form');
     const token = sessionStorage.getItem("token");
     const raw = React.useMemo(() => getRolesFromJwt(token), [token]);
+    const [showResenas, setShowResenas] = useState(false); // Estado para mostrar/ocultar reseñas
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -128,108 +116,129 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
     };
 
     return (
-            <div className="reserve-section">
-                {/* Título con el nombre de la máquina */}
-                {raw.includes("ROLE_CLIENTE") ? (
-                    <h1>Reservar: {machine.nombre}</h1>
-                ) : (
-                    <h1>Disponibilidad: {machine.nombre}</h1>
-                )}
+        <div className="reserve-section">
+            {/* Título con el nombre de la máquina */}
+            {raw.includes("ROLE_CLIENTE") ? (
+                <h1>Reservar: {machine.nombre}</h1>
+            ) : (
+                <h1>Disponibilidad: {machine.nombre}</h1>
+            )}
 
-                {error && (
-                    <div className="error-banner">
-                        {error}
-                    </div>
-                )}
+            {error && (
+                <div className="error-banner">
+                    {error}
+                </div>
+            )}
 
-                <div className="reserve-content">
-                    <div className="calendar-container">
+            <div className="reserve-content">
+                <div className="calendar-container">
 
-                        {raw.includes("ROLE_CLIENTE") && !readonly ? (
-                            <>
-                                <label>Fecha Inicio:</label>
-                                <DatePicker
-                                    selected={inicio}
-                                    onChange={date => setInicio(date)}
-                                    excludeDates={diasOcupados}
-                                    dayClassName={marcarDiasOcupados}
-                                    selectsStart
-                                    startDate={inicio}
-                                    endDate={fin}
-                                    minDate={new Date()}
-                                    dateFormat="yyyy-MM-dd"
-                                    calendarClassName="big-calendar"
-                                />
-                                <br />
-
-                                <label>Fecha Fin:</label>
-                                <DatePicker
-                                    selected={fin}
-                                    onChange={date => setFin(date)}
-                                    excludeDates={diasOcupados}
-                                    dayClassName={marcarDiasOcupados}
-                                    selectsEnd
-                                    startDate={inicio}
-                                    endDate={fin}
-                                    minDate={inicio || new Date()}
-                                    dateFormat="yyyy-MM-dd"
-                                    calendarClassName="big-calendar"
-                                />
-                                <br />
-
-                                <button className="button-primary" onClick={handlePagoYRedireccion}>
-                                    Realizar Reserva
-                                </button>
-                            </>
-                        ) : (
+                    {raw.includes("ROLE_CLIENTE") && !readonly ? (
+                        <>
+                            <label>Fecha Inicio:</label>
                             <DatePicker
-                                selected={null}
+                                selected={inicio}
+                                onChange={date => setInicio(date)}
                                 excludeDates={diasOcupados}
                                 dayClassName={marcarDiasOcupados}
-                                inline
+                                selectsStart
+                                startDate={inicio}
+                                endDate={fin}
                                 minDate={new Date()}
                                 dateFormat="yyyy-MM-dd"
                                 calendarClassName="big-calendar"
                             />
-                        )}
+                            <br />
 
-                        <button
-                            className="button-secondary"
-                            onClick={onClose}
-                            style={{marginTop: '10px'}}
-                        >
-                            Volver
-                        </button>
-                    </div>
+                            <label>Fecha Fin:</label>
+                            <DatePicker
+                                selected={fin}
+                                onChange={date => setFin(date)}
+                                excludeDates={diasOcupados}
+                                dayClassName={marcarDiasOcupados}
+                                selectsEnd
+                                startDate={inicio}
+                                endDate={fin}
+                                minDate={inicio || new Date()}
+                                dateFormat="yyyy-MM-dd"
+                                calendarClassName="big-calendar"
+                            />
+                            <br />
 
-                    {/* Detalle de la máquina */}
-                    <div className="machine-info">
-                        <h2>Detalles de la Máquina</h2>
-                        <img
-                            src={getMachineImageSrc(machine.fotoUrl)}
-                            alt={machine.nombre}
-                            loading="lazy"
-                            className="machine-photo"
+                            <button className="button-primary" onClick={handlePagoYRedireccion}>
+                                Realizar Reserva
+                            </button>
+                        </>
+                    ) : (
+                        <DatePicker
+                            selected={null}
+                            excludeDates={diasOcupados}
+                            dayClassName={marcarDiasOcupados}
+                            inline
+                            minDate={new Date()}
+                            dateFormat="yyyy-MM-dd"
+                            calendarClassName="big-calendar"
                         />
-                        <p>
-                            <strong>Nombre:</strong> {machine.nombre}
-                        </p>
-                        <p>
-                            <strong>Tipo:</strong>{' '}
-                            {Array.isArray(machine.tipo) && machine.tipo.length > 0
-                                ? machine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
-                                : 'Sin tipo'}
-                        </p>
-                        <p>
-                            <strong>Precio por día:</strong> $
-                            {machine.precioDia || 'No disponible'}
-                        </p>
-                        <p>
-                            <strong>Descripción:</strong>{' '}
-                            {machine.descripcion || 'No disponible'}
-                        </p>
-                    </div>
+                    )}
+
+                    <button
+                        className="button-secondary"
+                        onClick={onClose}
+                        style={{ marginTop: '10px' }}
+                    >
+                        Volver
+                    </button>
+                </div>
+
+                {/* Detalle de la máquina */}
+                <div className="machine-info">
+                    <h2>Detalles de la Máquina</h2>
+                    <img
+                        src={getMachineImageSrc(machine.fotoUrl)}
+                        alt={machine.nombre}
+                        loading="lazy"
+                        className="machine-photo"
+                    />
+                    <p>
+                        <strong>Nombre:</strong> {machine.nombre}
+                    </p>
+                    <p>
+                        <strong>Tipo:</strong>{' '}
+                        {Array.isArray(machine.tipo) && machine.tipo.length > 0
+                            ? machine.tipo.map(t => t.nombreTipo || t.nombre).join(', ')
+                            : 'Sin tipo'}
+                    </p>
+                    <p>
+                        <strong>Precio por día:</strong> $
+                        {machine.precioDia || 'No disponible'}
+                    </p>
+                    <p>
+                        <strong>Descripción:</strong>{' '}
+                        {machine.descripcion || 'No disponible'}
+                    </p>
                 </div>
             </div>
+
+            {/* Botón para mostrar/ocultar reseñas */}
+            <div style={{ marginTop: "32px", textAlign: "center" }}>
+                <button
+                    className="button-secondary"
+                    onClick={() => setShowResenas(prev => !prev)}
+                    style={{ marginBottom: "8px" }}
+                >
+                    {showResenas ? "Ocultar reseñas" : "Ver reseñas"}
+                </button>
+                {showResenas && (
+                    <div>
+                        <h2 style={{marginBottom: 0}}>Reseñas</h2>
+                        <ListaResenasMaquina
+                            nombreMaquina={machine.nombre}
+                            visible={true}
+                            onClose={() => setShowResenas(false)}
+                        />
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
