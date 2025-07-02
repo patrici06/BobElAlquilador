@@ -72,7 +72,7 @@ public class AlquilerService {
         if (alq.getEstadoAlquiler() != EstadoAlquiler.Activo)
             throw new IllegalStateException("La reserva no se encuentra activa para devolver");
         alq.setEstado(EstadoAlquiler.Finalizado);
-        alq.getMaquina().setEstadoMaquina(EstadoMaquina.Disponible);
+        alq.getMaquina().setEstadoMaquina(EstadoMaquina.Mantenimiento);
         repo.save(alq);
     }
 
