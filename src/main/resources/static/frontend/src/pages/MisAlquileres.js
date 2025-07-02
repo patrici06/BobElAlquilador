@@ -17,6 +17,8 @@ function MisAlquileres() {
     const [modalOpen, setModalOpen] = useState(false);
     const [alquilerAEliminar, setAlquilerAEliminar] = useState(null);
 
+    const [tab, setTab] = useState('alquileres'); // 'alquileres' o 'reservas'
+
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
 
@@ -64,9 +66,11 @@ function MisAlquileres() {
     const alquileresFiltrados = alquileres.filter((a) => {
         // Filtrar eliminados/cancelados involuntarios
         if (a.estadoAlquiler === "CanceladoInvoluntario" || (a.estado && a.estado.toLowerCase() === "eliminado")) return false;
+        // filtro por pestaña
+        if (tab === 'alquileres' && !(a.estadoAlquiler === "Activo" || a.estadoAlquiler === "Finalizado")) return false;
+        if (tab === 'reservas' && a.estadoAlquiler !== "Pendiente") return false;
         // filtro estado
         if (estadoFiltro !== "todos" && a.estadoAlquiler.toLowerCase() !== estadoFiltro.toLowerCase()) return false;
-
         // filtro búsqueda cliente (dni o email)
         if (busquedaCliente.trim() !== "") {
             const busq = busquedaCliente.toLowerCase();
@@ -74,7 +78,6 @@ function MisAlquileres() {
             const email = a.persona?.email?.toLowerCase() || "";
             if (!dni.includes(busq) && !email.includes(busq)) return false;
         }
-
         return true;
     });
 
@@ -186,8 +189,27 @@ function MisAlquileres() {
     if (view === 'list') {
         return (
             <div className="container">
+                {/* Pestañas */}
+                <div style={{ display: 'flex', gap: '1em', marginBottom: '1.5em', justifyContent: 'center' }}>
+                    <button
+                        className={tab === 'alquileres' ? 'button-primary' : 'button-secondary'}
+                        style={{ minWidth: 140 }}
+                        onClick={() => setTab('alquileres')}
+                    >
+                        Mis alquileres
+                    </button>
+                    <button
+                        className={tab === 'reservas' ? 'button-primary' : 'button-secondary'}
+                        style={{ minWidth: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        onClick={() => setTab('reservas')}
+                    >
+                        Pendientes
+                    </button>
+                </div>
+
                 {esAdmin && <h2 className="title">Alquileres</h2>}
-                {rawRoles.includes("ROLE_CLIENTE") && <h2 className="title">Mis Alquileres</h2>}
+                {/* Título dinámico según la pestaña */}
+                <h2 className="title">{tab === 'alquileres' ? 'Mis Alquileres' : 'Mis Reservas'}</h2>
 
                 {esAdmin && (
                     <div className="filters" style={{marginBottom: "1rem"}}>
@@ -231,6 +253,8 @@ function MisAlquileres() {
                                             {mensaje.split('Porcentaje de reintegro:')[1]}
                                         </span>
                                     </span>
+                                    <br />
+                                    <span style={{fontWeight: 400, color: '#007e33'}}>Se ha enviado un mail confirmando la cancelación.</span>
                                 </>
                             ) : (
                                 <>{mensaje}</>
@@ -334,6 +358,26 @@ function MisAlquileres() {
                                 <div>
                                     <strong>¿Estás seguro de que querés cancelar este alquiler?</strong>
                                     <div style={{fontWeight: 400, fontSize: '1rem', marginTop: '0.5em'}}>Esta acción no se puede deshacer.</div>
+                                    {alquilerAEliminar && (alquilerAEliminar.porcentajeReintegro || (alquilerAEliminar.maquina && alquilerAEliminar.maquina.porcentajeReembolso)) && (
+                                        <>
+                                            <div style={{marginTop: '1em', color: '#b00', fontWeight: 600}}>
+                                                Porcentaje de cancelación: {alquilerAEliminar.porcentajeReintegro ? alquilerAEliminar.porcentajeReintegro + '%' : (alquilerAEliminar.maquina.porcentajeReembolso + '%')}
+                                            </div>
+                                            <div style={{marginTop: '0.5em', color: '#b00', fontWeight: 600}}>
+                                                Monto a reintegrar: {
+                                                    (() => {
+                                                        const precio = alquilerAEliminar.precioTotal;
+                                                        const porcentaje = alquilerAEliminar.porcentajeReintegro ?? (alquilerAEliminar.maquina ? alquilerAEliminar.maquina.porcentajeReembolso : 0);
+                                                        if (precio && porcentaje) {
+                                                            const monto = precio * porcentaje / 100;
+                                                            return monto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+                                                        }
+                                                        return '-';
+                                                    })()
+                                                }
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div style={{marginTop: '1.5em', display: 'flex', justifyContent: 'center', gap: '1em', padding: '0 0 1.5em 0'}}>
