@@ -66,9 +66,11 @@ function MisAlquileres() {
     const alquileresFiltrados = alquileres.filter((a) => {
         // Filtrar eliminados/cancelados involuntarios
         if (a.estadoAlquiler === "CanceladoInvoluntario" || (a.estado && a.estado.toLowerCase() === "eliminado")) return false;
-        // filtro por pestaña
-        if (tab === 'alquileres' && !(a.estadoAlquiler === "Activo" || a.estadoAlquiler === "Finalizado")) return false;
-        if (tab === 'reservas' && a.estadoAlquiler !== "Pendiente") return false;
+        // filtro por pestaña SOLO para cliente
+        if (rawRoles.includes("ROLE_CLIENTE")) {
+            if (tab === 'alquileres' && !(a.estadoAlquiler === "Activo" || a.estadoAlquiler === "Finalizado")) return false;
+            if (tab === 'reservas' && a.estadoAlquiler !== "Pendiente") return false;
+        }
         // filtro estado
         if (estadoFiltro !== "todos" && a.estadoAlquiler.toLowerCase() !== estadoFiltro.toLowerCase()) return false;
         // filtro búsqueda cliente (dni o email)
@@ -83,6 +85,7 @@ function MisAlquileres() {
 
     // Solo mostrar filtros si es propietario o empleado
     const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
+    const esCliente = rawRoles.includes("ROLE_CLIENTE");
 
     // Maneja el click en un alquiler: setea la máquina y cambia vista
     const handleAlquilerClick = (alquiler) => {
@@ -189,27 +192,29 @@ function MisAlquileres() {
     if (view === 'list') {
         return (
             <div className="container">
-                {/* Pestañas */}
-                <div style={{ display: 'flex', gap: '1em', marginBottom: '1.5em', justifyContent: 'center' }}>
-                    <button
-                        className={tab === 'alquileres' ? 'button-primary' : 'button-secondary'}
-                        style={{ minWidth: 140 }}
-                        onClick={() => setTab('alquileres')}
-                    >
-                        Mis alquileres
-                    </button>
-                    <button
-                        className={tab === 'reservas' ? 'button-primary' : 'button-secondary'}
-                        style={{ minWidth: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        onClick={() => setTab('reservas')}
-                    >
-                        Pendientes
-                    </button>
-                </div>
-
+                {/* Pestañas SOLO para cliente */}
+                {esCliente && (
+                    <div style={{ display: 'flex', gap: '1em', marginBottom: '1.5em', justifyContent: 'center' }}>
+                        <button
+                            className={tab === 'alquileres' ? 'button-primary' : 'button-secondary'}
+                            style={{ minWidth: 140 }}
+                            onClick={() => setTab('alquileres')}
+                        >
+                            Mis alquileres
+                        </button>
+                        <button
+                            className={tab === 'reservas' ? 'button-primary' : 'button-secondary'}
+                            style={{ minWidth: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            onClick={() => setTab('reservas')}
+                        >
+                            Pendientes
+                        </button>
+                    </div>
+                )}
+                {/* Título dinámico según la pestaña SOLO para cliente */}
+                {esCliente && <h2 className="title">{tab === 'alquileres' ? 'Mis Alquileres' : 'Mis Reservas'}</h2>}
+                {/* Para admin, mostrar el título original */}
                 {esAdmin && <h2 className="title">Alquileres</h2>}
-                {/* Título dinámico según la pestaña */}
-                <h2 className="title">{tab === 'alquileres' ? 'Mis Alquileres' : 'Mis Reservas'}</h2>
 
                 {esAdmin && (
                     <div className="filters" style={{marginBottom: "1rem"}}>
