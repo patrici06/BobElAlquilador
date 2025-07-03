@@ -78,7 +78,7 @@ public class MaquinaController {
     @GetMapping("/api/maquinas")
     public ResponseEntity<?> obtenerMaquinas() {
         try {
-            return ResponseEntity.ok(maquinaService.getAllMaquinas());
+            return ResponseEntity.ok(maquinaService.getAllMaquinasActivasDB());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener máquinas: " + e.getMessage());
         }

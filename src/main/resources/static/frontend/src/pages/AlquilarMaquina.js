@@ -51,9 +51,9 @@ function AlquilarMaquina() {
 
     // 1) Cargo la lista de máquinas
     useEffect(() => {
-        const endpoint = rawRoles.includes("ROLE_PROPIETARIO")
-            ? 'http://localhost:8080/api/maquinas'
-            : 'http://localhost:8080/api/maquinas/disponibles';
+        const endpoint = rawRoles.includes("ROLE_CLIENTE")
+            ? 'http://localhost:8080/api/maquinas/disponibles'
+            : 'http://localhost:8080/api/maquinas';
 
         fetch(endpoint, {
             headers: {
