@@ -46,7 +46,7 @@ function SubirMaquina() {
             })
             .then(data => setMarcas(data))
             .catch(() => setMarcas([]));
-    }, []);
+    }, [token]);
 
     if (!roles.includes("ROLE_PROPIETARIO")) {
         return (

@@ -97,8 +97,9 @@ public class PersonaService {
         }
         Persona persona = new Persona( request.getDni(), request.getNombre(), request.getApellido()
                 , request.getEmail(),ClaveGenerador.generar(12));
-
-       String clave = persona.getClave();
+        persona.setFechaNacimiento(request.getFechaNacimiento()); // <-- PRIMERO AQUÍ
+        validadorCredencialesService.usuarioMenorDeEdad(persona.getFechaNacimiento()); // <-- LUEGO AQUÍ
+        String clave = persona.getClave();
        correoService.enviarMail(request.getEmail(), "Clave Auto-Generada",
                "Tu Clave auto generada para el primer login es:\n" +
                        clave +"\n"+

@@ -187,4 +187,54 @@ public class AlquilerService {
         alquiler.setEstado(EstadoAlquiler.Activo);
         repo.save(alquiler);
     }
+
+
+    public static class MaquinaAlquilerCount {
+        private String nombreMaquina;
+        private long cantidad;
+
+        public MaquinaAlquilerCount(String nombreMaquina, long cantidad) {
+            this.nombreMaquina = nombreMaquina;
+            this.cantidad = cantidad;
+        }
+
+        public String getNombreMaquina() {
+            return nombreMaquina;
+        }
+
+        public long getCantidad() {
+            return cantidad;
+        }
+    }
+
+    public List<MaquinaAlquilerCount> obtenerMaquinasMasAlquiladas(LocalDate fechaInicio, LocalDate fechaFin) {
+    return repo.findAll().stream()
+        .filter(a -> !a.getAlquilerId().getFechaInicio().isAfter(fechaFin) &&
+                     !a.getAlquilerId().getFechaFin().isBefore(fechaInicio))
+        .collect(Collectors.groupingBy(a -> a.getMaquina().getNombre(), Collectors.counting()))
+        .entrySet().stream()
+        .map(e -> new MaquinaAlquilerCount(e.getKey(), e.getValue()))
+        .sorted((a, b) -> Long.compare(b.getCantidad(), a.getCantidad()))
+        .collect(Collectors.toList());
+    }
+
+    /**
+     * Cancela un alquiler solo si la fecha actual es anterior a la fecha de inicio (para clientes)
+     */
+    public double cancelarAlquilerCliente(String nombreMaquina, LocalDate inicio, LocalDate fin) {
+        Alquiler alquiler = repo.findById(new AlquilerId(nombreMaquina, inicio, fin))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alquiler no encontrado"));
+        LocalDate hoy = LocalDate.now();
+        if (!hoy.isBefore(inicio)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede cancelar la reserva debido a que se encuentra en curso");
+        }
+        // Usar estado Cancelado para cancelación voluntaria
+        alquiler.borrarAlquiler(EstadoAlquiler.Cancelado);
+        repo.save(alquiler);
+        // Enviar mail de cancelación voluntaria
+        personaService.correoService.enviarCancelacionCliente(alquiler.getPersona().getEmail(), alquiler);
+        // Devuelvo el porcentaje de reintegro de la máquina
+        return alquiler.getMaquina().getPorcentajeReembolso();
+    }
+
 }

@@ -1,14 +1,31 @@
-.container {
+.splitContainer {
+    display: flex;
+    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: #f8f9fa;
     min-height: calc(100vh - 4rem);
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+.leftBlock,
+.rightBlock {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.leftBlock {
+    flex: 1 1 340px;
+    max-width: 400px;
+}
+.rightBlock {
+    flex: 2 1 0;
+    min-width: 0;
 }
 
 .title {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.1rem;
     margin-bottom: 2rem;
     color: #b30000;
     border-bottom: 2px solid #b30000;
@@ -17,6 +34,15 @@
     margin-left: auto;
     margin-right: auto;
 }
+.titleRight {
+    text-align: left;
+    color: #b30000;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+    width: 100%;
+    padding-bottom: 0.3rem;
+}
 
 .nuevoMensaje {
     background-color: white;
@@ -24,9 +50,7 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
 }
 
 .textarea {
@@ -39,6 +63,7 @@
     margin-bottom: 1rem;
     resize: vertical;
     transition: border-color 0.2s ease;
+    font-family: inherit;
 }
 
 .textarea:focus {
@@ -55,6 +80,8 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s ease;
+    width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 .button:hover {
@@ -72,6 +99,7 @@
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
 .exito {
@@ -84,7 +112,6 @@
     font-size: 1.1rem;
 }
 
-/* Estilos para el contenedor de éxito */
 .exitoContainer {
     background-color: white;
     padding: 2rem;
@@ -94,16 +121,153 @@
     margin: 2rem auto;
     text-align: center;
 }
-
 .contador {
     color: #666;
     margin-top: 1rem;
     font-size: 0.9rem;
 }
-
-/* Botones en el mensaje de éxito */
 .exitoContainer .button {
     width: 220px;
     margin: 0.5rem auto;
     display: block;
+}
+
+.preguntasList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 100%;
+}
+.preguntaCard {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+}
+.preguntaContainer {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #b30000;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.preguntaHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.7rem;
+}
+
+.estado {
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #c3e6cb;
+}
+.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+.respondida {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.preguntaText,
+.respuestaText {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.fecha {
+    color: #777;
+    font-size: 0.9rem;
+    display: block;
+}
+
+.respuestaContainer {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    border-left: 4px solid #b30000;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.empleadoInfo {
+    margin-top: 0.7em;
+    font-size: 1em;
+    color: #444;
+    background: #f2f2f2;
+    padding: 0.6em 1em;
+    border-radius: 6px;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.empty {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+    .splitContainer {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    .leftBlock,
+    .rightBlock {
+        max-width: 100%;
+        flex: 1 1 100%;
+        margin: 0;
+    }
+    .nuevoMensaje, .exitoContainer {
+        max-width: 100%;
+    }
+}
+@media (max-width: 600px) {
+    .splitContainer {
+        flex-direction: column;
+        padding: 0.5rem;
+        gap: 1rem;
+    }
+    .nuevoMensaje,
+    .preguntaCard,
+    .preguntaContainer,
+    .respuestaContainer {
+        font-size: 1em;
+        padding: 0.8em;
+    }
+    .preguntaHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3em;
+    }
+    .empleadoInfo {
+        font-size: 0.98em;
+        padding: 0.5em 0.7em;
+    }
 }

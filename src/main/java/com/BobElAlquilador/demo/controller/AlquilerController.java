@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -165,6 +167,37 @@ public class AlquilerController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error al registrar retiro: " + e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('PROPIETARIO')")
+    @GetMapping("/mas-alquiladas")
+    public ResponseEntity<?> obtenerMaquinasMasAlquiladas(
+        @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+    if (fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El rango de fechas es inválido"));
+    }
+
+    List<AlquilerService.MaquinaAlquilerCount> resultado = service.obtenerMaquinasMasAlquiladas(fechaInicio, fechaFin);
+    return ResponseEntity.ok(resultado); // Si no hay resultados, devuelve []
+    }
+
+    @DeleteMapping("/cancelar-cliente/{nombreMaquina}")
+    public ResponseEntity<?> cancelarAlquilerCliente(
+            @PathVariable String nombreMaquina,
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin
+    ) {
+        try {
+            double porcentaje = service.cancelarAlquilerCliente(nombreMaquina, inicio, fin);
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Reserva cancelada",
+                "porcentajeReintegro", porcentaje
+            ));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("mensaje", e.getReason()));
         }
     }
 }

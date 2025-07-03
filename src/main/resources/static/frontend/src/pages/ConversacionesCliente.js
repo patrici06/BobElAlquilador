@@ -59,69 +59,72 @@ function ConversacionesCliente() {
     };
 
     return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>Consultas y Respuestas</h1>
-
-            <div className={styles.nuevaPregunta}>
-                <h2>Nueva Consulta</h2>
-                <textarea
-                    value={nuevaPregunta}
-                    onChange={(e) => setNuevaPregunta(e.target.value)}
-                    placeholder="Escribe tu pregunta aquí..."
-                    className={styles.textarea}
-                    disabled={enviando}
-                />
-                {error && <div className={styles.error}>{error}</div>}
-                {exito && <div className={styles.success}>¡Pregunta enviada con éxito!</div>}
-                <button
-                    onClick={handleEnviarPregunta}
-                    disabled={enviando || !nuevaPregunta.trim()}
-                    className={styles.button}
-                >
-                    {enviando ? "Enviando..." : "Enviar Consulta"}
-                </button>
+        <div className={styles.splitContainer}>
+            {/* Bloque Izquierdo: Nueva Consulta */}
+            <div className={styles.leftBlock}>
+                <div className={styles.nuevaPregunta}>
+                    <h2>Nueva Consulta</h2>
+                    <textarea
+                        value={nuevaPregunta}
+                        onChange={(e) => setNuevaPregunta(e.target.value)}
+                        placeholder="Escribe tu pregunta aquí..."
+                        className={styles.textarea}
+                        disabled={enviando}
+                    />
+                    {error && <div className={styles.error}>{error}</div>}
+                    {exito && <div className={styles.success}>¡Pregunta enviada con éxito!</div>}
+                    <button
+                        onClick={handleEnviarPregunta}
+                        disabled={enviando || !nuevaPregunta.trim()}
+                        className={styles.button}
+                    >
+                        {enviando ? "Enviando..." : "Enviar Consulta"}
+                    </button>
+                </div>
             </div>
-
-            <div className={styles.historial}>
-                <h2>Historial de Consultas</h2>
-                {preguntas.length === 0 ? (
-                    <div className={styles.empty}>
-                        No tienes consultas realizadas todavía.
-                    </div>
-                ) : (
-                    <div className={styles.preguntasList}>
-                        {preguntas.map((iteracion, index) => (
-                            <div key={index} className={styles.preguntaCard}>
-                                <div className={styles.preguntaContainer}>
-                                    <div className={styles.preguntaHeader}>
-                                        <h3>Mi Pregunta:</h3>
-                                        <span className={`${styles.estado} ${iteracion.respuesta && iteracion.respuesta.cuerpo ? styles.respondida : styles.pendiente}`}>
-                                            {iteracion.respuesta && iteracion.respuesta.cuerpo ? "Respondida" : "Pendiente"}
-                                        </span>
-                                    </div>
-                                    <p>{iteracion.pregunta.cuerpo}</p>
-                                    <small className={styles.fecha}>
-                                        {iteracion.pregunta.fecha} {formatearHora(iteracion.pregunta.hora)}
-                                    </small>
-                                </div>
-                                {iteracion.respuesta && iteracion.respuesta.cuerpo && (
-                                    <div className={styles.respuestaContainer}>
-                                        <h3>Respuesta:</h3>
-                                        <p>{iteracion.respuesta.cuerpo}</p>
-                                        <small className={styles.fecha}>
-                                            {iteracion.respuesta.fecha} {formatearHora(iteracion.respuesta.hora)}
-                                        </small>
-                                        <div className={styles.empleadoInfo}>
-                                            <strong>Empleado que respondió:</strong>{" "}
-                                            {iteracion.respuesta.persona?.nombre || <em>No disponible</em>}{" "}
-                                            {iteracion.respuesta.persona?.apellido || ""}
+            {/* Bloque Derecho: Historial de Consultas */}
+            <div className={styles.rightBlock}>
+                <div className={styles.historial}>
+                    <h2>Historial de Consultas</h2>
+                    {preguntas.length === 0 ? (
+                        <div className={styles.empty}>
+                            No tienes consultas realizadas todavía.
+                        </div>
+                    ) : (
+                        <div className={styles.preguntasList}>
+                            {preguntas.map((iteracion, index) => (
+                                <div key={index} className={styles.preguntaCard}>
+                                    <div className={styles.preguntaContainer}>
+                                        <div className={styles.preguntaHeader}>
+                                            <h3>Mi Pregunta:</h3>
+                                            <span className={`${styles.estado} ${iteracion.respuesta && iteracion.respuesta.cuerpo ? styles.respondida : styles.pendiente}`}>
+                                                {iteracion.respuesta && iteracion.respuesta.cuerpo ? "Respondida" : "Pendiente"}
+                                            </span>
                                         </div>
+                                        <p>{iteracion.pregunta.cuerpo}</p>
+                                        <small className={styles.fecha}>
+                                            {iteracion.pregunta.fecha} {formatearHora(iteracion.pregunta.hora)}
+                                        </small>
                                     </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
+                                    {iteracion.respuesta && iteracion.respuesta.cuerpo && (
+                                        <div className={styles.respuestaContainer}>
+                                            <h3>Respuesta:</h3>
+                                            <p>{iteracion.respuesta.cuerpo}</p>
+                                            <small className={styles.fecha}>
+                                                {iteracion.respuesta.fecha} {formatearHora(iteracion.respuesta.hora)}
+                                            </small>
+                                            <div className={styles.empleadoInfo}>
+                                                <strong>Empleado que respondió:</strong>{" "}
+                                                {iteracion.respuesta.persona?.nombre || <em>No disponible</em>}{" "}
+                                                {iteracion.respuesta.persona?.apellido || ""}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -6,6 +6,7 @@ import './AlquilarMaquina.css';
 import { jwtDecode } from "jwt-decode";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from './VerMaquina';
+import { useLocation } from 'react-router-dom';
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -34,6 +35,7 @@ function AlquilarMaquina() {
     const clienteDni = sessionStorage.getItem('dni');
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
+    const location = useLocation();
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -192,6 +194,9 @@ function AlquilarMaquina() {
                 } else {
                     alert('Máquina eliminada con éxito');
                     setMachines((prev) => prev.filter((m) => m.nombre !== nombre));
+                } else {
+                    const error = await response.json();
+                    alert('Error al eliminar: ' + (error.mensaje || 'Error desconocido'));
                 }
             } catch (error) {
                 alert('Error al eliminar: ' + error.message);
