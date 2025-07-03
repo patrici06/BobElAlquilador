@@ -53,9 +53,9 @@ public class MercadoPagoController {
                     .build();
 
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .success("https://9b39-170-239-31-145.ngrok-free.app/pago-exitoso")
-                    .failure("https://9b39-170-239-31-145.ngrok-free.app/pago-fallido")
-                    .pending("https://9b39-170-239-31-145.ngrok-free.app/pago-pendiente")
+                    .success("https://ad4e-2800-340-52-144-b609-dc3f-1b81-d345.ngrok-free.app/pago-exitoso")
+                    .failure("https://ad4e-2800-340-52-144-b609-dc3f-1b81-d345.ngrok-free.app/pago-fallido")
+                    .pending("https://ad4e-2800-340-52-144-b609-dc3f-1b81-d345.ngrok-free.app/pago-pendiente")
                     .build();
 
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
@@ -99,4 +99,9 @@ public class MercadoPagoController {
         response.sendRedirect(url);
     }
 
+    @GetMapping("/mp/redirect-failure")
+    public void redirigirAFailure(HttpServletResponse response) throws IOException {
+        String url = "http://localhost:3000/pago-fallido";
+        response.sendRedirect(url);
+    }
 }

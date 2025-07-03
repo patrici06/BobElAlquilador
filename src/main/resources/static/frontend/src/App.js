@@ -16,6 +16,7 @@ import BandejaDeEntrada from "./pages/BandejaDeEntrada";
 import ConversacionesCliente from './pages/ConversacionesCliente';
 import DetalleConsulta from './pages/DetalleConsulta';
 import PagoExitoso from "./pages/PagoExitoso";
+import PagoFallido from "./pages/PagoFallido";
 import MasAlquiladas from './pages/MasAlquiladas';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/consultas/:conversacionId/:preguntaId" element={<DetalleConsulta />} />
                 <Route path="/bandeja" element={<BandejaDeEntrada />} />
                 <Route path="/pago-exitoso" element={<PagoExitoso />} />
+                <Route path="/pago-fallido" element={<PagoFallido />} />
                 <Route path="/mas-alquiladas" element={<MasAlquiladas />} />
 
             </Routes>

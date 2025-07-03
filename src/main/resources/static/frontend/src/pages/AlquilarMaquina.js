@@ -6,6 +6,7 @@ import './AlquilarMaquina.css';
 import { jwtDecode } from "jwt-decode";
 import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from './VerMaquina';
+import { useSearchParams } from 'react-router-dom';
 
 // === FUNCIÓN UTILITARIA PARA CONSTRUIR EL SRC DE LA IMAGEN ===
 function getMachineImageSrc(fotoUrl) {
@@ -34,6 +35,8 @@ function AlquilarMaquina() {
     const clienteDni = sessionStorage.getItem('dni');
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
+    const [searchParams] = useSearchParams();
+    const pago = searchParams.get("pago");
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -246,6 +249,11 @@ function AlquilarMaquina() {
             {view === 'list' && (
                 <>
                     <h1>Máquinas Disponibles</h1>
+                    {pago === "rechazado" && (
+                        <div className="error-banner">
+                            ❌ El pago fue rechazado. No se realizó ninguna reserva.
+                        </div>
+                    )}
                     <div className="search-bar-container" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
                         <input
                             type="text"
