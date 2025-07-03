@@ -18,6 +18,10 @@ function MisAlquileres() {
     const [showReviewPopup, setShowReviewPopup] = useState(false);
     const [alquilerParaResenia, setAlquilerParaResenia] = useState(null);
 
+    // Cancelación (cliente)
+    const [modalOpen, setModalOpen] = useState(false);
+    const [alquilerAEliminar, setAlquilerAEliminar] = useState(null);
+
     const token = sessionStorage.getItem("token");
     const rawRoles = React.useMemo(() => getRolesFromJwt(token), [token]);
     const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
@@ -94,12 +98,50 @@ function MisAlquileres() {
         }
     };
 
-    // Aquí sigue tu lógica de devolución, cancelación, etc. (no repetido aquí por brevedad...)
+    // ----------- CANCELACIÓN DE ALQUILER (CLIENTE) ------------
+    // Modal: abrir
+    const abrirModalCancelar = (alquiler) => {
+        setAlquilerAEliminar(alquiler);
+        setModalOpen(true);
+    };
+    // Modal: cerrar
+    const cerrarModalCancelar = () => {
+        setAlquilerAEliminar(null);
+        setModalOpen(false);
+    };
+    // Confirmar cancelación: Llamada backend + feedback y actualización
+    const confirmarCancelarAlquiler = async () => {
+        if (!alquilerAEliminar) return;
+        setMensaje("");
+        setTipoMensaje("");
+        try {
+            const a = alquilerAEliminar;
+            const url = `http://localhost:8080/api/alquileres/cancelar-cliente/${a.alquilerId.nombre_maquina}?inicio=${a.alquilerId.fechaInicio}&fin=${a.alquilerId.fechaFin}`;
+            const res = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.mensaje || "Error al cancelar el alquiler.");
+            setAlquileres((prev) => prev.filter((al) => al.alquilerId.nombre_maquina !== a.alquilerId.nombre_maquina || al.alquilerId.fechaInicio !== a.alquilerId.fechaInicio || al.alquilerId.fechaFin !== a.alquilerId.fechaFin));
+            setMensaje(`${data.mensaje}. Porcentaje de reintegro: ${data.porcentajeReintegro}%`);
+            setTipoMensaje("success");
+        } catch (err) {
+            setMensaje(err.message);
+            setTipoMensaje("error");
+        } finally {
+            cerrarModalCancelar();
+        }
+    };
 
-    // Review popup (igual que tu código)
-    const ReviewPopup = () => { /* ... igual ... */ return null; /* omitir para brevedad */ };
+    // ----------- FIN CANCELACIÓN CLIENTE -----------
 
-    // VISTAS
+    // Review popup (igual que tu código, omitido)
+    const ReviewPopup = () => { return null; };
+
+    // VISTAS de detalle
     if (view === 'alquilerVista' && selectedMachine) {
         return (
             <MachineAvailability
@@ -145,6 +187,28 @@ function MisAlquileres() {
             <h2 className="title">
                 {filtro === "todos" ? "Mis Alquileres" : "Pendientes"}
             </h2>
+
+            {mensaje && (
+                <div className={tipoMensaje === "success" ? "mensaje-exito" : "mensaje-error"} style={{marginBottom: "1rem"}}>
+                    <div>
+                        {tipoMensaje === "success" ? (
+                            <>
+                                <strong>¡Cancelación realizada con éxito!</strong><br />
+                                <span style={{fontWeight: 500}}>Porcentaje de reintegro:&nbsp;
+                                    <span style={{color: '#007e33', fontWeight: 700, fontSize: '1.1em'}}>
+                                        {mensaje.split('Porcentaje de reintegro:')[1]}
+                                    </span>
+                                </span>
+                                <br />
+                                <span style={{fontWeight: 400, color: '#007e33'}}>Se ha enviado un mail confirmando la cancelación.</span>
+                            </>
+                        ) : (
+                            <>{mensaje}</>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {loading && <p className="loading">Cargando...</p>}
             {error && <p className="error">{error}</p>}
             {!loading && !error && alquileresFiltrados.length === 0 && (
@@ -171,38 +235,107 @@ function MisAlquileres() {
                                 <th>Acciones</th>
                             </>
                         )}
+                        {/* Columna para el botón de cancelar (cliente) */}
+                        {esCliente && <th></th>}
                     </tr>
                     </thead>
                     <tbody>
-                    {alquileresFiltrados.map((a) => (
-                        <tr key={`${a.alquilerId?.nombre_maquina}_${a.alquilerId?.fechaInicio}_${a.alquilerId?.fechaFin}`}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => handleAlquilerClick(a)}
-                        >
-                            <td>{a.alquilerId?.nombre_maquina || "Desconocida"}</td>
-                            <td>{new Date(a.alquilerId?.fechaInicio + "T00:00:00").toLocaleDateString()}</td>
-                            <td>{new Date(a.alquilerId?.fechaFin + "T00:00:00").toLocaleDateString()}</td>
-                            <td>{a.estadoAlquiler}</td>
-                            <td>
-                                {a.precioTotal?.toLocaleString("es-AR", {
-                                    style: "currency",
-                                    currency: "ARS",
-                                })}
-                            </td>
-                            {esAdmin && (
-                                <>
-                                    <td>{a.persona?.nombre || "-"}</td>
-                                    <td>{a.persona?.dni || "-"}</td>
-                                    <td>{a.persona?.email || "-"}</td>
+                    {alquileresFiltrados.map((a) => {
+                        // ----------- LÓGICA BOTÓN CANCELAR (SOLO CLIENTE) -----------
+                        let puedeCancelarCliente = false;
+                        if (esCliente && a.alquilerId && a.estadoAlquiler) {
+                            // Solo puede cancelar si es "pendiente" y HOY es anterior a inicio
+                            const hoy = new Date();
+                            const [anio, mes, dia] = a.alquilerId.fechaInicio.split("-").map(Number);
+                            const inicioAlquiler = new Date(anio, mes - 1, dia);
+                            inicioAlquiler.setHours(0,0,0,0);
+                            puedeCancelarCliente = hoy < inicioAlquiler && String(a.estadoAlquiler).toLowerCase() === "pendiente";
+                        }
+                        // -----------------------------------------------------------
+                        return (
+                            <tr key={`${a.alquilerId?.nombre_maquina}_${a.alquilerId?.fechaInicio}_${a.alquilerId?.fechaFin}`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => handleAlquilerClick(a)}
+                            >
+                                <td>{a.alquilerId?.nombre_maquina || "Desconocida"}</td>
+                                <td>{new Date(a.alquilerId?.fechaInicio + "T00:00:00").toLocaleDateString()}</td>
+                                <td>{new Date(a.alquilerId?.fechaFin + "T00:00:00").toLocaleDateString()}</td>
+                                <td>{a.estadoAlquiler}</td>
+                                <td>
+                                    {a.precioTotal?.toLocaleString("es-AR", {
+                                        style: "currency",
+                                        currency: "ARS",
+                                    })}
+                                </td>
+                                {esAdmin && (
+                                    <>
+                                        <td>{a.persona?.nombre || "-"}</td>
+                                        <td>{a.persona?.dni || "-"}</td>
+                                        <td>{a.persona?.email || "-"}</td>
+                                        <td>
+                                            {/* Acciones (cancelar, registrar retiro, devolución) aquí si aplica */}
+                                        </td>
+                                    </>
+                                )}
+                                {/* Botón cancelar SOLO para cliente y si aplica */}
+                                {esCliente && (
                                     <td>
-                                        {/* Acciones (cancelar, registrar retiro, devolución) aquí si aplica */}
+                                        {puedeCancelarCliente && (
+                                            <button
+                                                className="button-primary"
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    abrirModalCancelar(a);
+                                                }}
+                                            >
+                                                Cancelar Alquiler
+                                            </button>
+                                        )}
                                     </td>
-                                </>
-                            )}
-                        </tr>
-                    ))}
+                                )}
+                            </tr>
+                        );
+                    })}
                     </tbody>
                 </table>
+            )}
+
+            {/* Modal de confirmación de cancelación */}
+            {modalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-content" style={{padding: 0, borderRadius: '12px', boxShadow: '0 4px 24px rgba(179,0,0,0.10)'}}>
+                        <div className="mensaje-error" style={{margin: 0, borderRadius: '12px 12px 0 0', borderLeft: 'none', borderTop: '6px solid #e53935', fontSize: '1.15rem', justifyContent: 'center', textAlign: 'center'}}>
+                            <div>
+                                <strong>¿Estás seguro de que querés cancelar este alquiler?</strong>
+                                <div style={{fontWeight: 400, fontSize: '1rem', marginTop: '0.5em'}}>Esta acción no se puede deshacer.</div>
+                                {alquilerAEliminar && (alquilerAEliminar.porcentajeReintegro || (alquilerAEliminar.maquina && alquilerAEliminar.maquina.porcentajeReembolso)) && (
+                                    <>
+                                        <div style={{marginTop: '1em', color: '#b00', fontWeight: 600}}>
+                                            Porcentaje de cancelación: {alquilerAEliminar.porcentajeReintegro ? alquilerAEliminar.porcentajeReintegro + '%' : (alquilerAEliminar.maquina.porcentajeReembolso + '%')}
+                                        </div>
+                                        <div style={{marginTop: '0.5em', color: '#b00', fontWeight: 600}}>
+                                            Monto a reintegrar: {
+                                            (() => {
+                                                const precio = alquilerAEliminar.precioTotal;
+                                                const porcentaje = alquilerAEliminar.porcentajeReintegro ?? (alquilerAEliminar.maquina ? alquilerAEliminar.maquina.porcentajeReembolso : 0);
+                                                if (precio && porcentaje) {
+                                                    const monto = precio * porcentaje / 100;
+                                                    return monto.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+                                                }
+                                                return '-';
+                                            })()
+                                        }
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div style={{marginTop: '1.5em', display: 'flex', justifyContent: 'center', gap: '1em', padding: '0 0 1.5em 0'}}>
+                            <button className="button-primary" onClick={confirmarCancelarAlquiler}>Sí, cancelar</button>
+                            <button className="button-secondary" onClick={cerrarModalCancelar}>No, volver</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

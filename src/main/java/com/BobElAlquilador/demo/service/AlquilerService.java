@@ -229,7 +229,7 @@ public class AlquilerService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede cancelar la reserva debido a que se encuentra en curso");
         }
         // Usar estado Cancelado para cancelación voluntaria
-        alquiler.borrarAlquiler(EstadoAlquiler.Cancelado);
+        alquiler.setEstado(EstadoAlquiler.Cancelado);
         repo.save(alquiler);
         // Enviar mail de cancelación voluntaria
         personaService.correoService.enviarCancelacionCliente(alquiler.getPersona().getEmail(), alquiler);
