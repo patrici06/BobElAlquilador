@@ -102,7 +102,7 @@ public class MaquinaController {
             return ResponseEntity.status(HttpStatus.OK).body("Máquina '" + nombre + "' eliminada con éxito.");
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
+            response.put("mensaje", "Error al eliminar maquina" + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }

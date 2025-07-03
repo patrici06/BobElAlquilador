@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,14 +97,6 @@ public class AlquilerService {
                 .toList();
         alquileresMaq.forEach(alq -> alq.cancelamientoInvoluntario());
         personaService.enviarMailCancelacion(alquileresMaq);
-    }
-
-    // Utilizado para saber si se puede dar una maquina de baja
-    public boolean tieneAlquilerActivo(Maquina maq) {
-        List<EstadoAlquiler> estados = new ArrayList<>();
-        estados.add(EstadoAlquiler.Activo);
-        List<Alquiler> alquileres = repo.findByMaquinaNombreAndEstadoIn(maq.getNombre(), estados);
-        return(!alquileres.isEmpty());
     }
 
     public List<Alquiler> obtenerReservasActivasOPendientes(String maquinaNombre) {

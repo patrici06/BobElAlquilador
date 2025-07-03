@@ -14,17 +14,10 @@ public class MaquinaAlquilerCordinator {
     private AlquilerService alquilerService;
 
     public void eliminarMaquinaConCancelacion(String nombreMaquina) {
-        // Check si la maquina existe
         Maquina maquina = maquinaService.getMaquinaPorNombre(nombreMaquina);
         if (maquina == null) {
             throw new RuntimeException("La máquina no existe");
         }
-
-        // Check si la maquina tiene un alquiler activo
-        if (alquilerService.tieneAlquilerActivo(maquina)) {
-            throw new RuntimeException("No se puede eliminar una maquina que tiene un alquiler activo");
-        }
-
         // Borrado lógico
         maquina.borrarMaquina();
 
