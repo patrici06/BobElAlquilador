@@ -9,6 +9,7 @@ function Header() {
     const navigate = useNavigate();
     const token = sessionStorage.getItem("token");
     const rawRoles = getRolesFromJwt(token);
+    const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
 
     // Extraer el email del JWT si existe
     let email = "";
@@ -108,18 +109,6 @@ function Header() {
                 {rawRoles.includes("ROLE_CLIENTE") && (
                     <>
                         <button
-                            onClick={() => {
-                                setMenuOpen(false);
-                                navigate("/alquilar");
-                            }}
-                            className={styles.button}
-                            onMouseEnter={() => setHoveredBtn("alquilar")}
-                            onMouseLeave={() => setHoveredBtn("")}
-                            data-hovered={hoveredBtn === "alquilar"}
-                        >
-                            Alquilar Maquina
-                        </button>
-                        <button
                             onClick={() => { setMenuOpen(false); navigate("/consultas"); }}
                             className={styles.button}
                             onMouseEnter={() => setHoveredBtn("consultar")}
@@ -156,6 +145,20 @@ function Header() {
                     {rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO")
                         ? "Ver Alquileres"
                         : "Mis Alquileres"}
+                </button>
+                <button
+                        onClick={() => {
+                            setMenuOpen(false);
+                            navigate("/alquilar");
+                        }}
+                        className={styles.button}
+                        onMouseEnter={() => setHoveredBtn("ver-maquinas")}
+                        onMouseLeave={() => setHoveredBtn("")}
+                        data-hovered={hoveredBtn === "ver-maquinas"}
+                    >
+                        {rawRoles.includes("ROLE_CLIENTE")
+                            ? "Alquilar Maquina"
+                            : "Ver Máquinas"}
                 </button>
                 <button
                     onClick={() => {
