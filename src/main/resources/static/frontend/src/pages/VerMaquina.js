@@ -72,6 +72,7 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
     }
 
     const handlePagoYRedireccion = async () => {
+        console.log("Iniciando proceso de pago");
         setError('');
         if (!inicio || !fin) {
             setError('Por favor selecciona ambas fechas.');
@@ -107,6 +108,7 @@ export default function MachineAvailability({ machine, onClose, onReserveSuccess
             localStorage.setItem("nombreMaquina", machine.nombre);
 
             // Redirigir al checkout de MP
+            console.log("Redirigiendo a:", initPoint);
             window.location.href = initPoint;
 
         } catch (err) {
