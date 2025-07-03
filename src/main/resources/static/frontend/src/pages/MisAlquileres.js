@@ -97,7 +97,107 @@ function MisAlquileres() {
             setView('alquilerVista');
         }
     };
+    const handleEliminarAlquiler = (alquiler, e) => {
+        e.stopPropagation();
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+        const hoy = new Date();
+        const [anio, mes, dia] = fechaInicio.split("-").map(Number);
+        const inicioAlquiler = new Date(anio, mes - 1, dia);
+        inicioAlquiler.setHours(0, 0, 0, 0);
+        if (hoy >= inicioAlquiler) {
+            alert("No se puede cancelar el alquiler debido a que se encuentra en curso");
+            return;
+        }
+        const confirmacion = window.confirm("¿Estás seguro de que querés eliminar este alquiler?");
+        if (!confirmacion) return;
+        const url = `http://localhost:8080/api/alquileres/eliminar/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al eliminar el alquiler.");
+                setAlquileres((prev) =>
+                    prev.filter(
+                        (a) =>
+                            !(
+                                a.alquilerId.nombre_maquina === nombre_maquina &&
+                                a.alquilerId.fechaInicio === fechaInicio &&
+                                a.alquilerId.fechaFin === fechaFin
+                            )
+                    )
+                );
+                alert("Reserva cancelada");
+            })
+            .catch((err) => {
+                alert("No se pudo eliminar el alquiler: " + err.message);
+            });
+    };
+    const handleRegistrarDevolucion = (alquiler, e) => {
+        e.stopPropagation();
 
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+        const url = `http://localhost:8080/api/alquileres/registrar-devolucion/${nombre_maquina}?inicio=${fechaInicio}&fin=${fechaFin}`;
+        fetch(url, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || "Error al registrar devolución");
+                }
+                setAlquileres(prevAlquileres =>
+                    prevAlquileres.map(a => {
+                        if (a.alquilerId.nombre_maquina === nombre_maquina &&
+                            a.alquilerId.fechaInicio === fechaInicio &&
+                            a.alquilerId.fechaFin === fechaFin) {
+                            return { ...a, estadoAlquiler: "Finalizado" };
+                        }
+                        return a;
+                    })
+                );
+                setAlquilerParaResenia(alquiler);
+                setShowReviewPopup(true);
+            })
+            .catch((err) => {
+                alert('Error al registrar la devolución: ' + err.message);
+            });
+    }
+    const handleRegistrarRetiro = (alquiler, e) => {
+        e.stopPropagation();
+
+        const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
+
+        fetch("http://localhost:8080/api/alquileres/registrar-retiro", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                nombreMaquina: nombre_maquina,
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin,
+            }),
+        })
+            .then(async (res) => {
+                const mensaje = await res.text();
+                if (!res.ok) throw new Error(mensaje);
+                alert(mensaje);
+
+                // Opcional: Refrescar los datos si querés ver el estado actualizado
+                // Podés usar refetchAlquileres(), o hacer un setAlquileres con los datos actualizados
+
+            })
+            .catch((err) => {
+                alert("Error al registrar el retiro: " + err.message);
+            });
+    };
     // ----------- CANCELACIÓN DE ALQUILER (CLIENTE) ------------
     // Modal: abrir
     const abrirModalCancelar = (alquiler) => {
@@ -273,7 +373,37 @@ function MisAlquileres() {
                                         <td>{a.persona?.dni || "-"}</td>
                                         <td>{a.persona?.email || "-"}</td>
                                         <td>
-                                            {/* Acciones (cancelar, registrar retiro, devolución) aquí si aplica */}
+                                                <button
+                                                    className="button-primary"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleEliminarAlquiler(a, e);
+                                                    }}
+                                                    style={{ marginRight: "8px" }}
+                                                >
+                                                    Cancelar Alquiler
+                                                </button>
+                                                {a.estadoAlquiler.toLocaleUpperCase() === "PENDIENTE" && (
+                                                    <button
+                                                        className="button-secondary"
+                                                        onClick={(e) => handleRegistrarRetiro(a, e)}
+                                                        style={{ marginRight: "8px" }}
+                                                    >
+                                                        Registrar Retiro
+                                                    </button>
+                                                )}
+                                                {a.estadoAlquiler.toLocaleUpperCase() === "ACTIVO" && (
+                                                    <button
+                                                        className="button-primary"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleRegistrarDevolucion(a, e);
+                                                        }}
+                                                    >
+                                                        Registrar Devolución
+                                                    </button>
+                                                )}
+
                                         </td>
                                     </>
                                 )}
