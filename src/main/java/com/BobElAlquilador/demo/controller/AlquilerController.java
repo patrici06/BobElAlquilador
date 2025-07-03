@@ -120,8 +120,7 @@ public class AlquilerController {
             List<Alquiler> alquileres = service.getAllAlquileres();
 
             return ResponseEntity.ok(alquileres);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al obtener los alquileres: " + e.getMessage());
         }
     }
@@ -141,6 +140,7 @@ public class AlquilerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
     @PostMapping("/registrar-retiro")
     public ResponseEntity<?> registrarRetiro(
             @RequestBody RetiroRequest request,
@@ -173,15 +173,15 @@ public class AlquilerController {
     @PreAuthorize("hasRole('PROPIETARIO')")
     @GetMapping("/mas-alquiladas")
     public ResponseEntity<?> obtenerMaquinasMasAlquiladas(
-        @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-        @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+            @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
 
-    if (fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) {
-        return ResponseEntity.badRequest().body(Map.of("mensaje", "El rango de fechas es inválido"));
-    }
+        if (fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El rango de fechas es inválido"));
+        }
 
-    List<AlquilerService.MaquinaAlquilerCount> resultado = service.obtenerMaquinasMasAlquiladas(fechaInicio, fechaFin);
-    return ResponseEntity.ok(resultado); // Si no hay resultados, devuelve []
+        List<AlquilerService.MaquinaAlquilerCount> resultado = service.obtenerMaquinasMasAlquiladas(fechaInicio, fechaFin);
+        return ResponseEntity.ok(resultado); // Si no hay resultados, devuelve []
     }
 
     @DeleteMapping("/cancelar-cliente/{nombreMaquina}")
@@ -193,8 +193,8 @@ public class AlquilerController {
         try {
             double porcentaje = service.cancelarAlquilerCliente(nombreMaquina, inicio, fin);
             return ResponseEntity.ok(Map.of(
-                "mensaje", "Reserva cancelada",
-                "porcentajeReintegro", porcentaje
+                    "mensaje", "Reserva cancelada",
+                    "porcentajeReintegro", porcentaje
             ));
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("mensaje", e.getReason()));
