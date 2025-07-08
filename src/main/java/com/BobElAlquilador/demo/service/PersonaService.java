@@ -5,10 +5,13 @@ import com.BobElAlquilador.demo.model.Alquiler;
 import com.BobElAlquilador.demo.model.Persona;
 import com.BobElAlquilador.demo.model.Rol;
 import com.BobElAlquilador.demo.repository.PersonaRepository;
+import com.BobElAlquilador.demo.repository.ResenaRepository;
 import com.BobElAlquilador.demo.repository.RolRepository;
 import com.BobElAlquilador.demo.util.ClaveGenerador;
+import com.BobElAlquilador.demo.util.EmpleadoValoracionDTO;
 import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,8 @@ public class PersonaService {
     @Autowired
     CorreoService correoService;
     @Autowired
+    ResenaRepository resenaRepository;
+    @Autowired
     PersonaRepository pRepo;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -24,6 +29,10 @@ public class PersonaService {
     RolRepository rolRepository;
     @Autowired
     ValidadorCredencialesService validadorCredencialesService;
+
+    public List<EmpleadoValoracionDTO> EmpleadosOrderByValoracion(){
+        return resenaRepository.findAllEmpleadosWithPromedioValoracionDesc();
+    }
 
     public void enviarMailCancelacion(Alquiler aCancelar) {
         correoService.enviarCancelacion(aCancelar.getPersona().getEmail(), aCancelar);

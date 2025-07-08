@@ -132,6 +132,19 @@ function Header() {
                         </button>
                     </>
                 )}
+                {rawRoles.includes("ROLE_PROPIETARIO") && (
+                    <>
+                    <button
+                        onClick={() => { setMenuOpen(false); navigate("/propietario/empleados-valoracion"); }}
+                        className={styles.button}
+                        onMouseEnter={() => setHoveredBtn("valoracion empelados")}
+                        onMouseLeave={() => setHoveredBtn("")}
+                        data-hovered={hoveredBtn === "empleados mas valorados"}
+                    >
+                        Empleados Mejor valorados
+                    </button>
+                    </>
+                )}
                 <button
                     onClick={() => {
                         setMenuOpen(false);

@@ -18,6 +18,7 @@ import DetalleConsulta from './pages/DetalleConsulta';
 import PagoExitoso from "./pages/PagoExitoso";
 import PagoFallido from "./pages/PagoFallido";
 import MasAlquiladas from './pages/MasAlquiladas';
+import MisEmpleados from './pages/MisEmpleados';
 
 function App() {
     const location = useLocation();
@@ -43,7 +44,7 @@ function App() {
                 <Route path="/pago-exitoso" element={<PagoExitoso />} />
                 <Route path="/pago-fallido" element={<PagoFallido />} />
                 <Route path="/mas-alquiladas" element={<MasAlquiladas />} />
-
+                <Route path="/propietario/empleados-valoracion" element={<MisEmpleados />} />
             </Routes>
             {!hideHeaderFooter && <Footer />}
         </div>
