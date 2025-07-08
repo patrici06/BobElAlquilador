@@ -3,6 +3,7 @@ package com.BobElAlquilador.demo.repository;
 
 import com.BobElAlquilador.demo.model.Persona;
 import com.BobElAlquilador.demo.model.Resena;
+import com.BobElAlquilador.demo.util.EmpleadoContDTO;
 import com.BobElAlquilador.demo.util.EmpleadoValoracionDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,11 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
             "GROUP BY r.empleado.email " +
             "ORDER BY AVG(r.valoracion) DESC")
     List<EmpleadoValoracionDTO> findAllEmpleadosWithPromedioValoracionDesc();
+
+    @Query("SELECT new com.BobElAlquilador.demo.util.EmpleadoContDTO(" +
+            "e.email, e.nombre, CAST(COUNT(r) AS string)) " +
+            "FROM Resena r " +
+            "JOIN r.empleado e " +
+            "GROUP BY e.email, e.nombre")
+    List<EmpleadoContDTO> cantidadAlquileresPorEmpleado();
 }

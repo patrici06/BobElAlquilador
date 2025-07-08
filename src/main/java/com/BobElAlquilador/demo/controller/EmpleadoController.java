@@ -1,6 +1,7 @@
 package com.BobElAlquilador.demo.controller;
 
 import com.BobElAlquilador.demo.service.PersonaService;
+import com.BobElAlquilador.demo.service.ResenaService;
 import jdk.javadoc.doclet.Reporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmpleadoController {
     @Autowired
     PersonaService personaService;
+    @Autowired
+    private ResenaService resenaService;
 
     @GetMapping("/empleados-valoracion")
     public ResponseEntity<?> empleadosValoracion() {
@@ -22,5 +25,14 @@ public class EmpleadoController {
         catch(Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @GetMapping ("/empleados-cantidad-alquileres-efectuado")
+    public ResponseEntity<?> empleadosCantidadAlquileresEfectuado() {
+        try {
+            return ResponseEntity.ok().body(personaService.alquileresPorEmpleado());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 }

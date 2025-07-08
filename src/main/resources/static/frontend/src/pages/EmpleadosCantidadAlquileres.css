@@ -1,0 +1,77 @@
+.empleados-cantidad-container {
+    max-width: 700px;
+    margin: 2em auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(172, 16, 16, 0.43);
+    padding: 2.5em 2em 2em 2em;
+}
+
+.empleados-cantidad-title {
+    margin-bottom: 1.5em;
+    color: rgba(172, 16, 16, 0.43);
+    letter-spacing: 0.5px;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.empleados-cantidad-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+    background: #f8fafc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.empleados-cantidad-table th,
+.empleados-cantidad-table td {
+    padding: 0.9em 1.2em;
+    text-align: left;
+    border-bottom: 1px solid #e6e9ef;
+    font-size: 1.07rem;
+}
+
+.empleados-cantidad-table th {
+    background: #eaf0fb;
+    color: #ac1010;
+    font-weight: 600;
+}
+
+.empleados-cantidad-table td {
+    background: rgba(0, 0, 0, 0.75);
+    color: #ac1010;
+}
+
+.empleados-cantidad-table tr:last-child td {
+    border-bottom: none;
+}
+
+.empleados-cantidad-table td.cantidad {
+    text-align: center;
+    font-weight: 600;
+    color: rgba(172, 16, 16, 0.43);
+    font-size: 1.15rem;
+}
+
+.empleados-cantidad-error {
+    color: #e63946;
+    font-weight: bold;
+    margin-top: 1.5em;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .empleados-cantidad-container {
+        padding: 1em 0.3em 2em 0.3em;
+    }
+    .empleados-cantidad-title {
+        font-size: 1.3rem;
+    }
+    .empleados-cantidad-table th,
+    .empleados-cantidad-table td {
+        font-size: 0.97rem;
+        padding: 0.65em 0.4em;
+    }
+}

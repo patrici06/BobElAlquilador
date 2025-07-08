@@ -8,6 +8,7 @@ import com.BobElAlquilador.demo.repository.PersonaRepository;
 import com.BobElAlquilador.demo.repository.ResenaRepository;
 import com.BobElAlquilador.demo.repository.RolRepository;
 import com.BobElAlquilador.demo.util.ClaveGenerador;
+import com.BobElAlquilador.demo.util.EmpleadoContDTO;
 import com.BobElAlquilador.demo.util.EmpleadoValoracionDTO;
 import com.BobElAlquilador.demo.util.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,10 @@ public class PersonaService {
     RolRepository rolRepository;
     @Autowired
     ValidadorCredencialesService validadorCredencialesService;
+
+    public List<EmpleadoContDTO> alquileresPorEmpleado() {
+        return resenaRepository.cantidadAlquileresPorEmpleado();
+    }
 
     public List<EmpleadoValoracionDTO> EmpleadosOrderByValoracion(){
         return resenaRepository.findAllEmpleadosWithPromedioValoracionDesc();

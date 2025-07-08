@@ -143,6 +143,15 @@ function Header() {
                     >
                         Empleados Mejor valorados
                     </button>
+                    <button
+                    onClick={() => {setMenuOpen(false); navigate("/propietario/empleados-cantidad-alquileres-efectuado")}}
+                    className={styles.button}
+                    onMouseEnter={() => setHoveredBtn("ver")}
+                    onMouseLeave={() => setHoveredBtn("")}
+                    data-hovered={hoveredBtn === "ver cantidad de alquileres efectuados" }
+                    >
+                        Empleados-Alquileres
+                    </button>
                     </>
                 )}
                 <button
