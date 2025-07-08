@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,8 @@ public class AlquilerService {
     private PersonaService personaService;
     @Autowired
     private MaquinaService maquinaService;
+    @Autowired
+    private CorreoService correoService;
 
     public Alquiler reservar(String email, String maquinaName, LocalDate inicio, LocalDate fin) {
         // 1. Validar fechas lógicas
@@ -74,6 +77,17 @@ public class AlquilerService {
         alq.setEstado(EstadoAlquiler.Finalizado);
         alq.getMaquina().setEstadoMaquina(EstadoMaquina.Mantenimiento);
         repo.save(alq);
+        if (!LocalDate.now().isBefore(alq.getAlquilerId().getFechaFin())){
+            int cantiDiasAtrazo = (int) ChronoUnit.DAYS.between(LocalDate.now(), alq.getAlquilerId().getFechaFin());
+            correoService.enviarMail(
+                    alq.getPersona().getEmail(),
+                    "Recargo por devolucion tardia!",
+                    "Dada la devolucion tardia de la maquina "+ alq.getMaquina().getNombre() +
+                    " con la fecha de retiro pactada de " + alq.getAlquilerId().getFechaFin().toString() +
+                    " Se le vera impuesto el recargo de " + alq.getMaquina().getPrecioDia() * cantiDiasAtrazo * 1.1  +
+                    " por el atrazo de "+ cantiDiasAtrazo
+            );
+        }
     }
 
     public void eliminarAlquiler(String nombreMaquina, LocalDate inicio, LocalDate fin) {
