@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/perfil")
-public class ChangeDataUserController {
+public class    ChangeDataUserController {
 
     @Autowired
     private PersonaService personaService;
@@ -32,7 +32,6 @@ public class ChangeDataUserController {
         // Puedes usar el email del path o del body, pero debería coincidir
         try {
             // Si quieres, puedes validar que registerRequest.getEmail().equals(email)
-
             Persona usuario = personaService.changeUserData(registerRequest);
             return ResponseEntity.ok(usuario);
         } catch (Exception e) {

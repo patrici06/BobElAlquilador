@@ -4,21 +4,20 @@ import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from "./VerMaquina";
 import VerMaquinasAlquilerFinalizado from "./VerMaquinasAlquilerFinalizado";
 import { jwtDecode } from "jwt-decode";
+import EmpleadoReviewPopup from "../components/EmpleadoReviewPopUp";
 
 function MisAlquileres() {
     const [alquileres, setAlquileres] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    const [filtro, setFiltro] = useState("todos"); // "todos" | "pendientes"
+    const [filtro, setFiltro] = useState("todos");
     const [mensaje, setMensaje] = useState("");
-    const [tipoMensaje, setTipoMensaje] = useState(""); // 'success' o 'error'
+    const [tipoMensaje, setTipoMensaje] = useState("");
     const [view, setView] = useState('list');
     const [selectedMachine, setSelectedMachine] = useState(null);
     const [selectedAlquiler, setSelectedAlquiler] = useState(null);
     const [showReviewPopup, setShowReviewPopup] = useState(false);
     const [alquilerParaResenia, setAlquilerParaResenia] = useState(null);
-
-    // Cancelación (cliente)
     const [modalOpen, setModalOpen] = useState(false);
     const [alquilerAEliminar, setAlquilerAEliminar] = useState(null);
 
@@ -27,7 +26,6 @@ function MisAlquileres() {
     const esAdmin = rawRoles.includes("ROLE_PROPIETARIO") || rawRoles.includes("ROLE_EMPLEADO");
     const esCliente = rawRoles.includes("ROLE_CLIENTE");
 
-    // Obtener email del empleado desde el token JWT
     let email = "";
     if (token) {
         try {
@@ -36,7 +34,6 @@ function MisAlquileres() {
         } catch (e) { }
     }
 
-    // SOLO UNA LISTA: siempre traigo todos los alquileres del usuario (no reservas aparte)
     useEffect(() => {
         if (!token) {
             setError("No estás autenticado.");
@@ -44,7 +41,6 @@ function MisAlquileres() {
             return;
         }
 
-        // Siempre traigo los alquileres del usuario (pueden ser reservas y alquileres, según backend).
         const endpoint =
             esAdmin
                 ? "http://localhost:8080/api/alquileres/todos-los-alquileres"
@@ -59,7 +55,6 @@ function MisAlquileres() {
                 try {
                     const data = JSON.parse(text);
                     if (!res.ok) throw new Error(data.message || "Error al obtener alquileres.");
-                    // Filtrar alquileres por el id compuesto para evitar repetidos
                     const uniques = {};
                     data.forEach(alq => {
                         const key = [
@@ -67,7 +62,7 @@ function MisAlquileres() {
                             alq.alquilerId?.fechaInicio,
                             alq.alquilerId?.fechaFin
                         ].join("_");
-                        uniques[key] = alq; // sobrescribe repetidos
+                        uniques[key] = alq;
                     });
                     setAlquileres(Object.values(uniques));
                     setError("");
@@ -79,7 +74,6 @@ function MisAlquileres() {
             .finally(() => setLoading(false));
     }, [token, esAdmin]);
 
-    // FILTRADO POR BOTÓN (todos | pendientes)
     const alquileresFiltrados = alquileres.filter(a => {
         if (filtro === "pendientes") {
             return String(a.estadoAlquiler || "").toLowerCase() === "pendiente";
@@ -87,7 +81,6 @@ function MisAlquileres() {
         return true;
     });
 
-    // VISTAS: ver detalle de alquiler y alquiler finalizado
     const handleAlquilerClick = (alquiler) => {
         setSelectedMachine(alquiler.maquina);
         setSelectedAlquiler(alquiler);
@@ -97,6 +90,7 @@ function MisAlquileres() {
             setView('alquilerVista');
         }
     };
+
     const handleEliminarAlquiler = (alquiler, e) => {
         e.stopPropagation();
         const { nombre_maquina, fechaInicio, fechaFin } = alquiler.alquilerId;
@@ -104,6 +98,10 @@ function MisAlquileres() {
         const [anio, mes, dia] = fechaInicio.split("-").map(Number);
         const inicioAlquiler = new Date(anio, mes - 1, dia);
         inicioAlquiler.setHours(0, 0, 0, 0);
+        if (String(alquiler.estadoAlquiler || "").toLowerCase() !== "pendiente") {
+            alert("Solo se pueden cancelar alquileres en estado pendiente.");
+            return;
+        }
         if (hoy >= inicioAlquiler) {
             alert("No se puede cancelar el alquiler debido a que se encuentra en curso");
             return;
@@ -135,6 +133,7 @@ function MisAlquileres() {
                 alert("No se pudo eliminar el alquiler: " + err.message);
             });
     };
+
     const handleRegistrarDevolucion = (alquiler, e) => {
         e.stopPropagation();
 
@@ -167,7 +166,8 @@ function MisAlquileres() {
             .catch((err) => {
                 alert('Error al registrar la devolución: ' + err.message);
             });
-    }
+    };
+
     const handleRegistrarRetiro = (alquiler, e) => {
         e.stopPropagation();
 
@@ -189,27 +189,20 @@ function MisAlquileres() {
                 const mensaje = await res.text();
                 if (!res.ok) throw new Error(mensaje);
                 alert(mensaje);
-
-                // Opcional: Refrescar los datos si querés ver el estado actualizado
-                // Podés usar refetchAlquileres(), o hacer un setAlquileres con los datos actualizados
-
             })
             .catch((err) => {
                 alert("Error al registrar el retiro: " + err.message);
             });
     };
-    // ----------- CANCELACIÓN DE ALQUILER (CLIENTE) ------------
-    // Modal: abrir
+
     const abrirModalCancelar = (alquiler) => {
         setAlquilerAEliminar(alquiler);
         setModalOpen(true);
     };
-    // Modal: cerrar
     const cerrarModalCancelar = () => {
         setAlquilerAEliminar(null);
         setModalOpen(false);
     };
-    // Confirmar cancelación: Llamada backend + feedback y actualización
     const confirmarCancelarAlquiler = async () => {
         if (!alquilerAEliminar) return;
         setMensaje("");
@@ -236,12 +229,6 @@ function MisAlquileres() {
         }
     };
 
-    // ----------- FIN CANCELACIÓN CLIENTE -----------
-
-    // Review popup (igual que tu código, omitido)
-    const ReviewPopup = () => { return null; };
-
-    // VISTAS de detalle
     if (view === 'alquilerVista' && selectedMachine) {
         return (
             <MachineAvailability
@@ -263,11 +250,19 @@ function MisAlquileres() {
         );
     }
 
-    // LISTADO ÚNICO CON FILTRO POR BOTÓN ("Mis alquileres" y "Pendientes")
     return (
         <div className="container">
-            {showReviewPopup && <ReviewPopup />}
-            {/* Botones para filtrar */}
+            <EmpleadoReviewPopup
+                open={showReviewPopup}
+                alquilerParaResenia={alquilerParaResenia}
+                emailEmpleado={email}
+                onClose={() => {
+                    setShowReviewPopup(false);
+                    setAlquilerParaResenia(null);
+                }}
+                onReviewSubmitted={() => {}}
+            />
+
             <div style={{ display: 'flex', gap: '1em', marginBottom: '1.5em', justifyContent: 'center' }}>
                 <button
                     className={filtro === 'todos' ? 'button-primary' : 'button-secondary'}
@@ -335,23 +330,28 @@ function MisAlquileres() {
                                 <th>Acciones</th>
                             </>
                         )}
-                        {/* Columna para el botón de cancelar (cliente) */}
                         {esCliente && <th></th>}
                     </tr>
                     </thead>
                     <tbody>
                     {alquileresFiltrados.map((a) => {
-                        // ----------- LÓGICA BOTÓN CANCELAR (SOLO CLIENTE) -----------
                         let puedeCancelarCliente = false;
                         if (esCliente && a.alquilerId && a.estadoAlquiler) {
-                            // Solo puede cancelar si es "pendiente" y HOY es anterior a inicio
                             const hoy = new Date();
                             const [anio, mes, dia] = a.alquilerId.fechaInicio.split("-").map(Number);
                             const inicioAlquiler = new Date(anio, mes - 1, dia);
                             inicioAlquiler.setHours(0,0,0,0);
                             puedeCancelarCliente = hoy < inicioAlquiler && String(a.estadoAlquiler).toLowerCase() === "pendiente";
                         }
-                        // -----------------------------------------------------------
+                        const adminAcciones = [];
+                        if (esAdmin) {
+                            if (String(a.estadoAlquiler || "").toLowerCase() === "pendiente") {
+                                adminAcciones.push('cancel');
+                                adminAcciones.push('retiro');
+                            } else if (String(a.estadoAlquiler || "").toLowerCase() === "activo") {
+                                adminAcciones.push('devolucion');
+                            }
+                        }
                         return (
                             <tr key={`${a.alquilerId?.nombre_maquina}_${a.alquilerId?.fechaInicio}_${a.alquilerId?.fechaFin}`}
                                 style={{ cursor: 'pointer' }}
@@ -373,41 +373,47 @@ function MisAlquileres() {
                                         <td>{a.persona?.dni || "-"}</td>
                                         <td>{a.persona?.email || "-"}</td>
                                         <td>
-                                                <button
-                                                    className="button-primary"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEliminarAlquiler(a, e);
-                                                    }}
-                                                    style={{ marginRight: "8px" }}
-                                                >
-                                                    Cancelar Alquiler
-                                                </button>
-                                                {a.estadoAlquiler.toLocaleUpperCase() === "PENDIENTE" && (
-                                                    <button
-                                                        className="button-secondary"
-                                                        onClick={(e) => handleRegistrarRetiro(a, e)}
-                                                        style={{ marginRight: "8px" }}
-                                                    >
-                                                        Registrar Retiro
-                                                    </button>
-                                                )}
-                                                {a.estadoAlquiler.toLocaleUpperCase() === "ACTIVO" && (
-                                                    <button
-                                                        className="button-primary"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleRegistrarDevolucion(a, e);
-                                                        }}
-                                                    >
-                                                        Registrar Devolución
-                                                    </button>
-                                                )}
-
+                                            {adminAcciones.length === 0 ? (
+                                                <span>-</span>
+                                            ) : (
+                                                <>
+                                                    {adminAcciones.includes('cancel') && (
+                                                        <button
+                                                            className="button-primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleEliminarAlquiler(a, e);
+                                                            }}
+                                                            style={{ marginRight: "8px" }}
+                                                        >
+                                                            Cancelar Alquiler
+                                                        </button>
+                                                    )}
+                                                    {adminAcciones.includes('retiro') && (
+                                                        <button
+                                                            className="button-secondary"
+                                                            onClick={(e) => handleRegistrarRetiro(a, e)}
+                                                            style={{ marginRight: "8px" }}
+                                                        >
+                                                            Registrar Retiro
+                                                        </button>
+                                                    )}
+                                                    {adminAcciones.includes('devolucion') && (
+                                                        <button
+                                                            className="button-primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleRegistrarDevolucion(a, e);
+                                                            }}
+                                                        >
+                                                            Registrar Devolución
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
                                         </td>
                                     </>
                                 )}
-                                {/* Botón cancelar SOLO para cliente y si aplica */}
                                 {esCliente && (
                                     <td>
                                         {puedeCancelarCliente && (
@@ -430,7 +436,6 @@ function MisAlquileres() {
                 </table>
             )}
 
-            {/* Modal de confirmación de cancelación */}
             {modalOpen && (
                 <div className="modal-overlay">
                     <div className="modal-content" style={{padding: 0, borderRadius: '12px', boxShadow: '0 4px 24px rgba(179,0,0,0.10)'}}>
