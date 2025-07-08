@@ -95,7 +95,10 @@ function MisAlquileres() {
     }, [token, esAdmin]);
 
     const alquileresFiltrados = alquileres.filter(a => {
+        // Si el filtro es "pendientes", solo mostrar los pendientes
         if (filtro === "pendientes" && String(a.estadoAlquiler || "").toLowerCase() !== "pendiente") return false;
+        // Si el filtro es "todos", ocultar los pendientes
+        if (filtro === "todos" && String(a.estadoAlquiler || "").toLowerCase() === "pendiente") return false;
 
         let tipoMatch = true, marcaMatch = true, searchMatch = true;
         const m = a.maquina || {};
@@ -313,11 +316,11 @@ function MisAlquileres() {
                     style={{ minWidth: 140 }}
                     onClick={() => setFiltro('pendientes')}
                 >
-                    Pendientes
+                    Reservas
                 </button>
             </div>
             <h2 className="title">
-                {filtro === "todos" ? (esAdmin ? "Alquileres" : "Mis Alquileres") : "Pendientes"}
+                {filtro === "todos" ? (esAdmin ? "Alquileres" : "Mis Alquileres") : "Reservas"}
             </h2>
             <div className="search-bar-container">
                 <input
@@ -469,7 +472,7 @@ function MisAlquileres() {
                                                             }}
                                                             style={{ marginRight: "8px" }}
                                                         >
-                                                            Cancelar Alquiler
+                                                            Cancelar Reserva
                                                         </button>
                                                     )}
                                                     {accionesAdmin.includes("retiro") && (
@@ -507,7 +510,7 @@ function MisAlquileres() {
                                                     abrirModalCancelar(a);
                                                 }}
                                             >
-                                                Cancelar Alquiler
+                                                Cancelar Reserva
                                             </button>
                                         )}
                                     </td>

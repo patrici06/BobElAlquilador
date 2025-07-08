@@ -164,6 +164,31 @@ function AlquilarMaquina() {
         }
     }, [alquilerEnProceso, email]);
 
+    const fetchMachines = React.useCallback(() => {
+        const endpoint = rawRoles.includes("ROLE_CLIENTE")
+            ? 'http://localhost:8080/api/maquinas/disponibles'
+            : 'http://localhost:8080/api/maquinas';
+
+        fetch(endpoint, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => setMachines(data))
+            .catch(err => {
+                setError('Error cargando máquinas: ' + err.message);
+                setMachines([]);
+            });
+    }, [rawRoles, token]);
+
+    useEffect(() => {
+        fetchMachines();
+    }, [fetchMachines]);
+
     const handleReserveClick = (machine) => {
         setSelectedMachine(machine);
         setError('');
@@ -348,6 +373,7 @@ function AlquilarMaquina() {
                                         <MachineStateManagement
                                             machine={machine}
                                             token={token}
+                                            onStateUpdated={fetchMachines}
                                         />
                                     )}
                                 </div>
