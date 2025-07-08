@@ -306,7 +306,7 @@ function MisAlquileres() {
                     style={{ minWidth: 140 }}
                     onClick={() => setFiltro('todos')}
                 >
-                    Mis alquileres
+                    {esAdmin ? "Alquileres" : "Mis alquileres"}
                 </button>
                 <button
                     className={filtro === 'pendientes' ? 'button-primary' : 'button-secondary'}
@@ -317,7 +317,7 @@ function MisAlquileres() {
                 </button>
             </div>
             <h2 className="title">
-                {filtro === "todos" ? "Mis Alquileres" : "Pendientes"}
+                {filtro === "todos" ? (esAdmin ? "Alquileres" : "Mis Alquileres") : "Pendientes"}
             </h2>
             <div className="search-bar-container">
                 <input
