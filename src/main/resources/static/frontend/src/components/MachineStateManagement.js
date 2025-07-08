@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function MachineStateManagement({ machine, token }) {
-    const [selectedState, setSelectedState] = useState(machine.estado);
+function MachineStateManagement({ machine, token, onStateUpdated }) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [updateMessage, setUpdateMessage] = useState('');
     const [updateStatus, setUpdateStatus] = useState('');
 
     const machineStates = ["Disponible", "Mantenimiento", "Descompuesta"];
+    // El estado actual: preferir estado_maquina, luego estado, sino vacío
+    const machineEstado = machine.estadoMaquina || "";
+
+    // Estado seleccionado: arranca vacío
+    const [selectedState, setSelectedState] = useState("");
+
+    // Cuando cambia el estado actual de la máquina, reseteá el select
+    useEffect(() => {
+        setSelectedState("");
+    }, [machineEstado]);
+
+    // Opciones de actualización: todas excepto el estado actual
+    const updateStates = machineStates.filter(state => state !== machineEstado);
 
     const handleStateChange = (e) => {
         setSelectedState(e.target.value);
     };
 
     const updateMachineState = async () => {
-
+        // Si no eligió nada nuevo, no hagas nada
+        if (!selectedState || selectedState === machineEstado) return;
         setIsUpdating(true);
         try {
             const response = await fetch(
@@ -31,10 +44,13 @@ function MachineStateManagement({ machine, token }) {
                 throw new Error(errorData.mensaje || 'Error al actualizar el estado');
             }
 
-            setUpdateMessage(`${machine.nombre} actualizada con exito`);
+            setUpdateMessage(`${machine.nombre} actualizada con éxito`);
             setUpdateStatus('success');
-            // Update the machine object to reflect the new state
-            machine.estado = selectedState;
+            // Actualizar el objeto local (si hace falta)
+            if ('estado' in machine) machine.estado = selectedState;
+            if ('estado_maquina' in machine) machine.estado_maquina = selectedState;
+
+            if (onStateUpdated) onStateUpdated();
 
         } catch (error) {
             setUpdateMessage(`Error: ${error.message}`);
@@ -50,31 +66,43 @@ function MachineStateManagement({ machine, token }) {
 
     // Style customization
     const selectStyle = {
-        width: '60%',          // Adjust width (90% of container)
-        padding: '10px',       // Increase padding for height
-        fontSize: '14px',      // Adjust font size
-        borderRadius: '4px',   // Round corners
-        border: '1px solid #ccc', // Border style
-        backgroundColor: '#f8f9fa', // Light background
-        margin: '0 auto',      // Center the dropdown
-        display: 'block'       // Block display
+        width: '60%',
+        padding: '10px',
+        fontSize: '14px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        backgroundColor: '#f8f9fa',
+        margin: '0 auto',
+        display: 'block'
     };
 
     const buttonStyle = {
-        width: '40%',          // Match dropdown width
-        padding: '10px 0',     // Vertical padding
-        margin: '10px auto',   // Center and add space around
-        fontSize: '15px',      // Text size
-        borderRadius: '4px',   // Round corners
-        backgroundColor: '#dc3545', // Red color like in your image
-        color: 'white',        // Text color
-        border: 'none',        // Remove border
-        cursor: 'pointer',     // Hand cursor on hover
-        fontWeight: '500'      // Semi-bold text
+        width: '40%',
+        padding: '10px 0',
+        margin: '10px auto',
+        fontSize: '15px',
+        borderRadius: '4px',
+        backgroundColor: '#dc3545',
+        color: 'white',
+        border: 'none',
+        cursor: 'pointer',
+        fontWeight: '500'
     };
 
     return (
         <div className="machine-state-management" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <div style={{ marginBottom: '8px', width: '100%', textAlign: 'center', fontWeight: 500 }}>
+                Estado actual:&nbsp;
+                <span style={{
+                    color:
+                        machineEstado === "Disponible" ? "#155724" :
+                        machineEstado === "Mantenimiento" ? "#856404" :
+                        machineEstado === "Descompuesta" ? "#721c24" :
+                        "#333"
+                }}>
+                    {machineEstado || <span style={{ color: "#999" }}>Sin estado</span>}
+                </span>
+            </div>
             <div className="state-selector" style={{ marginBottom: '8px', width: '100%' }}>
                 <select
                     value={selectedState}
@@ -82,7 +110,8 @@ function MachineStateManagement({ machine, token }) {
                     style={selectStyle}
                     disabled={isUpdating}
                 >
-                    {machineStates.map(state => (
+                    <option value="">Seleccionar nuevo estado...</option>
+                    {updateStates.map(state => (
                         <option key={state} value={state}>
                             {state.replace('_', ' ')}
                         </option>
@@ -93,7 +122,7 @@ function MachineStateManagement({ machine, token }) {
             <button
                 className="button-primary"
                 onClick={updateMachineState}
-                disabled={isUpdating}
+                disabled={isUpdating || !selectedState}
                 style={buttonStyle}
             >
                 {isUpdating ? 'Actualizando...' : 'Actualizar'}
@@ -103,7 +132,7 @@ function MachineStateManagement({ machine, token }) {
                 <div
                     className={`update-message ${updateStatus}`}
                     style={{
-                        width: '90%',       // Match width of other elements
+                        width: '90%',
                         marginTop: '8px',
                         padding: '8px',
                         textAlign: 'center',
