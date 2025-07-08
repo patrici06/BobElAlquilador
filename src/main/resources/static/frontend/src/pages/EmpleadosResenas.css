@@ -1,0 +1,79 @@
+.resenas-container {
+    max-width: 1000px;
+    margin: 2em auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 2em 1em 2em 1em;
+}
+
+.resenas-title {
+    margin-bottom: 1.5em;
+    color: #2b2d42;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.resenas-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f8fafc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.resenas-table th,
+.resenas-table td {
+    padding: 0.8em 1em;
+    text-align: left;
+    border-bottom: 1px solid #e6e9ef;
+    font-size: 1rem;
+}
+
+.resenas-table th {
+    background: #eaf0fb;
+    color: #495057;
+    font-weight: 600;
+}
+
+.resenas-table td {
+    background: #fff;
+    color: #22223b;
+    vertical-align: top;
+}
+
+.resenas-table tr:last-child td {
+    border-bottom: none;
+}
+
+.resenas-error {
+    color: #e63946;
+    font-weight: bold;
+    margin-top: 1.5em;
+    text-align: center;
+}
+
+.star {
+    color: #FFD700;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+@media (max-width: 800px) {
+    .resenas-container {
+        padding: 1em 0.2em 1.5em 0.2em;
+    }
+    .resenas-title {
+        font-size: 1.2rem;
+    }
+    .resenas-table th,
+    .resenas-table td {
+        font-size: 0.93rem;
+        padding: 0.55em 0.3em;
+    }
+}

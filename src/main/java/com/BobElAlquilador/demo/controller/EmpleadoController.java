@@ -35,4 +35,13 @@ public class EmpleadoController {
         }
 
     }
+    @GetMapping ("/empleados-resenas")
+    public ResponseEntity<?> empleadosResenas() {
+        try {
+            return ResponseEntity.ok().body(resenaService.getAllResena());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
 }

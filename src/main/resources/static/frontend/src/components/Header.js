@@ -152,6 +152,15 @@ function Header() {
                     >
                         Empleados-Alquileres
                     </button>
+                    <button
+                    onClick={() => {setMenuOpen(false); navigate("/propietario/empleados-resenas")}}
+                    className={styles.button}
+                    onMouseEnter={() => setHoveredBtn("ver")}
+                    onMouseLeave={() => setHoveredBtn("")}
+                    data-hovered={hoveredBtn === "ver cantidad de alquileres efectuados" }
+                    >
+                    Empleados-Resenas
+                  </button>
                     </>
                 )}
                 <button
