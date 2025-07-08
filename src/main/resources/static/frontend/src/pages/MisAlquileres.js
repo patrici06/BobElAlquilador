@@ -17,6 +17,11 @@ function MisAlquileres() {
     const [selectedAlquiler, setSelectedAlquiler] = useState(null);
     const [showReviewPopup, setShowReviewPopup] = useState(false);
     const [alquilerParaResenia, setAlquilerParaResenia] = useState(null);
+    const [tipos, setTipos] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+    const [selectedTipo, setSelectedTipo] = useState('');
+    const [selectedMarca, setSelectedMarca] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Cancelación (cliente)
     const [modalOpen, setModalOpen] = useState(false);
@@ -35,6 +40,21 @@ function MisAlquileres() {
             email = decoded.email || decoded.sub || "";
         } catch (e) { }
     }
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        fetch("http://localhost:8080/api/tipos", { headers })
+            .then(res => res.ok ? res.json() : [])
+            .then(setTipos)
+            .catch(() => setTipos([]));
+
+        fetch("http://localhost:8080/api/marcas", { headers })
+            .then(res => res.ok ? res.json() : [])
+            .then(setMarcas)
+            .catch(() => setMarcas([]));
+    }, []);
 
     // SOLO UNA LISTA: siempre traigo todos los alquileres del usuario (no reservas aparte)
     useEffect(() => {
@@ -81,10 +101,39 @@ function MisAlquileres() {
 
     // FILTRADO POR BOTÓN (todos | pendientes)
     const alquileresFiltrados = alquileres.filter(a => {
-        if (filtro === "pendientes") {
-            return String(a.estadoAlquiler || "").toLowerCase() === "pendiente";
+        // Estado pendiente/todos
+        if (filtro === "pendientes" && String(a.estadoAlquiler || "").toLowerCase() !== "pendiente") return false;
+
+        // --- Filtros de tipo y marca (usando a.maquina) ---
+        let tipoMatch = true, marcaMatch = true, searchMatch = true;
+        const m = a.maquina || {};
+        // Tipo
+        if (selectedTipo) {
+            const tipoArray = Array.isArray(m.tipo) ? m.tipo : [];
+            tipoMatch = tipoArray.some(t => String(t.id) === String(selectedTipo));
         }
-        return true;
+        // Marca
+        if (selectedMarca) {
+            if (typeof m.marca === "object" && m.marca !== null) {
+                marcaMatch = String(m.marca.id) === String(selectedMarca);
+            } else {
+                marcaMatch = String(m.marca) === String(selectedMarca);
+            }
+        }
+        // --- BÚSQUEDA UNIFICADA ---
+        const term = searchTerm.trim().toLowerCase();
+        if (term !== "") {
+            // Buscar en nombre, descripción Y/O DNI
+            const nombre = (m.nombre || '').toLowerCase();
+            const descripcion = (m.descripcion || '').toLowerCase();
+            const dniAlquiler = String(a.persona?.dni || "").toLowerCase();
+            searchMatch =
+                nombre.includes(term) ||
+                descripcion.includes(term) ||
+                dniAlquiler.includes(term);
+        }
+
+        return tipoMatch && marcaMatch && searchMatch;
     });
 
     // VISTAS: ver detalle de alquiler y alquiler finalizado
@@ -287,6 +336,45 @@ function MisAlquileres() {
             <h2 className="title">
                 {filtro === "todos" ? "Mis Alquileres" : "Pendientes"}
             </h2>
+
+    {/* --- AGREGADO: Barra de búsqueda y filtros --- */}
+            <div
+                className="search-bar-container"
+            >
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                    style={{ flex: 2 }}
+                />
+                <select
+                    value={selectedTipo}
+                    onChange={e => setSelectedTipo(e.target.value)}
+                    className="search-select"
+                    style={{ flex: 1 }}
+                >
+                    <option value="">Todos los Tipos</option>
+                    {tipos.map(tipo => (
+                        <option key={tipo.id} value={tipo.id}>
+                            {tipo.nombreTipo || tipo.nombre}
+                        </option>
+                    ))}
+                </select>
+                <select
+                    value={selectedMarca}
+                    onChange={e => setSelectedMarca(e.target.value)}
+                    className="search-select"
+                    style={{ flex: 1 }}
+                >
+                    <option value="">Todas las Marcas</option>
+                    {marcas.map(marca => (
+                        <option key={marca.id} value={marca.id}>
+                            {marca.nombre}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
             {mensaje && (
                 <div className={tipoMensaje === "success" ? "mensaje-exito" : "mensaje-error"} style={{marginBottom: "1rem"}}>
