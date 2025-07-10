@@ -4,6 +4,7 @@ import { getRolesFromJwt } from "../utils/getUserRolesFromJwt";
 import MachineAvailability from "./VerMaquina";
 import VerMaquinasAlquilerFinalizado from "./VerMaquinasAlquilerFinalizado";
 import { jwtDecode } from "jwt-decode";
+import EmpleadoReviewPopup from "../components/EmpleadoReviewPopUp";
 
 function MisAlquileres() {
     const [alquileres, setAlquileres] = useState([]);
@@ -277,7 +278,18 @@ function MisAlquileres() {
         }
     };
 
-    const ReviewPopup = () => { return null; };
+    const ReviewPopup = () => (
+        <EmpleadoReviewPopup
+            open={showReviewPopup}
+            alquilerParaResenia={alquilerParaResenia}
+            emailEmpleado={email}
+            onClose={() => {
+                setShowReviewPopup(false);
+                setAlquilerParaResenia(null);
+            }}
+            onReviewSubmitted={() => {}}
+        />
+    );
 
     if (view === 'alquilerVista' && selectedMachine) {
         return (
